@@ -143,18 +143,18 @@ Regla: cada sección empieza con una celda Markdown que explica qué se hace y p
 
 | # | Sección | Contenido | Rúbrica | Responsable |
 |---|---|---|---|---|
-| 0 | Portada | Título, integrantes, objetivo, dataset | — | P4 |
-| 1 | Configuración | Imports, rutas, semilla, versión de librerías | — | P1 |
-| 2 | Datos y EDA mínimo | Carga, nulos, distribución del target, ventas por categoría | — | P1 |
-| 3 | Features y split | Selección, one-hot, `dropna`, split temporal | — | P1 |
-| 4 | Pipeline SVR | `TransformedTargetRegressor`, `StandardScaler`, `SVR` | 3.1 | P2 |
-| 5 | Barrido kernels × C | 16 runs en MLflow + métricas | 3.1 | P2 |
-| 6 | Optimización | `GridSearchCV`, mejor modelo, reentrenamiento | 3.1 | P2 |
-| 7 | Evaluación | RMSE/MAE/R²/MAPE, predicho vs real, residuos | 3.1 | P3 |
-| 8 | Resultados consolidados | `mlflow.search_runs` → lista/tabla + CSV + figura | 3.1 | P3 |
-| 9 | Función de predicción | `predecir_venta()` + dos casos | 3.2 | P3 |
-| 10 | Conclusiones | Hallazgos, comparación con LSTM, limitaciones | 3.4 | P4 |
-| 11 | Referencias | APA 7 | 3.4 | P4 |
+| 0 | Portada | Título, integrantes, objetivo, dataset | — | R4 |
+| 1 | Configuración | Imports, rutas, semilla, versión de librerías | — | R1 |
+| 2 | Datos y EDA mínimo | Carga, nulos, distribución del target, ventas por categoría | — | R1 |
+| 3 | Features y split | Selección, one-hot, `dropna`, split temporal | — | R1 |
+| 4 | Pipeline SVR | `TransformedTargetRegressor`, `StandardScaler`, `SVR` | 3.1 | R2 |
+| 5 | Barrido kernels × C | 16 runs en MLflow + métricas | 3.1 | R2 |
+| 6 | Optimización | `GridSearchCV`, mejor modelo, reentrenamiento | 3.1 | R2 |
+| 7 | Evaluación | RMSE/MAE/R²/MAPE, predicho vs real, residuos | 3.1 | R3 |
+| 8 | Resultados consolidados | `mlflow.search_runs` → lista/tabla + CSV + figura | 3.1 | R3 |
+| 9 | Función de predicción | `predecir_venta()` + dos casos | 3.2 | R3 |
+| 10 | Conclusiones | Hallazgos, comparación con LSTM, limitaciones | 3.4 | R4 |
+| 11 | Referencias | APA 7 | 3.4 | R4 |
 
 ---
 
@@ -164,10 +164,10 @@ Regla: cada sección empieza con una celda Markdown que explica qué se hace y p
 
 | Rol | Integrante | Responsabilidad principal | Carga estimada |
 |---|---|---|---:|
-| **P1 — Datos y EDA** | _(nombre)_ | Dataset, features, split, control de fuga | 8 h |
-| **P2 — Modelado y MLflow** | _(nombre)_ | Pipeline SVR, barrido, GridSearch, tracking | 10 h |
-| **P3 — Evaluación y predicción** | _(nombre)_ | Métricas, figuras, `predecir_venta`, HTML | 9 h |
-| **P4 — Conclusiones y documentación** | _(nombre)_ | Conclusiones, APA, revisión final | 6 h |
+| **R1 — Datos y EDA** | _(nombre)_ | Dataset, features, split, control de fuga | 8 h |
+| **R2 — Modelado y MLflow** | _(nombre)_ | Pipeline SVR, barrido, GridSearch, tracking | 10 h |
+| **R3 — Evaluación y predicción** | _(nombre)_ | Métricas, figuras, `predecir_venta`, HTML | 9 h |
+| **R4 — Conclusiones y documentación** | _(nombre)_ | Conclusiones, APA, revisión final | 6 h |
 
 ### 5.2 Responsabilidades detalladas
 
@@ -175,7 +175,7 @@ Cada rol tiene un objetivo, tareas verificables, entregables, criterio de acepta
 límite claro de lo que **no** le corresponde. Las horas son estimadas y suman 33 h de
 trabajo efectivo para el equipo.
 
-#### 5.2.1 P1 — Datos y EDA (8 h)
+#### 5.2.1 R1 — Datos y EDA (8 h)
 
 **Objetivo:** entregar un dataset limpio, un conjunto de variables sin fuga de información
 y un split reproducible que el resto del equipo pueda usar sin modificarlo.
@@ -212,9 +212,9 @@ y un split reproducible que el resto del equipo pueda usar sin modificarlo.
 - `X_train`, `X_test`, `y_train`, `y_test` existen, no tienen nulos y conservan la
   proporción temporal esperada.
 - Cada exclusión de columna está justificada por escrito.
-- P2 revisa y aprueba la ausencia de fuga antes de modelar.
+- R2 revisa y aprueba la ausencia de fuga antes de modelar.
 
-**Interacción:** entrega a P2 la matriz y el split; P3 reutiliza las figuras del EDA.
+**Interacción:** entrega a R2 la matriz y el split; R3 reutiliza las figuras del EDA.
 **No le corresponde:** entrenar modelos, calcular métricas ni redactar conclusiones.
 
 | Actividad | Horas |
@@ -226,7 +226,7 @@ y un split reproducible que el resto del equipo pueda usar sin modificarlo.
 | Documentación y figuras | 1.5 |
 | **Total** | **8.0** |
 
-#### 5.2.2 P2 — Modelado y MLflow (10 h)
+#### 5.2.2 R2 — Modelado y MLflow (10 h)
 
 **Objetivo:** construir el pipeline SVR, ejecutar el barrido de kernels y penalización,
 optimizar los hiperparámetros y dejar todo registrado en MLflow de forma reproducible.
@@ -246,7 +246,7 @@ optimizar los hiperparámetros y dejar todo registrado en MLflow de forma reprod
 7. Seleccionar el mejor modelo y justificar la decisión comparando RMSE de CV contra RMSE
    de test.
 8. Generar la tabla consolidada con `mlflow.search_runs` (o dejar la función lista para
-   que P3 la exporte).
+   que R3 la exporte).
 9. Documentar hiperparámetros, semilla y versión de scikit-learn.
 
 **Entregables:**
@@ -262,8 +262,8 @@ optimizar los hiperparámetros y dejar todo registrado en MLflow de forma reprod
 - El mejor modelo se puede reconstruir con los parámetros registrados.
 - La comparación CV vs test está explicada, no solo mostrada.
 
-**Interacción:** depende del split de P1; entrega el modelo final a P3 y los resultados a
-P4 para las conclusiones.
+**Interacción:** depende del split de R1; entrega el modelo final a R3 y los resultados a
+R4 para las conclusiones.
 **No le corresponde:** figuras de evaluación final, función de predicción, conclusiones
 ni referencias.
 
@@ -276,7 +276,7 @@ ni referencias.
 | Documentación y tabla | 1.5 |
 | **Total** | **10.0** |
 
-#### 5.2.3 P3 — Evaluación y predicción (9 h)
+#### 5.2.3 R3 — Evaluación y predicción (9 h)
 
 **Objetivo:** medir correctamente el modelo final, comunicar los resultados con figuras
 claras y entregar una función de predicción usable con dos casos demostrativos.
@@ -312,7 +312,7 @@ claras y entregar una función de predicción usable con dos casos demostrativos
 - La función responde para los dos casos y no falla con campos opcionales ausentes.
 - El HTML se abre y muestra todas las secciones sin errores.
 
-**Interacción:** recibe el modelo de P2; entrega los resultados y las figuras a P4 para las
+**Interacción:** recibe el modelo de R2; entrega los resultados y las figuras a R4 para las
 conclusiones.
 **No le corresponde:** elegir hiperparámetros ni redactar conclusiones ni referencias.
 
@@ -326,7 +326,7 @@ conclusiones.
 | Exportación HTML y revisión | 1.5 |
 | **Total** | **9.0** |
 
-#### 5.2.4 P4 — Conclusiones y documentación (6 h)
+#### 5.2.4 R4 — Conclusiones y documentación (6 h)
 
 **Objetivo:** cerrar el trabajo con conclusiones basadas en métricas, referencias en APA 7
 y una revisión final contra el alcance acordado. **No** incluye justificar predicciones ni
@@ -334,13 +334,13 @@ usar SHAP/PDP/permutation importance.
 
 **Tareas concretas:**
 
-1. Revisar las métricas, la tabla consolidada y las figuras que entregan P2 y P3.
+1. Revisar las métricas, la tabla consolidada y las figuras que entregan R2 y R3.
 2. Redactar las conclusiones con cifras: mejor kernel/C, comparación con el baseline y con
    el LSTM de la práctica 001, y limitaciones del dataset.
 3. Construir la lista de referencias en APA 7 y citarlas en el texto.
 4. Verificar la coherencia entre objetivos, resultados y conclusiones.
 5. Revisar el notebook contra los ítems 3.1, 3.2 y 3.4 del alcance.
-6. Coordinar con P3 la exportación HTML y revisar que se vea correctamente.
+6. Coordinar con R3 la exportación HTML y revisar que se vea correctamente.
 7. Preparar el guion de sustentación y repartir los bloques entre los cuatro integrantes.
 
 **Entregables:**
@@ -357,7 +357,7 @@ usar SHAP/PDP/permutation importance.
 - La revisión final no deja ítems del alcance sin evidencia.
 - No aparece ninguna sección de SHAP, PDP/ICE ni permutation importance.
 
-**Interacción:** depende de los resultados de P2 y de las figuras de P3.
+**Interacción:** depende de los resultados de R2 y de las figuras de R3.
 **No le corresponde:** modificar el pipeline, recalcular métricas, cambiar el split ni
 implementar la función de predicción.
 
@@ -370,24 +370,24 @@ implementar la función de predicción.
 | Guion de sustentación | 1.0 |
 | **Total** | **6.0** |
 
-### 5.3 Matriz RACI
+### 5.3 Matriz de responsabilidades
 
-`R` = responsable de ejecutar, `A` = aprueba, `C` = consultado, `I` = informado.
+`E` = ejecuta, `A` = aprueba, `C` = consultado, `I` = informado.
 
-| Tarea | P1 | P2 | P3 | P4 |
+| Tarea | R1 | R2 | R3 | R4 |
 |---|---|---|---|---|
-| Estructura del repo y entorno | **R** | C | I | I |
-| Carga, EDA y features | **R** | C | I | I |
-| Split temporal y control de fuga | **R** | A | C | C |
-| Pipeline SVR y escalado del target | C | **R** | C | I |
-| Barrido kernels × C | I | **R** | C | I |
-| GridSearchCV | I | **R** | C | I |
-| Métricas y figuras de evaluación | I | C | **R** | C |
-| Tabla consolidada desde MLflow | I | **R** | C | I |
-| `predecir_venta()` y dos casos | I | C | **R** | C |
-| Conclusiones | C | C | C | **R** |
-| Referencias APA | I | I | I | **R** |
-| Exportación HTML y revisión de rúbrica | I | I | **R** | A |
+| Estructura del repo y entorno | **E** | C | I | I |
+| Carga, EDA y features | **E** | C | I | I |
+| Split temporal y control de fuga | **E** | A | C | C |
+| Pipeline SVR y escalado del target | C | **E** | C | I |
+| Barrido kernels × C | I | **E** | C | I |
+| GridSearchCV | I | **E** | C | I |
+| Métricas y figuras de evaluación | I | C | **E** | C |
+| Tabla consolidada desde MLflow | I | **E** | C | I |
+| `predecir_venta()` y dos casos | I | C | **E** | C |
+| Conclusiones | C | C | C | **E** |
+| Referencias APA | I | I | I | **E** |
+| Exportación HTML y revisión de rúbrica | I | I | **E** | A |
 
 ### 5.4 Regla de edición del notebook
 
@@ -397,7 +397,7 @@ El notebook es un archivo único y cuatro personas no pueden editarlo a la vez.
    `feat/evaluacion`, `feat/documentacion`.
 2. Solo se edita la sección asignada.
 3. Antes de editar: `git pull --rebase origin main`.
-4. Al terminar: commit pequeño y push; el integrador (P1) hace el merge.
+4. Al terminar: commit pequeño y push; el integrador (R1) hace el merge.
 5. Si hay conflicto, se resuelve en pareja (autor + integrador) y se vuelve a ejecutar
    el notebook completo.
 6. Prohibido dejar celdas con errores o salidas obsoletas en `main`.
@@ -405,16 +405,16 @@ El notebook es un archivo único y cuatro personas no pueden editarlo a la vez.
 ### 5.5 Flujo de dependencias entre roles
 
 ```text
-P1  Datos + features + split
+R1  Datos + features + split
         │
         ▼
-P2  Pipeline SVR + barrido + GridSearch + MLflow
+R2  Pipeline SVR + barrido + GridSearch + MLflow
         │
-        ├──────────────► P4  Resultados y métricas para conclusiones
+        ├──────────────► R4  Resultados y métricas para conclusiones
         ▼
-P3  Métricas + figuras + predecir_venta() + HTML
+R3  Métricas + figuras + predecir_venta() + HTML
         │
-        └──────────────► P4  Figuras y dos casos
+        └──────────────► R4  Figuras y dos casos
                               │
                               ▼
                         Conclusiones + APA + revisión
@@ -422,10 +422,10 @@ P3  Métricas + figuras + predecir_venta() + HTML
 
 Reglas del flujo:
 
-- P1 no entrega hasta que P2 confirme que no hay fuga de información.
-- P2 no entrega hasta que la tabla de MLflow esté completa.
-- P3 no entrega hasta que la función funcione con los dos casos.
-- P4 no entrega hasta que las conclusiones tengan cifras y la rúbrica esté marcada.
+- R1 no entrega hasta que R2 confirme que no hay fuga de información.
+- R2 no entrega hasta que la tabla de MLflow esté completa.
+- R3 no entrega hasta que la función funcione con los dos casos.
+- R4 no entrega hasta que las conclusiones tengan cifras y la rúbrica esté marcada.
 - Ningún rol modifica el trabajo de otro sin avisar y sin volver a ejecutar el notebook.
 
 ---
@@ -436,11 +436,11 @@ Reglas del flujo:
 
 | Sesión | Duración | Objetivo | Actividades | Responsable | Entregable |
 |---|---:|---|---|---|---|
-| **S1** | 2 h | Base reproducible | Kickoff, repo, entorno, carga, EDA, features, split | P1 | Notebook secciones 0–3 ejecutando |
-| **S2** | 2 h | Primer modelo | Pipeline SVR, baseline, configuración de MLflow, 4 runs | P2 | Sección 4–5 con 4 runs |
-| **S3** | 2 h | Optimización | 16 runs, `GridSearchCV`, tabla consolidada, figuras | P2 + P3 | Secciones 5–8 completas |
-| **S4** | 2 h | Predicción | Métricas finales, `predecir_venta()`, dos casos | P3 | Secciones 7 y 9 |
-| **S5** | 2 h | Conclusiones y cierre | Conclusiones, APA, exportación HTML, revisión de rúbrica | P4 + todos | Notebook completo + HTML |
+| **S1** | 2 h | Base reproducible | Kickoff, repo, entorno, carga, EDA, features, split | R1 | Notebook secciones 0–3 ejecutando |
+| **S2** | 2 h | Primer modelo | Pipeline SVR, baseline, configuración de MLflow, 4 runs | R2 | Sección 4–5 con 4 runs |
+| **S3** | 2 h | Optimización | 16 runs, `GridSearchCV`, tabla consolidada, figuras | R2 + R3 | Secciones 5–8 completas |
+| **S4** | 2 h | Predicción | Métricas finales, `predecir_venta()`, dos casos | R3 | Secciones 7 y 9 |
+| **S5** | 2 h | Conclusiones y cierre | Conclusiones, APA, exportación HTML, revisión de rúbrica | R4 + todos | Notebook completo + HTML |
 | **S6** | 1 h | Buffer | Correcciones, ensayo de sustentación | Todos | Versión final |
 
 ### 6.2 Hitos
@@ -456,10 +456,10 @@ Reglas del flujo:
 
 | Entre | Tarea | Responsable | Tiempo |
 |---|---|---|---:|
-| S1–S2 | Revisar dokumentación de SVR y preparar el pipeline | P2 | 2 h |
-| S2–S3 | Preparar funciones de métricas y figuras | P3 | 2 h |
-| S3–S4 | Revisar resultados y preparar el borrador de conclusiones | P4 | 2 h |
-| S4–S5 | Redactar conclusiones y referencias | P4 | 2 h |
+| S1–S2 | Revisar dokumentación de SVR y preparar el pipeline | R2 | 2 h |
+| S2–S3 | Preparar funciones de métricas y figuras | R3 | 2 h |
+| S3–S4 | Revisar resultados y preparar el borrador de conclusiones | R4 | 2 h |
+| S4–S5 | Redactar conclusiones y referencias | R4 | 2 h |
 | S5–S6 | Ensayo individual de la sustentación | Todos | 1 h |
 
 ---
@@ -835,7 +835,7 @@ Marcar antes de la entrega:
 | Conflictos al editar el notebook | Alta | Medio | Ramas por persona, secciones asignadas, integrador único |
 | Kernel `sigmoid` inestable | Alta | Bajo | Documentarlo como resultado esperado; limitar C |
 | Métricas distintas entre integrantes | Media | Medio | Semilla fija, split congelado, mismos datos |
-| Fuga de información en features | Media | Alto | Revisión cruzada P1–P2 antes de modelar |
+| Fuga de información en features | Media | Alto | Revisión cruzada R1–R2 antes de modelar |
 | Split temporal con solo ~100 filas de test | Alta | Medio | Reportar también CV 5-fold; no sobreinterpretar decimales |
 | MLflow no registra artefactos | Baja | Medio | Verificar en S2 con un run de prueba |
 | Pérdida de una sesión | Media | Medio | Sesión buffer S6 |
@@ -849,10 +849,10 @@ Duración total: 12–15 minutos + preguntas. Un bloque por integrante.
 
 | Bloque | Minutos | Contenido | Responsable |
 |---|---:|---|---|
-| 1. Contexto | 3 | Dataset, variable objetivo, por qué SVR, split y control de fuga | P1 |
-| 2. Modelo y optimización | 4 | Pipeline, kernels, C, MLflow, GridSearch, tabla de resultados | P2 |
-| 3. Evaluación y predicción | 4 | RMSE/MAE/R², figuras, `predecir_venta()` y los dos casos | P3 |
-| 4. Conclusiones y referencias | 3 | Hallazgos, limitaciones y referencias APA | P4 |
+| 1. Contexto | 3 | Dataset, variable objetivo, por qué SVR, split y control de fuga | R1 |
+| 2. Modelo y optimización | 4 | Pipeline, kernels, C, MLflow, GridSearch, tabla de resultados | R2 |
+| 3. Evaluación y predicción | 4 | RMSE/MAE/R², figuras, `predecir_venta()` y los dos casos | R3 |
+| 4. Conclusiones y referencias | 3 | Hallazgos, limitaciones y referencias APA | R4 |
 
 ### Preguntas probables y respuestas cortas
 

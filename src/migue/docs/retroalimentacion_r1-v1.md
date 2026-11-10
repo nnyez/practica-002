@@ -1,11 +1,14 @@
-# Retroalimentación para P1 — secciones 1 a 3
+# Retroalimentación para R1 — secciones 1 a 3
 
 | Campo | Valor |
 |---|---|
-| **Revisado** | `src/migue/p1.ipynb` |
+| **Revisado** | `src/migue/practica-002-v1/r1-v1.ipynb` |
 | **Alcance** | Secciones 1 (configuración), 2 (datos y EDA) y 3 (features y split) |
 | **Fecha** | 9 de noviembre de 2026 |
 | **Veredicto** | **Aprobado con cambios menores** |
+
+> **Notación:** `R1`–`R4` son los roles del equipo. En la columna *Prio* de la sección 2,
+> `P0` = bloqueante, `P1` = importante y `P2` = menor; son prioridades, no roles.
 
 ---
 
@@ -270,7 +273,7 @@ motivos; en 25, la redacción; en 6, la personalización del gráfico.
   10 días (20-feb → 1-mar), sin solapamiento y con los 10 productos en ambos.
 - `semana_iso` está bien excluida: el 1-ene-2022 es semana ISO 52 y rompe el orden.
 - El diagnóstico de extrapolación (`es_feriado` constante en train, 40 % de
-  `semana_del_periodo` fuera de rango) es información útil para P2 y para las
-  limitaciones de P4.
+  `semana_del_periodo` fuera de rango) es información útil para R2 y para las
+  limitaciones de R4.
 - El contrato `X_train`, `X_test`, `y_train`, `y_test`, `COLUMNAS`, `SEED` y `guardar()`
   está claro y verificado.

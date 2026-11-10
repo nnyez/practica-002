@@ -33,8 +33,8 @@ antes de escribir código.
 > `shap` **no** se instala: la justificación de predicciones quedó fuera del alcance de la
 > práctica. Tampoco se usan Random Forest ni árboles de decisión.
 
-El notebook de P1 se ejecutó originalmente con Python 3.13.18, pandas 3.0.5 y numpy 2.5.3.
-Al adoptar esta base, **P1 debe re-ejecutarlo una vez** para que la tabla de versiones del
+El notebook de R1 se ejecutó originalmente con Python 3.13.18, pandas 3.0.5 y numpy 2.5.3.
+Al adoptar esta base, **R1 debe re-ejecutarlo una vez** para que la tabla de versiones del
 notebook coincida con la del equipo. Los resultados no cambian de forma apreciable.
 
 ---
@@ -212,7 +212,7 @@ En Windows: `certutil -hashfile datos\ventas_features.csv SHA256` y comparar a m
 - Abrir JupyterLab desde el entorno activado: `jupyter lab`.
 - Seleccionar el kernel **"Python (svr-ventas)"**, no "Python 3" del sistema.
 - Ejecutar el notebook desde la raíz del repositorio o usar el helper `raiz_proyecto()`
-  acordado con P1. Si el kernel arranca en `src/migue/`, `Path("datos/...")` no encuentra
+  acordado con R1. Si el kernel arranca en `src/migue/`, `Path("datos/...")` no encuentra
   el CSV.
 
 Ejecución sin interfaz:
@@ -287,9 +287,9 @@ git rm --cached ".~lock.guia.docx#"
 
 ---
 
-## 11. Alternativa: mantener el entorno original de P1
+## 11. Alternativa: mantener el entorno original de R1
 
-Si el equipo prefiere conservar el entorno exacto en que P1 ya ejecutó el notebook,
+Si el equipo prefiere conservar el entorno exacto en que R1 ya ejecutó el notebook,
 cambien solo estas tres cosas:
 
 ```txt

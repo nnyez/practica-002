@@ -95,7 +95,8 @@ practica-002/
 │   └── plan_desarrollo_svr_4_personas.pdf
 ├── src/
 │   ├── migue/
-│   │   └── p1.ipynb                   # trabajo individual de P1
+│   │   ├── practica-002-v1/           # entrega v1 de R1 (histórico)
+│   │   └── practica-002-v2/           # entrega v2 de R1
 │   └── svr_ventas.ipynb               # integración final (a generar)
 ├── resultados/
 │   ├── resultados_modelos.csv         # a generar
@@ -113,10 +114,10 @@ practica-002/
 
 | Rol | Responsabilidad | Carga |
 |---|---|---:|
-| P1 — Datos y EDA | Dataset, features, split y control de fuga | 8 h |
-| P2 — Modelado y MLflow | Pipeline SVR, barrido, GridSearch y tracking | 10 h |
-| P3 — Evaluación y predicción | Métricas, figuras, `predecir_venta()` y HTML | 9 h |
-| P4 — Conclusiones y documentación | Conclusiones, APA y revisión final | 6 h |
+| R1 — Datos y EDA | Dataset, features, split y control de fuga | 8 h |
+| R2 — Modelado y MLflow | Pipeline SVR, barrido, GridSearch y tracking | 10 h |
+| R3 — Evaluación y predicción | Métricas, figuras, `predecir_venta()` y HTML | 9 h |
+| R4 — Conclusiones y documentación | Conclusiones, APA y revisión final | 6 h |
 
 El detalle de tareas, entregables y criterios de aceptación está en la sección 5 del plan.
 

@@ -1,0 +1,23 @@
+variable,rol,motivo_exclusion
+anio,excluida,constante
+cantidad_vendida,target,
+categoria,categórica,
+dia_del_mes,numérica,
+dia_semana,numérica,
+dias_para_expirar,numérica,
+es_feriado,numérica,
+es_fin_de_semana,numérica,
+fecha_venta,excluida,solo ordena y divide
+mes,numérica,
+nombre,excluida,1 a 1 con product_id
+nombre_dia,excluida,1 a 1 con dia_semana
+product_id,categórica,
+promedio_movil_7d,numérica,
+semana_del_periodo,numérica,
+semana_iso,excluida,no es monótona (1-ene = semana 52)
+stock_actual,excluida,constante por producto
+stock_en_momento,numérica,
+tipo_dia,excluida,derivada de es_fin_de_semana y es_feriado
+unidad,excluida,fija por producto
+ventas_dia_anterior,numérica,
+ventas_hace_7_dias,numérica,

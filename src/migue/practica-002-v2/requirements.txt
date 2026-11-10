@@ -1,0 +1,13 @@
+# Paquetes del plan de desarrollo (sección 7.1). Versiones mínimas con las que se probó la parte R1.
+# Tras crear tu entorno (python3.12 -m venv .venv) puedes regenerar la lista exacta con:
+#   .venv/bin/python -m pip freeze > requirements.txt
+pandas>=2.2
+numpy>=1.26
+scikit-learn>=1.5
+matplotlib>=3.8
+seaborn>=0.13
+mlflow>=2.14
+shap>=0.45
+jupyter
+nbconvert
+ipykernel

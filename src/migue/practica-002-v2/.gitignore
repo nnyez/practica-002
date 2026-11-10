@@ -1,0 +1,5 @@
+# Entorno y artefactos pesados (plan de desarrollo, sección 8.3)
+.venv/
+mlruns/
+__pycache__/
+.ipynb_checkpoints/
