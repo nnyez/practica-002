@@ -26,8 +26,8 @@ El equipo construirá un único notebook reproducible que:
 1. Carga y prepara el dataset de la práctica 001.
 2. Entrena SVR con distintos **kernels** (`linear`, `rbf`, `poly`, `sigmoid`) y distintos
    valores de **penalización** `C`.
-3. Registra **todos** los entrenamientos en **MLflow** y consolida los resultados en una
-   lista/tabla comparativa.
+3. Registra **cada entrenamiento** como una **versión** en el Model Registry de MLflow y
+   consolida todas las versiones en una lista/tabla comparativa.
 4. Optimiza el modelo con `GridSearchCV` (C, epsilon, gamma, degree).
 5. Define una función `predecir_venta()` para un sample nuevo, probada con **dos casos**
    reales del dataset (demanda alta y demanda baja).
@@ -98,7 +98,9 @@ Estas decisiones se toman una vez y no se reabren sin acuerdo del equipo.
 | Métrica principal | RMSE | Misma unidad que la variable (unidades vendidas) |
 | Métricas secundarias | MAE, R², MAPE | Complementan la interpretación |
 | Semilla | `random_state=42` | Reproducibilidad |
-| Tracking | MLflow local (`./mlruns`) | Requisito de la guía |
+| Tracking | MLflow local con backend SQLite (`sqlite:///mlflow.db`) | Requisito de la guía; el registry no funciona con `file:./mlruns` |
+| Versiones | Model Registry `svr_ventas`: una versión por kernel × C + la del `GridSearchCV` | Cada combinación es una versión comparable; el alias `champion` marca la vigente |
+| Artefactos | `mlartifacts/` (local, ignorado en Git) + `resultados/modelos/*.joblib` (versionado) | El `.db` no siempre viaja; los `.joblib` sí |
 
 ### 3.1 Variables de entrada
 
@@ -117,7 +119,16 @@ Estas decisiones se toman una vez y no se reabren sin acuerdo del equipo.
 | `stock_actual` | Constante por producto; identifica al producto, no aporta señal |
 | `nombre`, `unidad` | Texto redundante con `product_id` y `categoria` |
 | `fecha_venta`, `anio`, `nombre_dia`, `tipo_dia` | Redundantes con las variables de calendario |
-| `ventas_hace_7_dias` (nulos) | Se eliminan las filas con nulos (600 → ~530) |
+| `semana_iso` | No es monótona: el 1-ene-2022 cae en la semana 52 y rompe el orden |
+
+> Las filas con nulos en los rezagos (`ventas_dia_anterior`, `ventas_hace_7_dias`,
+> `promedio_movil_7d`) se eliminan: son 90 celdas en 70 filas del calentamiento de los
+> rezagos (600 → 530 registros). No se imputan porque inventaría ventas que no ocurrieron.
+
+> **Nota sobre `categoria`:** es función de `product_id` (5 de las 6 categorías tienen un
+> solo producto), así que 5 de sus dummies son idénticas a las de `product_id`. Se mantienen
+> ambas por decisión del equipo; si se prioriza la simplicidad, `CAT = ["product_id"]` deja
+> 20 columnas sin perder información.
 
 > Regla de oro: ninguna variable puede contener información del futuro ni del target.
 > `ventas_dia_anterior` y `promedio_movil_7d` son válidas porque solo usan días previos.
@@ -148,10 +159,10 @@ Regla: cada sección empieza con una celda Markdown que explica qué se hace y p
 | 2 | Datos y EDA mínimo | Carga, nulos, distribución del target, ventas por categoría | — | R1 |
 | 3 | Features y split | Selección, one-hot, `dropna`, split temporal | — | R1 |
 | 4 | Pipeline SVR | `TransformedTargetRegressor`, `StandardScaler`, `SVR` | 3.1 | R2 |
-| 5 | Barrido kernels × C | 16 runs en MLflow + métricas | 3.1 | R2 |
-| 6 | Optimización | `GridSearchCV`, mejor modelo, reentrenamiento | 3.1 | R2 |
+| 5 | Barrido kernels × C | 16 runs + 16 versiones registradas en MLflow | 3.1 | R2 |
+| 6 | Optimización | `GridSearchCV`, mejor modelo, alias `champion` | 3.1 | R2 |
 | 7 | Evaluación | RMSE/MAE/R²/MAPE, predicho vs real, residuos | 3.1 | R3 |
-| 8 | Resultados consolidados | `mlflow.search_runs` → lista/tabla + CSV + figura | 3.1 | R3 |
+| 8 | Resultados consolidados | `search_model_versions` + métricas del run → tabla + CSV + figura | 3.1 | R3 |
 | 9 | Función de predicción | `predecir_venta()` + dos casos | 3.2 | R3 |
 | 10 | Conclusiones | Hallazgos, comparación con LSTM, limitaciones | 3.4 | R4 |
 | 11 | Referencias | APA 7 | 3.4 | R4 |
@@ -229,37 +240,40 @@ y un split reproducible que el resto del equipo pueda usar sin modificarlo.
 #### 5.2.2 R2 — Modelado y MLflow (10 h)
 
 **Objetivo:** construir el pipeline SVR, ejecutar el barrido de kernels y penalización,
-optimizar los hiperparámetros y dejar todo registrado en MLflow de forma reproducible.
+optimizar los hiperparámetros y dejar **cada modelo registrado como versión** en MLflow, de
+forma reproducible.
 
 **Tareas concretas:**
 
-1. Configurar MLflow con `tracking_uri="file:./mlruns"` y experimento `svr_ventas`;
-   validar con un run de prueba.
+1. Configurar MLflow con `tracking_uri="sqlite:///mlflow.db"` (el registry necesita un
+   backend SQL) y experimento `svr_ventas`; validar con un run de prueba.
 2. Implementar `construir_svr(kernel, C, epsilon, gamma, degree)` usando
    `TransformedTargetRegressor` + `StandardScaler`.
-3. Entrenar el baseline (`linear`, C=1) y documentar sus métricas como punto de partida.
+3. Entrenar el baseline (`linear`, C=1) como primer run del barrido y documentar sus
+   métricas como punto de partida; no se crea un run extra.
 4. Ejecutar el barrido de 4 kernels × 4 valores de C (16 runs), registrando parámetros,
-   RMSE, MAE, R², MAPE y el modelo.
+   RMSE, MAE, R², MAPE y **una versión del modelo** por run, con tags de kernel y C.
 5. Detectar y documentar el comportamiento inestable de `sigmoid` sin ocultar resultados.
 6. Ejecutar `GridSearchCV` 5-fold sobre C, epsilon, gamma y degree; registrar la búsqueda
-   como un run adicional.
-7. Seleccionar el mejor modelo y justificar la decisión comparando RMSE de CV contra RMSE
-   de test.
-8. Generar la tabla consolidada con `mlflow.search_runs` (o dejar la función lista para
-   que R3 la exporte).
+   como un run adicional y el mejor modelo como versión 17.
+7. Asignar el alias `champion` a la mejor versión y seleccionarla justificando la decisión
+   con RMSE de CV frente a RMSE de test.
+8. Exportar cada modelo a `resultados/modelos/` con `joblib` y generar la tabla consolidada
+   desde `search_model_versions` + las métricas de su run.
 9. Documentar hiperparámetros, semilla y versión de scikit-learn.
 
 **Entregables:**
 
 - Notebook secciones 4–6 ejecutando.
-- ≥ 17 runs visibles en `mlflow ui` (16 del barrido + 1 de optimización).
-- Modelo final en memoria y artefacto en MLflow.
-- Tabla de resultados cruda y mejores hiperparámetros.
+- ≥ 17 runs y ≥ 17 versiones visibles en `mlflow ui` (16 del barrido + 1 de optimización).
+- Alias `champion` apuntando a la mejor versión, cargable con
+  `models:/svr_ventas@champion`.
+- `resultados/modelos/*.joblib` (una por versión) y tabla de resultados cruda.
 
 **Criterio de aceptación:**
 
-- Todos los runs tienen kernel, C y métricas completas.
-- El mejor modelo se puede reconstruir con los parámetros registrados.
+- Todas las versiones tienen los tags `kernel` y `C`, y su run tiene las métricas completas.
+- El mejor modelo se puede reconstruir y cargar desde el registry sin reentrenar.
 - La comparación CV vs test está explicada, no solo mostrada.
 
 **Interacción:** depende del split de R1; entrega el modelo final a R3 y los resultados a
@@ -269,11 +283,11 @@ ni referencias.
 
 | Actividad | Horas |
 |---|---:|
-| Configuración de MLflow | 1.0 |
+| Configuración de MLflow + registry | 1.5 |
 | Pipeline y baseline | 2.0 |
 | Barrido kernels × C | 3.0 |
 | GridSearchCV y selección | 2.5 |
-| Documentación y tabla | 1.5 |
+| Documentación y tabla | 1.0 |
 | **Total** | **10.0** |
 
 #### 5.2.3 R3 — Evaluación y predicción (9 h)
@@ -287,10 +301,11 @@ claras y entregar una función de predicción usable con dos casos demostrativos
 2. Evaluar el mejor modelo sobre `X_test` y construir la tabla de métricas finales.
 3. Generar las figuras: predicho vs real con recta `y = x`, histograma de residuos y
    barras comparativas de RMSE por kernel y por C.
-4. Exportar la tabla consolidada de MLflow a `resultados/resultados_modelos.csv` y
-   ordenarla por RMSE.
-5. Implementar `predecir_venta(nuevo_sample)` alineando columnas con `COLUMNAS`,
-   rellenando categóricas faltantes con 0 y devolviendo la predicción redondeada.
+4. Exportar la tabla consolidada desde las **versiones registradas** a
+   `resultados/resultados_modelos.csv` y ordenarla por RMSE.
+5. Implementar `predecir_venta(nuevo_sample)` cargando `models:/svr_ventas@champion`,
+   alineando columnas con `COLUMNAS`, rellenando categóricas faltantes con 0 y devolviendo
+   la predicción redondeada.
 6. Diseñar dos casos con productos y contextos distintos: uno de demanda alta (fin de
    semana/feriado, lags altos) y uno de demanda baja (entre semana, lags bajos).
 7. Comparar cada predicción con un valor real cercano del dataset y explicar la
@@ -308,7 +323,7 @@ claras y entregar una función de predicción usable con dos casos demostrativos
 
 **Criterio de aceptación:**
 
-- Las métricas del mejor modelo coinciden con las registradas en MLflow.
+- Las métricas del mejor modelo coinciden con las registradas en su versión de MLflow.
 - La función responde para los dos casos y no falla con campos opcionales ausentes.
 - El HTML se abre y muestra todas las secciones sin errores.
 
@@ -383,7 +398,7 @@ implementar la función de predicción.
 | Barrido kernels × C | I | **E** | C | I |
 | GridSearchCV | I | **E** | C | I |
 | Métricas y figuras de evaluación | I | C | **E** | C |
-| Tabla consolidada desde MLflow | I | **E** | C | I |
+| Tabla consolidada de versiones | I | **E** | C | I |
 | `predecir_venta()` y dos casos | I | C | **E** | C |
 | Conclusiones | C | C | C | **E** |
 | Referencias APA | I | I | I | **E** |
@@ -448,7 +463,7 @@ Reglas del flujo:
 | Hito | Fecha | Criterio de cumplimiento |
 |---|---|---|
 | **M1** | Fin S1 | El notebook carga datos y genera `X_train`, `X_test` sin errores |
-| **M2** | Fin S3 | ≥ 16 runs visibles en `mlflow ui` y tabla `resultados_modelos.csv` |
+| **M2** | Fin S3 | 17 runs y 17 versiones visibles en `mlflow ui`, alias `champion` y tabla `resultados_modelos.csv` |
 | **M3** | Fin S4 | `predecir_venta()` devuelve valores para dos casos distintos |
 | **M4** | Fin S5 | Notebook ejecutado de inicio a fin, HTML generado, rúbrica completa |
 
@@ -506,12 +521,14 @@ practica-002/
 │   └── plan_desarrollo_svr_4_personas.pdf
 ├── src/
 │   ├── <integrante>/
-│   │   └── pN.ipynb              # trabajo individual
-│   └── svr_ventas.ipynb          # integración final
+│   │   └── practica-002-vN/       # entrega por versión
+│   └── svr_ventas.ipynb           # integración final
 ├── resultados/
-│   ├── resultados_modelos.csv
+│   ├── resultados_modelos.csv     # una fila por versión registrada
+│   ├── modelos/                   # un .joblib por versión
 │   └── figuras/
-├── mlruns/                        # se crea solo al registrar en MLflow
+├── mlflow.db                      # registry SQLite (ignorado en Git)
+├── mlartifacts/                   # artefactos de los runs (ignorado en Git)
 ├── requirements.txt
 ├── requirements-lock.txt
 ├── .python-version
@@ -522,7 +539,7 @@ practica-002/
 Verificar los datos:
 
 ```bash
-mkdir -p resultados/figuras
+mkdir -p resultados/figuras resultados/modelos
 sha256sum -c datos.sha256
 ```
 
@@ -592,16 +609,23 @@ def construir_svr(kernel="rbf", C=1.0, epsilon=0.1, gamma="scale", degree=3):
 ### 7.6 Barrido kernels × C con MLflow
 
 ```python
+import joblib
 import numpy as np
 import mlflow
 import mlflow.sklearn
+from mlflow import MlflowClient
+from pathlib import Path
 from sklearn.metrics import (
     mean_squared_error, mean_absolute_error, r2_score,
     mean_absolute_percentage_error,
 )
 
-mlflow.set_tracking_uri("file:./mlruns")
+mlflow.set_tracking_uri("sqlite:///mlflow.db")   # el registry exige backend SQL
 mlflow.set_experiment("svr_ventas")
+
+cliente = MlflowClient()
+NOMBRE = "svr_ventas"
+Path("resultados/modelos").mkdir(parents=True, exist_ok=True)
 
 for kernel in ["linear", "rbf", "poly", "sigmoid"]:
     for C in [0.1, 1, 10, 100]:
@@ -620,8 +644,20 @@ for kernel in ["linear", "rbf", "poly", "sigmoid"]:
                 "split": "temporal", "target": TARGET,
             })
             mlflow.log_metrics({"rmse": rmse, "mae": mae, "r2": r2, "mape": mape})
-            mlflow.sklearn.log_model(modelo, "modelo")
+
+            # Una versión del modelo por run
+            info = mlflow.sklearn.log_model(modelo, name="modelo")
+            version = mlflow.register_model(info.model_uri, NOMBRE)
+            cliente.set_model_version_tag(NOMBRE, version.version, "kernel", kernel)
+            cliente.set_model_version_tag(NOMBRE, version.version, "C", str(C))
+
+            # Copia portable para revisión sin MLflow
+            joblib.dump(modelo, f"resultados/modelos/{kernel}_C{C}.joblib")
 ```
+
+> Cada iteración crea un run **y** una versión del mismo modelo registrado `svr_ventas`.
+> Las versiones son v1…v16; la etiqueta (`kernel`, `C`) permite identificarlas sin abrir el
+> run. `register_model` devuelve el número de versión, que es lo que se etiqueta.
 
 > `sigmoid` puede producir valores extremos. Es un resultado esperado y sirve para la
 > discusión: no todos los kernels son adecuados para datos tabulares.
@@ -666,25 +702,54 @@ print("Mejores parámetros:", gs.best_params_)
 print("RMSE CV:", -gs.best_score_)
 ```
 
-Registrar también esta búsqueda como un run de MLflow (parámetros + métricas + modelo).
+Registrar la búsqueda como un run y el mejor modelo como versión 17, con el alias
+`champion`:
+
+```python
+with mlflow.start_run(run_name="gridsearch"):
+    mlflow.log_params(gs.best_params_)
+    mlflow.log_metrics({"rmse_cv": float(-gs.best_score_)})
+
+    info = mlflow.sklearn.log_model(mejor_modelo, name="modelo")
+    version = mlflow.register_model(info.model_uri, NOMBRE)
+    cliente.set_registered_model_alias(NOMBRE, "champion", version.version)
+
+joblib.dump(mejor_modelo, "resultados/modelos/svr_mejor.joblib")
+```
+
+> El alias apunta siempre a la versión vigente: `predecir_venta()` carga
+> `models:/svr_ventas@champion` y no hay que tocar código cuando cambie el mejor modelo.
 
 ### 7.8 Consolidar resultados desde MLflow
 
 ```python
-runs = mlflow.search_runs(experiment_names=["svr_ventas"])
+filas = []
+for v in cliente.search_model_versions(f"name='{NOMBRE}'"):
+    metricas = cliente.get_run(v.run_id).data.metrics
+    filas.append({
+        "version": int(v.version),
+        "kernel": v.tags.get("kernel", ""),
+        "C": float(v.tags.get("C", "nan")),
+        "RMSE": metricas.get("rmse"),
+        "MAE": metricas.get("mae"),
+        "R2": metricas.get("r2"),
+        "MAPE": metricas.get("mape"),
+        "run": v.run_id,
+    })
 
-tabla = runs[[
-    "tags.mlflow.runName", "params.kernel", "params.C",
-    "metrics.rmse", "metrics.mae", "metrics.r2", "metrics.mape",
-]].copy()
-tabla.columns = ["run", "kernel", "C", "RMSE", "MAE", "R2", "MAPE"]
-tabla = tabla.sort_values("RMSE").reset_index(drop=True)
-
+tabla = pd.DataFrame(filas).sort_values("RMSE").reset_index(drop=True)
 tabla.to_csv("resultados/resultados_modelos.csv", index=False)
 tabla
 ```
 
-Esta tabla **es** la "lista de resultados de todos los modelos" que pide la guía.
+Esta tabla **es** la "lista de resultados de todos los modelos" que pide la guía, y ahora
+sale de las **versiones**, no de los runs sueltos.
+
+> La tabla de versiones del UI de MLflow no muestra métricas: solo número, alias, estado y
+> run. Por eso hay que unir cada versión con su run (`get_run(v.run_id)`) para comparar
+> RMSE/MAE. La columna `version` permite volver a cargar cualquier modelo con
+> `models:/svr_ventas/<version>`.
+
 Incluir una figura de barras: eje X = C, eje Y = RMSE, una barra por kernel.
 
 ### 7.9 Evaluación y figuras
@@ -700,6 +765,10 @@ por ejemplo `comparacion_kernels.png`.
 ### 7.10 Función de predicción para un sample nuevo
 
 ```python
+# La función usa la versión vigente del registry, no la variable en memoria:
+# así se demuestra que el modelo quedó guardado y se puede reutilizar después.
+mejor_modelo = mlflow.sklearn.load_model("models:/svr_ventas@champion")
+
 COLUMNAS = X_train.columns.tolist()
 
 def predecir_venta(nuevo_sample: dict) -> dict:
@@ -750,8 +819,8 @@ para comparar. Documentar que los dos samples pertenecen a productos y contextos
 
 ```bash
 jupyter nbconvert --to html src/svr_ventas.ipynb
-mlflow ui --backend-store-uri ./mlruns
-# abrir http://127.0.0.1:5000
+mlflow ui --backend-store-uri sqlite:///mlflow.db
+# abrir http://127.0.0.1:5000 → Experiments (runs) y Models → svr_ventas (versiones)
 ```
 
 Antes de exportar: reiniciar kernel y ejecutar todo (`Restart & Run All`) para que el HTML
@@ -791,8 +860,9 @@ git pull --rebase origin main
 git push origin feat/modelos
 ```
 
-- Nunca commitear `.venv/`, `mlruns/` completo con artefactos pesados ni `__pycache__/`.
-  Agregar `.gitignore` con `.venv/`, `mlruns/`, `__pycache__/`, `.ipynb_checkpoints/`.
+- Nunca commitear `.venv/`, `mlflow.db`, `mlartifacts/` ni `__pycache__/`. El
+  `.gitignore` debe incluirlos; los modelos para revisión se versionan como `.joblib` en
+  `resultados/modelos/`.
 - Los artefactos de MLflow se conservan localmente para la demostración; si el docente
   pide el repositorio, se documenta cómo regenerarlos.
 
@@ -810,7 +880,9 @@ git push origin feat/modelos
 Marcar antes de la entrega:
 
 - [ ] **3.1** Se entrenaron los 4 kernels y al menos 4 valores de C.
-- [ ] **3.1** Todos los runs aparecen en `mlflow ui` con parámetros y métricas.
+- [ ] **3.1** Los 17 runs aparecen en `mlflow ui` con parámetros y métricas.
+- [ ] **3.1** Las 17 versiones aparecen en **Models → svr_ventas** con sus tags de kernel y C.
+- [ ] **3.1** El alias `champion` apunta a la mejor y `models:/svr_ventas@champion` carga sin error.
 - [ ] **3.1** Existe una tabla comparativa (`resultados_modelos.csv`) y figuras que
       resaltan el mejor modelo.
 - [ ] **3.1** `GridSearchCV` documentado con los mejores hiperparámetros.
@@ -837,7 +909,8 @@ Marcar antes de la entrega:
 | Métricas distintas entre integrantes | Media | Medio | Semilla fija, split congelado, mismos datos |
 | Fuga de información en features | Media | Alto | Revisión cruzada R1–R2 antes de modelar |
 | Split temporal con solo ~100 filas de test | Alta | Medio | Reportar también CV 5-fold; no sobreinterpretar decimales |
-| MLflow no registra artefactos | Baja | Medio | Verificar en S2 con un run de prueba |
+| Registry no disponible con `file:./mlruns` | Media | Alto | Usar `sqlite:///mlflow.db` desde la sección 4 |
+| El `.db` no viaja en el repo | Media | Medio | Exportar `resultados_modelos.csv` y los `.joblib` de `resultados/modelos/` |
 | Pérdida de una sesión | Media | Medio | Sesión buffer S6 |
 | Un integrante se atrasa | Media | Alto | Tareas independientes y revisión por pares |
 
@@ -850,7 +923,7 @@ Duración total: 12–15 minutos + preguntas. Un bloque por integrante.
 | Bloque | Minutos | Contenido | Responsable |
 |---|---:|---|---|
 | 1. Contexto | 3 | Dataset, variable objetivo, por qué SVR, split y control de fuga | R1 |
-| 2. Modelo y optimización | 4 | Pipeline, kernels, C, MLflow, GridSearch, tabla de resultados | R2 |
+| 2. Modelo y optimización | 4 | Pipeline, kernels, C, versiones en MLflow, GridSearch, tabla de resultados | R2 |
 | 3. Evaluación y predicción | 4 | RMSE/MAE/R², figuras, `predecir_venta()` y los dos casos | R3 |
 | 4. Conclusiones y referencias | 3 | Hallazgos, limitaciones y referencias APA | R4 |
 
@@ -864,6 +937,10 @@ Duración total: 12–15 minutos + preguntas. Un bloque por integrante.
   lo que inflaría las métricas.
 - **¿Por qué `sigmoid` falla?** No es un kernel adecuado para este tipo de datos
   tabulares; produce predicciones extremas.
+- **¿Por qué se registran versiones y no solo runs?** Porque la práctica compara
+  variantes del mismo modelo (kernel y C). El registry les da un número estable, las
+  etiqueta y permite cargar cualquiera con `models:/svr_ventas/<version>`; los runs
+  guardan las métricas de cada una.
 - **¿Por qué no se usa SHAP?** Ese punto de justificación de predicciones quedó excluido
   del alcance acordado; la práctica se centra en optimización, predicción y conclusiones.
 - **¿El modelo sirve para producción?** No tal cual: hay 60 días y 10 productos; se
@@ -898,19 +975,20 @@ the machine learning lifecycle with MLflow. *IEEE Data Engineering Bulletin, 41*
 
 ### A. Plantilla de tabla de resultados
 
-| Run | Kernel | C | Epsilon | Gamma | RMSE | MAE | R² | MAPE |
-|---|---|---:|---:|---|---:|---:|---:|---:|
-| linear_C0.1 | linear | 0.1 | 0.1 | — | | | | |
-| linear_C1 | linear | 1 | 0.1 | — | | | | |
-| rbf_C10 | rbf | 10 | 0.1 | scale | | | | |
-| poly_C10 | poly | 10 | 0.1 | scale | | | | |
-| sigmoid_C10 | sigmoid | 10 | 0.1 | scale | | | | |
+| Versión | Run | Kernel | C | Epsilon | Gamma | RMSE | MAE | R² | MAPE |
+|---:|---|---|---:|---:|---|---:|---:|---:|---:|
+| 1 | linear_C0.1 | linear | 0.1 | 0.1 | — | | | | |
+| 2 | linear_C1 | linear | 1 | 0.1 | — | | | | |
+| 11 | rbf_C10 | rbf | 10 | 0.1 | scale | | | | |
+| 12 | poly_C10 | poly | 10 | 0.1 | scale | | | | |
+| 17 | gridsearch | rbf | 10 | 0.01 | 0.01 | | | | |
 
 ### B. Checklist de revisión final
 
 1. Reiniciar kernel y ejecutar todo el notebook.
 2. Verificar que no haya warnings graves ni celdas con error.
-3. Revisar que las 16+ runs estén en MLflow.
+3. Revisar que los 17 runs y las 17 versiones estén en MLflow, con el alias `champion`
+   asignado a la mejor.
 4. Abrir `resultados_modelos.csv` y confirmar el orden por RMSE.
 5. Revisar que cada figura esté citada e interpretada en Markdown.
 6. Confirmar que los dos casos de predicción usan productos y contextos distintos.
@@ -930,8 +1008,8 @@ jupyter nbconvert --to notebook --execute --inplace src/svr_ventas.ipynb
 # Exportar a HTML
 jupyter nbconvert --to html src/svr_ventas.ipynb
 
-# Ver experimentos
-mlflow ui --backend-store-uri ./mlruns
+# Ver experimentos y versiones
+mlflow ui --backend-store-uri sqlite:///mlflow.db
 
 # Revisar estado del repositorio
 git status
@@ -946,6 +1024,12 @@ git log --oneline --graph --decorate
 - **Epsilon:** ancho de la banda de tolerancia del SVR.
 - **Gamma:** alcance de influencia de cada punto en el kernel RBF.
 - **Fuga de información:** usar variables que contienen información del target o del futuro.
+- **Model Registry:** catálogo de modelos de MLflow; cada entrenamiento guardado se
+  convierte en una versión numerada del modelo registrado.
+- **Versión:** una fila del registry (`svr_ventas` v1, v2…), ligada a su run y a sus
+  métricas.
+- **Alias:** nombre mutable que apunta a una versión; `champion` marca la vigente sin
+  cambiar el código que la carga.
 
 ---
 

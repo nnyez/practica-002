@@ -14,9 +14,9 @@ nuevo y cerrar con conclusiones y referencias en APA 7.
 ## Objetivo
 
 Aplicar SVR al dataset de ventas retail, comparar distintos **kernels** y valores de
-**penalización `C`**, optimizar los hiperparámetros con `GridSearchCV`, registrar todos los
-entrenamientos en **MLflow** y entregar una función `predecir_venta()` probada con dos
-casos distintos.
+**penalización `C`**, optimizar los hiperparámetros con `GridSearchCV`, registrar **cada
+entrenamiento como una versión** en el Model Registry de **MLflow** y entregar una función
+`predecir_venta()` probada con dos casos distintos.
 
 ## Alcance
 
@@ -50,7 +50,8 @@ Se reutiliza el dataset de la práctica 001:
 | Escalado | `StandardScaler` en X y en y (`TransformedTargetRegressor`) |
 | Split | Temporal 80/20 por fecha |
 | Métricas | RMSE (principal), MAE, R², MAPE |
-| Tracking | MLflow local en `mlruns/` |
+| Tracking | MLflow local con SQLite (`mlflow.db`) y Model Registry |
+| Versiones | `svr_ventas` v1–v16 (barrido) + v17 (`GridSearchCV`), alias `champion` |
 | Semilla | `random_state=42` |
 
 ## Resultados esperados
@@ -73,7 +74,8 @@ práctica anterior con mucha menor complejidad.
 |---|---|
 | `src/svr_ventas.ipynb` | Notebook único con datos, modelo, MLflow, evaluación y predicción |
 | `src/svr_ventas.html` | Exportación del notebook para entrega |
-| `mlruns/` | Experimentos registrados en MLflow |
+| `mlflow.db` + `mlartifacts/` | Registry (17 versiones) y artefactos de los runs (locales, ignorados en Git) |
+| `resultados/modelos/` | Un `.joblib` por versión, para revisión sin MLflow |
 | `resultados/resultados_modelos.csv` | Tabla consolidada de todos los modelos |
 | `resultados/figuras/` | Figuras de EDA, comparación y evaluación |
 | `requirements.txt` | Dependencias del entorno con versiones fijas |
@@ -99,9 +101,11 @@ practica-002/
 │   │   └── practica-002-v2/           # entrega v2 de R1
 │   └── svr_ventas.ipynb               # integración final (a generar)
 ├── resultados/
-│   ├── resultados_modelos.csv         # a generar
+│   ├── resultados_modelos.csv         # una fila por versión (a generar)
+│   ├── modelos/                       # un .joblib por versión (a generar)
 │   └── figuras/                       # a generar
-├── mlruns/                            # a generar con MLflow (ignorado en Git)
+├── mlflow.db                          # registry SQLite (ignorado en Git)
+├── mlartifacts/                       # artefactos de los runs (ignorado en Git)
 ├── .python-version                    # 3.12.7
 ├── .gitignore
 ├── .gitattributes
@@ -143,8 +147,8 @@ MPLBACKEND=Agg jupyter nbconvert --to notebook --execute --inplace src/svr_venta
 # 5. Exportar a HTML
 jupyter nbconvert --to html src/svr_ventas.ipynb
 
-# 6. Ver los experimentos de MLflow
-mlflow ui --backend-store-uri ./mlruns
+# 6. Ver runs y versiones del modelo
+mlflow ui --backend-store-uri sqlite:///mlflow.db
 ```
 
 El detalle de versiones, verificación y problemas frecuentes está en

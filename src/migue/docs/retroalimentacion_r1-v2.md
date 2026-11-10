@@ -49,13 +49,7 @@ el plan lo escribimos nosotros.
 `seaborn/categorical.py`, no del notebook, y no se arreglan actualizando seaborn: 0.13.2 es
 la última versión publicada. La regla del equipo es cero warnings.
 
-**Qué.** En `requirements.txt`:
-
-```text
-matplotlib==3.10.9
-```
-
-Alternativa si hay que quedarse en 3.11 (filtro acotado, deja 0 avisos):
+**Qué.** Filtro acotado en la celda 1 (verificado: deja 0 avisos):
 
 ```python
 import warnings
@@ -65,6 +59,10 @@ from matplotlib import MatplotlibDeprecationWarning
 warnings.filterwarnings("ignore", message=r".*vert.*deprecated.*",
                         category=MatplotlibDeprecationWarning)
 ```
+
+> No bajar a `matplotlib==3.10.9`: con numpy 2.5 esa versión emite 136
+> `DeprecationWarning` de `matplotlib/dates.py` y el problema empeora. Con 3.11.2 + filtro
+> son 0.
 
 ---
 
@@ -145,9 +143,11 @@ tiene que describir la estructura final y no la carpeta de autor. Hoy dice:
 
 - notebook en `svr_ventas.ipynb`, cuando el plan y el README raíz lo ubican en
   `src/svr_ventas.ipynb`;
-- estructura sin `docs/`, `mlruns/`, `.python-version`, `datos.sha256`,
-  `requirements-lock.txt` ni `inventory.csv`;
+- estructura sin `docs/`, `resultados/modelos/`, `mlflow.db`, `mlartifacts/`,
+  `.python-version`, `datos.sha256`, `requirements-lock.txt` ni `inventory.csv`;
 - roles como `P1`–`P4`, cuando el resto del repo ya usa `R1`–`R4`;
+- sin mención al Model Registry (`svr_ventas`, una versión por kernel × C, alias
+  `champion`), que es lo que el README raíz documenta;
 - comandos escritos para la carpeta de autor, no para la raíz.
 
 Copiado tal cual, el repo queda con dos estructuras descritas y ninguna correcta.
@@ -157,12 +157,15 @@ concreto:
 
 - `svr_ventas.ipynb` → `src/svr_ventas.ipynb` en la estructura y en los comandos;
 - `P1`–`P4` → `R1`–`R4` en la tabla de estado y en el contrato;
-- agregar `docs/`, `mlruns/`, `.python-version`, `datos.sha256`, `requirements-lock.txt`
-  e `inventory.csv` al árbol;
+- agregar `docs/`, `resultados/modelos/`, `mlflow.db`, `mlartifacts/`, `.python-version`,
+  `datos.sha256`, `requirements-lock.txt` e `inventory.csv` al árbol;
+- describir el registry como en la raíz: `svr_ventas` v1–v16 del barrido, v17 de
+  `GridSearchCV`, alias `champion`;
 - los comandos se ejecutan desde la raíz:
   `MPLBACKEND=Agg jupyter nbconvert --to notebook --execute --inplace src/svr_ventas.ipynb`;
-- `requirements.txt`: el de la raíz es el que manda; no sobrescribirlo con el de la
-  carpeta (punto 1 y punto 3).
+- `requirements.txt`: el de la raíz manda; no sobrescribirlo con el de la carpeta (punto 1
+  y punto 3). `mlflow` va en `3.18.0`, no `>=2.14`: el registry y `log_model(name=...)`
+  necesitan 3.x.
 
 ---
 
@@ -176,5 +179,6 @@ concreto:
 - [ ] Celda 3.6 legible y con título.
 - [ ] `datos.sha256` presente y verificado.
 - [ ] Celda 2.5 aclarando el feriado de enero.
-- [ ] README con la estructura y las rutas de la raíz (`src/svr_ventas.ipynb`).
+- [ ] README con la estructura y las rutas de la raíz (`src/svr_ventas.ipynb`) y con el
+      registry (`svr_ventas`, versiones, alias `champion`).
 - [ ] 0 errores y ejecución < 2 min.
