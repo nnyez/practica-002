@@ -138,7 +138,7 @@ Por eso `categoria` se usa como **variable predictora**, no como target.
 
 ## 4. Arquitectura del notebook
 
-Archivo único: **`svr_ventas.ipynb`**.
+Archivo único: **`src/svr_ventas.ipynb`**.
 Regla: cada sección empieza con una celda Markdown que explica qué se hace y por qué.
 
 | # | Sección | Contenido | Rúbrica | Responsable |
@@ -182,8 +182,8 @@ y un split reproducible que el resto del equipo pueda usar sin modificarlo.
 
 **Tareas concretas:**
 
-1. Crear la estructura `datos/`, `resultados/figuras/` y copiar
-   `ventas_features.csv` desde la práctica 001.
+1. Crear la estructura `datos/`, `resultados/figuras/` y verificar el dataset con
+   `sha256sum -c datos.sha256`.
 2. Cargar el CSV con `parse_dates`, ordenar por fecha y producto, y validar dimensiones
    (600 filas, 10 productos × 60 días), tipos y rangos.
 3. Hacer el EDA mínimo: distribución de `cantidad_vendida`, ventas por categoría y
@@ -219,7 +219,7 @@ y un split reproducible que el resto del equipo pueda usar sin modificarlo.
 
 | Actividad | Horas |
 |---|---:|
-| Estructura y copia del dataset | 1.0 |
+| Estructura y verificación del dataset | 1.0 |
 | Carga, validación y EDA | 2.0 |
 | Features, one-hot y target | 2.0 |
 | Split temporal y revisión de fuga | 1.5 |
@@ -304,7 +304,7 @@ claras y entregar una función de predicción usable con dos casos demostrativos
 - `resultados/resultados_modelos.csv`.
 - Figuras `predicho_vs_real.png`, `residuos.png`, `comparacion_kernels.png`.
 - Función `predecir_venta()` con dos salidas documentadas.
-- `svr_ventas.html` generado.
+- `src/svr_ventas.html` generado.
 
 **Criterio de aceptación:**
 
@@ -472,38 +472,58 @@ Desde `practica-002`:
 
 ```bash
 python3.12 -m venv .venv
-.venv/bin/python -m pip install --upgrade pip
-.venv/bin/python -m pip install pandas numpy scikit-learn mlflow matplotlib seaborn jupyter nbconvert
-.venv/bin/python -m pip freeze > requirements.txt
+source .venv/bin/activate
+python -m pip install --upgrade pip
+pip install -r requirements.txt
+python -m pip check
+python -m ipykernel install --user --name svr-ventas --display-name "Python (svr-ventas)"
 ```
+
+Las versiones exactas, la verificación y los problemas frecuentes están en
+[`docs/entorno.md`](entorno.md).
 
 Verificación rápida:
 
 ```bash
-.venv/bin/python -c "import sklearn, mlflow; print(sklearn.__version__, mlflow.__version__)"
+python -c "import pandas, sklearn, mlflow; print(pandas.__version__, sklearn.__version__, mlflow.__version__)"
 ```
+
+Salida esperada: `3.0.6 1.9.1 3.18.0`.
 
 ### 7.2 Estructura de carpetas
 
 ```text
 practica-002/
 ├── datos/
-│   └── ventas_features.csv        # copia del dataset de la práctica 001
+│   ├── ventas_features.csv        # dataset principal
+│   ├── sales_history.csv          # ventas crudas
+│   └── inventory.csv              # catálogo de productos
+├── docs/
+│   ├── entorno.md
+│   ├── guia.md
+│   ├── guia.docx
+│   ├── plan_desarrollo_svr_4_personas.md
+│   └── plan_desarrollo_svr_4_personas.pdf
+├── src/
+│   ├── <integrante>/
+│   │   └── pN.ipynb              # trabajo individual
+│   └── svr_ventas.ipynb          # integración final
 ├── resultados/
 │   ├── resultados_modelos.csv
 │   └── figuras/
 ├── mlruns/                        # se crea solo al registrar en MLflow
-├── svr_ventas.ipynb
-├── svr_ventas.html
 ├── requirements.txt
+├── requirements-lock.txt
+├── .python-version
+├── datos.sha256
 └── README.md
 ```
 
-Copiar el dataset:
+Verificar los datos:
 
 ```bash
-mkdir -p datos resultados/figuras
-cp ../practica-001/datos/ventas_features.csv datos/
+mkdir -p resultados/figuras
+sha256sum -c datos.sha256
 ```
 
 ### 7.3 Carga, features y target
@@ -729,7 +749,7 @@ para comparar. Documentar que los dos samples pertenecen a productos y contextos
 ### 7.11 Cierre: HTML y MLflow UI
 
 ```bash
-jupyter nbconvert --to html svr_ventas.ipynb
+jupyter nbconvert --to html src/svr_ventas.ipynb
 mlflow ui --backend-store-uri ./mlruns
 # abrir http://127.0.0.1:5000
 ```
@@ -765,7 +785,7 @@ no tenga errores ni salidas viejas.
 
 ```bash
 git checkout -b feat/modelos
-git add svr_ventas.ipynb
+git add src/svr_ventas.ipynb
 git commit -m "agrega barrido de kernels y C con MLflow"
 git pull --rebase origin main
 git push origin feat/modelos
@@ -802,7 +822,7 @@ Marcar antes de la entrega:
 - [ ] No se incluye justificación de predicciones con SHAP, PDP/ICE ni permutation
       importance (fuera de alcance).
 - [ ] Notebook ejecutado de inicio a fin sin errores.
-- [ ] `svr_ventas.html` generado y revisado.
+- [ ] `src/svr_ventas.html` generado y revisado.
 - [ ] Repositorio ordenado y `.gitignore` correcto.
 - [ ] Todos los integrantes pueden explicar cualquier sección.
 
@@ -905,10 +925,10 @@ the machine learning lifecycle with MLflow. *IEEE Data Engineering Bulletin, 41*
 source .venv/bin/activate
 
 # Ejecutar el notebook desde la terminal
-jupyter nbconvert --to notebook --execute --inplace svr_ventas.ipynb
+jupyter nbconvert --to notebook --execute --inplace src/svr_ventas.ipynb
 
 # Exportar a HTML
-jupyter nbconvert --to html svr_ventas.ipynb
+jupyter nbconvert --to html src/svr_ventas.ipynb
 
 # Ver experimentos
 mlflow ui --backend-store-uri ./mlruns

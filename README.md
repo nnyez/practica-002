@@ -71,12 +71,13 @@ práctica anterior con mucha menor complejidad.
 
 | Archivo | Descripción |
 |---|---|
-| `svr_ventas.ipynb` | Notebook único con datos, modelo, MLflow, evaluación y predicción |
-| `svr_ventas.html` | Exportación del notebook para entrega |
+| `src/svr_ventas.ipynb` | Notebook único con datos, modelo, MLflow, evaluación y predicción |
+| `src/svr_ventas.html` | Exportación del notebook para entrega |
 | `mlruns/` | Experimentos registrados en MLflow |
 | `resultados/resultados_modelos.csv` | Tabla consolidada de todos los modelos |
 | `resultados/figuras/` | Figuras de EDA, comparación y evaluación |
-| `requirements.txt` | Dependencias del entorno |
+| `requirements.txt` | Dependencias del entorno con versiones fijas |
+| `docs/entorno.md` | Guía de instalación y verificación del entorno |
 
 ## Estructura del repositorio
 
@@ -87,17 +88,25 @@ practica-002/
 │   ├── sales_history.csv              # ventas crudas (trazabilidad)
 │   └── inventory.csv                  # catálogo de productos
 ├── docs/
+│   ├── entorno.md                     # instalación y verificación del entorno
 │   ├── guia.md                        # enunciado de la práctica
 │   ├── guia.docx                      # enunciado original
 │   ├── plan_desarrollo_svr_4_personas.md
 │   └── plan_desarrollo_svr_4_personas.pdf
+├── src/
+│   ├── migue/
+│   │   └── p1.ipynb                   # trabajo individual de P1
+│   └── svr_ventas.ipynb               # integración final (a generar)
 ├── resultados/
 │   ├── resultados_modelos.csv         # a generar
 │   └── figuras/                       # a generar
-├── mlruns/                            # a generar con MLflow
-├── svr_ventas.ipynb                   # a implementar
-├── svr_ventas.html                    # a exportar
-└── requirements.txt                   # a generar
+├── mlruns/                            # a generar con MLflow (ignorado en Git)
+├── .python-version                    # 3.12.7
+├── .gitignore
+├── .gitattributes
+├── datos.sha256                       # huellas de los CSV
+├── requirements.txt                   # dependencias con versión fija
+└── requirements-lock.txt              # a generar con pip freeze
 ```
 
 ## Equipo y roles
@@ -114,32 +123,41 @@ El detalle de tareas, entregables y criterios de aceptación está en la secció
 ## Reproducción (cuando el notebook esté implementado)
 
 ```bash
-# 1. El dataset ya está incluido en datos/
-#    (ventas_features.csv, sales_history.csv, inventory.csv)
+# 1. Verificar que los datos son los mismos
+sha256sum -c datos.sha256
 
-# 2. Crear el entorno
+# 2. Crear el entorno (Python 3.12.7)
 python3.12 -m venv .venv
-.venv/bin/python -m pip install --upgrade pip
-.venv/bin/python -m pip install pandas numpy scikit-learn mlflow matplotlib seaborn jupyter nbconvert
+source .venv/bin/activate
+python -m pip install --upgrade pip
+pip install -r requirements.txt
+python -m pip check
 
-# 3. Ejecutar el notebook
-jupyter nbconvert --to notebook --execute --inplace svr_ventas.ipynb
+# 3. Registrar el kernel de Jupyter
+python -m ipykernel install --user --name svr-ventas --display-name "Python (svr-ventas)"
 
-# 4. Exportar a HTML
-jupyter nbconvert --to html svr_ventas.ipynb
+# 4. Ejecutar el notebook
+MPLBACKEND=Agg jupyter nbconvert --to notebook --execute --inplace src/svr_ventas.ipynb
 
-# 5. Ver los experimentos de MLflow
+# 5. Exportar a HTML
+jupyter nbconvert --to html src/svr_ventas.ipynb
+
+# 6. Ver los experimentos de MLflow
 mlflow ui --backend-store-uri ./mlruns
 ```
 
+El detalle de versiones, verificación y problemas frecuentes está en
+[`docs/entorno.md`](docs/entorno.md).
+
 ## Documentación
 
+- [`docs/entorno.md`](docs/entorno.md): instalación, versiones y verificación del entorno.
 - [`docs/guia.md`](docs/guia.md): enunciado resumido de la práctica.
 - [`docs/guia.docx`](docs/guia.docx): guía oficial completa.
 - [`docs/plan_desarrollo_svr_4_personas.md`](docs/plan_desarrollo_svr_4_personas.md): plan de
   desarrollo con decisiones, roles, cronograma y guía técnica.
 - [`docs/plan_desarrollo_svr_4_personas.pdf`](docs/plan_desarrollo_svr_4_personas.pdf):
-  versión PDF del plan (21 páginas, A4).
+  versión PDF del plan (22 páginas, A4).
 
 ## Referencias principales
 
