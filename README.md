@@ -1,0 +1,150 @@
+# Práctica 002 — SVM de regresión (SVR) para predecir ventas
+
+Resumen del proyecto de la práctica de **Aprendizaje Automático**. El objetivo es
+desarrollar, optimizar y evaluar un modelo **SVM de regresión (SVR)** sobre el dataset de
+ventas de la práctica 001, además de exponer una función de predicción para un sample
+nuevo y cerrar con conclusiones y referencias en APA 7.
+
+> **Estado:** planificación. El notebook y los resultados todavía no están implementados.
+> La guía de desarrollo está en [`docs/plan_desarrollo_svr_4_personas.md`](docs/plan_desarrollo_svr_4_personas.md)
+> y su versión PDF en [`docs/plan_desarrollo_svr_4_personas.pdf`](docs/plan_desarrollo_svr_4_personas.pdf).
+
+---
+
+## Objetivo
+
+Aplicar SVR al dataset de ventas retail, comparar distintos **kernels** y valores de
+**penalización `C`**, optimizar los hiperparámetros con `GridSearchCV`, registrar todos los
+entrenamientos en **MLflow** y entregar una función `predecir_venta()` probada con dos
+casos distintos.
+
+## Alcance
+
+| Ítem | Incluido |
+|---|---|
+| 3.1 Desarrollo y optimización del modelo | Sí |
+| 3.2 Función de predicción para un sample nuevo | Sí |
+| 3.4 Conclusiones y referencias APA 7 | Sí |
+| Justificación de predicciones (SHAP, PDP/ICE, permutation importance) | **No** |
+| Random Forest y árboles de decisión | **No** |
+
+## Dataset
+
+Se reutiliza el dataset de la práctica 001:
+
+- **Archivo obligatorio:** `datos/ventas_features.csv` (600 filas, 22 columnas).
+- **Contenido:** 10 productos × 60 días (enero–marzo de 2022), con variables de calendario,
+  lags de ventas, promedio móvil, stock y días para expirar.
+- **Variable objetivo:** `cantidad_vendida` (continua, unidades por día).
+- **Origen:** dataset construido en la práctica 001 a partir del dataset público de Kaggle
+  *Retail Store Inventory Forecasting*.
+
+## Enfoque técnico
+
+| Decisión | Valor |
+|---|---|
+| Modelo | `SVR` de scikit-learn |
+| Kernels | `linear`, `rbf`, `poly`, `sigmoid` |
+| Penalización `C` | `0.1`, `1`, `10`, `100` |
+| Optimización | `GridSearchCV` 5-fold sobre C, epsilon, gamma y degree |
+| Escalado | `StandardScaler` en X y en y (`TransformedTargetRegressor`) |
+| Split | Temporal 80/20 por fecha |
+| Métricas | RMSE (principal), MAE, R², MAPE |
+| Tracking | MLflow local en `mlruns/` |
+| Semilla | `random_state=42` |
+
+## Resultados esperados
+
+Valores medidos previamente sobre este dataset, útiles como referencia:
+
+| Modelo | RMSE | MAE | R² |
+|---|---:|---:|---:|
+| Baseline ingenuo (`promedio_movil_7d`) | 41.72 | 31.42 | — |
+| SVR linear, C=1, split temporal | 26.27 | 20.12 | 0.768 |
+| SVR RBF, C=10, split aleatorio | 22.42 | 16.68 | 0.848 |
+| LSTM de la práctica 001 (referencia) | 23.19 | 17.30 | — |
+
+La conclusión esperada es que un SVR simple alcanza un desempeño comparable al LSTM de la
+práctica anterior con mucha menor complejidad.
+
+## Entregables previstos
+
+| Archivo | Descripción |
+|---|---|
+| `svr_ventas.ipynb` | Notebook único con datos, modelo, MLflow, evaluación y predicción |
+| `svr_ventas.html` | Exportación del notebook para entrega |
+| `mlruns/` | Experimentos registrados en MLflow |
+| `resultados/resultados_modelos.csv` | Tabla consolidada de todos los modelos |
+| `resultados/figuras/` | Figuras de EDA, comparación y evaluación |
+| `requirements.txt` | Dependencias del entorno |
+
+## Estructura del repositorio
+
+```text
+practica-002/
+├── datos/
+│   ├── ventas_features.csv            # dataset principal
+│   ├── sales_history.csv              # ventas crudas (trazabilidad)
+│   └── inventory.csv                  # catálogo de productos
+├── docs/
+│   ├── guia.md                        # enunciado de la práctica
+│   ├── guia.docx                      # enunciado original
+│   ├── plan_desarrollo_svr_4_personas.md
+│   └── plan_desarrollo_svr_4_personas.pdf
+├── resultados/
+│   ├── resultados_modelos.csv         # a generar
+│   └── figuras/                       # a generar
+├── mlruns/                            # a generar con MLflow
+├── svr_ventas.ipynb                   # a implementar
+├── svr_ventas.html                    # a exportar
+└── requirements.txt                   # a generar
+```
+
+## Equipo y roles
+
+| Rol | Responsabilidad | Carga |
+|---|---|---:|
+| P1 — Datos y EDA | Dataset, features, split y control de fuga | 8 h |
+| P2 — Modelado y MLflow | Pipeline SVR, barrido, GridSearch y tracking | 10 h |
+| P3 — Evaluación y predicción | Métricas, figuras, `predecir_venta()` y HTML | 9 h |
+| P4 — Conclusiones y documentación | Conclusiones, APA y revisión final | 6 h |
+
+El detalle de tareas, entregables y criterios de aceptación está en la sección 5 del plan.
+
+## Reproducción (cuando el notebook esté implementado)
+
+```bash
+# 1. El dataset ya está incluido en datos/
+#    (ventas_features.csv, sales_history.csv, inventory.csv)
+
+# 2. Crear el entorno
+python3.12 -m venv .venv
+.venv/bin/python -m pip install --upgrade pip
+.venv/bin/python -m pip install pandas numpy scikit-learn mlflow matplotlib seaborn jupyter nbconvert
+
+# 3. Ejecutar el notebook
+jupyter nbconvert --to notebook --execute --inplace svr_ventas.ipynb
+
+# 4. Exportar a HTML
+jupyter nbconvert --to html svr_ventas.ipynb
+
+# 5. Ver los experimentos de MLflow
+mlflow ui --backend-store-uri ./mlruns
+```
+
+## Documentación
+
+- [`docs/guia.md`](docs/guia.md): enunciado resumido de la práctica.
+- [`docs/guia.docx`](docs/guia.docx): guía oficial completa.
+- [`docs/plan_desarrollo_svr_4_personas.md`](docs/plan_desarrollo_svr_4_personas.md): plan de
+  desarrollo con decisiones, roles, cronograma y guía técnica.
+- [`docs/plan_desarrollo_svr_4_personas.pdf`](docs/plan_desarrollo_svr_4_personas.pdf):
+  versión PDF del plan (21 páginas, A4).
+
+## Referencias principales
+
+- Cortes, C., & Vapnik, V. (1995). Support-vector networks. *Machine Learning, 20*(3), 273–297.
+- Smola, A. J., & Schölkopf, B. (2004). A tutorial on support vector regression. *Statistics and Computing, 14*(3), 199–222.
+- Pedregosa, F., et al. (2011). Scikit-learn: Machine learning in Python. *Journal of Machine Learning Research, 12*, 2825–2830.
+- Raschka, S. (2017). *Python machine learning* (2.ª ed.). Packt Publishing.
+- Zaharia, M., et al. (2018). Accelerating the machine learning lifecycle with MLflow. *IEEE Data Engineering Bulletin, 41*(4), 39–45.

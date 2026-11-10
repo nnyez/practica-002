@@ -5,7 +5,7 @@
 | Campo | Valor |
 |---|---|
 | **Asignatura** | Aprendizaje Automático |
-| **Práctica** | SVM y explicación de predicciones — alcance exclusivo: solo SVM/SVR |
+| **Práctica** | SVM de regresión (SVR) — desarrollo, optimización y predicción |
 | **Equipo** | 4 integrantes |
 | **Duración estimada** | 2 semanas, 5 sesiones de trabajo + 1 sesión de buffer |
 | **Repositorio** | `tareas/practica-002` |
@@ -15,7 +15,7 @@
 
 ## 1. Resumen ejecutivo
 
-El objetivo de esta práctica es desarrollar, optimizar, evaluar y explicar un modelo de
+El objetivo de esta práctica es desarrollar, optimizar, evaluar y desplegar un modelo de
 **Máquinas de Soporte Vectorial (SVM)**. La guía permite explícitamente problemas de
 **regresión y/o clasificación**. Como la variable de interés del dataset es
 `cantidad_vendida` (continua, en unidades por día), la solución técnicamente correcta es
@@ -31,8 +31,7 @@ El equipo construirá un único notebook reproducible que:
 4. Optimiza el modelo con `GridSearchCV` (C, epsilon, gamma, degree).
 5. Define una función `predecir_venta()` para un sample nuevo, probada con **dos casos**
    reales del dataset (demanda alta y demanda baja).
-6. Justifica las predicciones con **permutation importance**, **SHAP** y **PDP/ICE**.
-7. Cierra con conclusiones basadas en métricas y referencias en **APA 7**.
+6. Cierra con conclusiones basadas en métricas y referencias en **APA 7**.
 
 **Resultado esperado (medido previamente sobre este dataset):**
 
@@ -53,27 +52,28 @@ práctica anterior con una fracción de la complejidad.
 ### 2.1 Objetivo general
 
 Aplicar SVR al dataset de ventas retail, optimizar sus hiperparámetros, evaluar su
-desempeño, exponer una función de predicción reutilizable y justificar las predicciones
-con técnicas de interpretabilidad.
+desempeño y exponer una función de predicción reutilizable.
 
 ### 2.2 Alcance (lo que sí se entrega)
 
-| Ítem de la rúbrica | Puntos | Evidencia en el notebook |
+| Ítem | Puntos | Evidencia en el notebook |
 |---|---:|---|
 | 3.1 Desarrollo y optimización de modelos | 2 | Barrido de kernels × C, `GridSearchCV`, tabla y figuras comparativas |
-| 3.2 Justificación de predicciones | 2 | Permutation importance, SHAP global y local, PDP/ICE |
-| 3.3 Función de predicción con nuevo sample | 2 | `predecir_venta()` probada con dos casos distintos |
+| 3.2 Función de predicción con nuevo sample | 2 | `predecir_venta()` probada con dos casos distintos |
 | 3.4 Conclusiones y referencias | 2 | Conclusiones con métricas + referencias APA 7 |
 
-> **Alcance exclusivo:** esta práctica se limita a **SVM/SVR y su explicabilidad**.
-> No se desarrolla **nada** de **Random Forest** ni **árboles de decisión**, incluido el
-> ejercicio de Information Gain. Ese contenido queda fuera del alcance y no se planifica
-> ni se incluye como comparación.
+> **Alcance exclusivo:** esta práctica se limita a **SVM/SVR, su optimización y la función
+> de predicción**. No se desarrolla **nada** de **Random Forest** ni **árboles de
+> decisión**, incluido el ejercicio de Information Gain. Tampoco se realiza la
+> **justificación de predicciones con herramientas de explicación** (SHAP, PDP/ICE,
+> permutation importance): ese punto queda explícitamente excluido.
 
 ### 2.3 Fuera de alcance
 
 - **Random Forest** y **árboles de decisión** (incluido Information Gain): no se
   implementan, no se comparan y no forman parte de ningún entregable.
+- **Justificación de predicciones** con técnicas de visualización o algoritmos de
+  interpretabilidad (SHAP, PDP/ICE, permutation importance, LIME): no se realiza.
 - Despliegue web o API (la práctica 001 ya cubrió eso).
 - Entrenamiento en GPU o deep learning.
 - Búsqueda exhaustiva de hiperparámetros tipo bayesiano.
@@ -99,7 +99,6 @@ Estas decisiones se toman una vez y no se reabren sin acuerdo del equipo.
 | Métricas secundarias | MAE, R², MAPE | Complementan la interpretación |
 | Semilla | `random_state=42` | Reproducibilidad |
 | Tracking | MLflow local (`./mlruns`) | Requisito de la guía |
-| Explicabilidad | Permutation importance, SHAP, PDP/ICE | Cubre visualización y algoritmos |
 
 ### 3.1 Variables de entrada
 
@@ -153,10 +152,9 @@ Regla: cada sección empieza con una celda Markdown que explica qué se hace y p
 | 6 | Optimización | `GridSearchCV`, mejor modelo, reentrenamiento | 3.1 | P2 |
 | 7 | Evaluación | RMSE/MAE/R²/MAPE, predicho vs real, residuos | 3.1 | P3 |
 | 8 | Resultados consolidados | `mlflow.search_runs` → lista/tabla + CSV + figura | 3.1 | P3 |
-| 9 | Función de predicción | `predecir_venta()` + dos casos | 3.3 | P3 |
-| 10 | Explicabilidad | Permutation, SHAP global/local, PDP/ICE | 3.2 | P4 |
-| 11 | Conclusiones | Hallazgos, comparación con LSTM, limitaciones | 3.4 | P4 |
-| 12 | Referencias | APA 7 | 3.4 | P4 |
+| 9 | Función de predicción | `predecir_venta()` + dos casos | 3.2 | P3 |
+| 10 | Conclusiones | Hallazgos, comparación con LSTM, limitaciones | 3.4 | P4 |
+| 11 | Referencias | APA 7 | 3.4 | P4 |
 
 ---
 
@@ -169,12 +167,12 @@ Regla: cada sección empieza con una celda Markdown que explica qué se hace y p
 | **P1 — Datos y EDA** | _(nombre)_ | Dataset, features, split, control de fuga | 8 h |
 | **P2 — Modelado y MLflow** | _(nombre)_ | Pipeline SVR, barrido, GridSearch, tracking | 10 h |
 | **P3 — Evaluación y predicción** | _(nombre)_ | Métricas, figuras, `predecir_venta`, HTML | 9 h |
-| **P4 — Explicabilidad y documentación** | _(nombre)_ | SHAP/PDP, conclusiones, APA, revisión final | 10 h |
+| **P4 — Conclusiones y documentación** | _(nombre)_ | Conclusiones, APA, revisión final | 6 h |
 
 ### 5.2 Responsabilidades detalladas
 
 Cada rol tiene un objetivo, tareas verificables, entregables, criterio de aceptación y un
-límite claro de lo que **no** le corresponde. Las horas son estimadas y suman 37 h de
+límite claro de lo que **no** le corresponde. Las horas son estimadas y suman 33 h de
 trabajo efectivo para el equipo.
 
 #### 5.2.1 P1 — Datos y EDA (8 h)
@@ -217,7 +215,7 @@ y un split reproducible que el resto del equipo pueda usar sin modificarlo.
 - P2 revisa y aprueba la ausencia de fuga antes de modelar.
 
 **Interacción:** entrega a P2 la matriz y el split; P3 reutiliza las figuras del EDA.
-**No le corresponde:** entrenar modelos, calcular métricas, SHAP ni conclusiones.
+**No le corresponde:** entrenar modelos, calcular métricas ni redactar conclusiones.
 
 | Actividad | Horas |
 |---|---:|
@@ -264,9 +262,10 @@ optimizar los hiperparámetros y dejar todo registrado en MLflow de forma reprod
 - El mejor modelo se puede reconstruir con los parámetros registrados.
 - La comparación CV vs test está explicada, no solo mostrada.
 
-**Interacción:** depende del split de P1; entrega el modelo final a P3 y P4.
-**No le corresponde:** figuras de evaluación final, función de predicción, SHAP,
-conclusiones ni referencias.
+**Interacción:** depende del split de P1; entrega el modelo final a P3 y los resultados a
+P4 para las conclusiones.
+**No le corresponde:** figuras de evaluación final, función de predicción, conclusiones
+ni referencias.
 
 | Actividad | Horas |
 |---|---:|
@@ -313,8 +312,9 @@ claras y entregar una función de predicción usable con dos casos demostrativos
 - La función responde para los dos casos y no falla con campos opcionales ausentes.
 - El HTML se abre y muestra todas las secciones sin errores.
 
-**Interacción:** recibe el modelo de P2; entrega los dos casos a P4 para los waterfall.
-**No le corresponde:** elegir hiperparámetros, interpretar SHAP ni redactar conclusiones.
+**Interacción:** recibe el modelo de P2; entrega los resultados y las figuras a P4 para las
+conclusiones.
+**No le corresponde:** elegir hiperparámetros ni redactar conclusiones ni referencias.
 
 | Actividad | Horas |
 |---|---:|
@@ -326,54 +326,49 @@ claras y entregar una función de predicción usable con dos casos demostrativos
 | Exportación HTML y revisión | 1.5 |
 | **Total** | **9.0** |
 
-#### 5.2.4 P4 — Explicabilidad y documentación (10 h)
+#### 5.2.4 P4 — Conclusiones y documentación (6 h)
 
-**Objetivo:** justificar las predicciones con evidencia visual y algorítmica, cerrar el
-trabajo con conclusiones basadas en métricas y dejar las referencias en APA 7.
+**Objetivo:** cerrar el trabajo con conclusiones basadas en métricas, referencias en APA 7
+y una revisión final contra el alcance acordado. **No** incluye justificar predicciones ni
+usar SHAP/PDP/permutation importance.
 
 **Tareas concretas:**
 
-1. Preparar una explicación breve de qué es SHAP, qué es PDP/ICE y qué mide la
-   importancia por permutación.
-2. Calcular la importance por permutación con `n_repeats=20` y graficar el top-10.
-3. Calcular SHAP global con 100 muestras de fondo y `nsamples=100`; guardar el summary
-   plot.
-4. Calcular SHAP local (waterfall) para los dos casos que definió P3 y guardar una figura
-   por caso.
-5. Calcular PDP/ICE para las dos variables más influyentes y guardar las figuras.
-6. Interpretar cada figura en Markdown: qué variable empuja la predicción hacia arriba o
-   hacia abajo y si tiene sentido para el negocio.
-7. Redactar las conclusiones con cifras: mejor kernel/C, comparación con el baseline y
-   con el LSTM de la práctica 001, y limitaciones del dataset.
-8. Construir la lista de referencias en APA 7 y citarlas en el texto.
-9. Hacer la revisión final contra la rúbrica y coordinar con P3 la exportación HTML.
+1. Revisar las métricas, la tabla consolidada y las figuras que entregan P2 y P3.
+2. Redactar las conclusiones con cifras: mejor kernel/C, comparación con el baseline y con
+   el LSTM de la práctica 001, y limitaciones del dataset.
+3. Construir la lista de referencias en APA 7 y citarlas en el texto.
+4. Verificar la coherencia entre objetivos, resultados y conclusiones.
+5. Revisar el notebook contra los ítems 3.1, 3.2 y 3.4 del alcance.
+6. Coordinar con P3 la exportación HTML y revisar que se vea correctamente.
+7. Preparar el guion de sustentación y repartir los bloques entre los cuatro integrantes.
 
 **Entregables:**
 
-- Notebook secciones 10–12 ejecutando.
-- `resultados/figuras/permutation_importance.png`, `shap_summary.png`,
-  `shap_caso_alto.png`, `shap_caso_bajo.png`, `pdp_ice.png`.
+- Notebook secciones 10–11 ejecutando.
 - Conclusiones con métricas y referencias APA 7.
 - Checklist de rúbrica marcado.
+- Guion de sustentación.
 
 **Criterio de aceptación:**
 
-- Cada figura tiene una interpretación escrita, no solo el gráfico.
 - Las conclusiones citan números concretos (RMSE, R², kernel, C).
 - Las referencias están en APA 7 y aparecen citadas en el texto.
-- La revisión final no deja ítems de la rúbrica sin evidencia.
+- La revisión final no deja ítems del alcance sin evidencia.
+- No aparece ninguna sección de SHAP, PDP/ICE ni permutation importance.
 
-**Interacción:** depende del modelo de P2 y de los dos casos de P3.
-**No le corresponde:** modificar el pipeline, recalcular métricas base ni cambiar el split.
+**Interacción:** depende de los resultados de P2 y de las figuras de P3.
+**No le corresponde:** modificar el pipeline, recalcular métricas, cambiar el split ni
+implementar la función de predicción.
 
 | Actividad | Horas |
 |---|---:|
-| Fundamentos y permutation importance | 2.0 |
-| SHAP global y local | 3.0 |
-| PDP/ICE e interpretación | 1.5 |
-| Conclusiones | 1.5 |
-| Referencias APA y revisión final | 2.0 |
-| **Total** | **10.0** |
+| Revisión de resultados y figuras | 1.0 |
+| Redacción de conclusiones | 2.0 |
+| Referencias APA | 1.0 |
+| Revisión de rúbrica y HTML | 1.0 |
+| Guion de sustentación | 1.0 |
+| **Total** | **6.0** |
 
 ### 5.3 Matriz RACI
 
@@ -390,8 +385,6 @@ trabajo con conclusiones basadas en métricas y dejar las referencias en APA 7.
 | Métricas y figuras de evaluación | I | C | **R** | C |
 | Tabla consolidada desde MLflow | I | **R** | C | I |
 | `predecir_venta()` y dos casos | I | C | **R** | C |
-| Permutation importance | I | C | C | **R** |
-| SHAP y PDP/ICE | I | C | C | **R** |
 | Conclusiones | C | C | C | **R** |
 | Referencias APA | I | I | I | **R** |
 | Exportación HTML y revisión de rúbrica | I | I | **R** | A |
@@ -401,7 +394,7 @@ trabajo con conclusiones basadas en métricas y dejar las referencias en APA 7.
 El notebook es un archivo único y cuatro personas no pueden editarlo a la vez.
 
 1. Cada integrante tiene su rama: `feat/datos`, `feat/modelos`,
-   `feat/evaluacion`, `feat/explicabilidad`.
+   `feat/evaluacion`, `feat/documentacion`.
 2. Solo se edita la sección asignada.
 3. Antes de editar: `git pull --rebase origin main`.
 4. Al terminar: commit pequeño y push; el integrador (P1) hace el merge.
@@ -417,11 +410,11 @@ P1  Datos + features + split
         ▼
 P2  Pipeline SVR + barrido + GridSearch + MLflow
         │
-        ├──────────────► P4  SHAP / PDP (necesita el modelo final)
+        ├──────────────► P4  Resultados y métricas para conclusiones
         ▼
 P3  Métricas + figuras + predecir_venta() + HTML
         │
-        └──────────────► P4  SHAP local de los dos casos
+        └──────────────► P4  Figuras y dos casos
                               │
                               ▼
                         Conclusiones + APA + revisión
@@ -432,7 +425,7 @@ Reglas del flujo:
 - P1 no entrega hasta que P2 confirme que no hay fuga de información.
 - P2 no entrega hasta que la tabla de MLflow esté completa.
 - P3 no entrega hasta que la función funcione con los dos casos.
-- P4 no entrega hasta que cada figura tenga interpretación y la rúbrica esté marcada.
+- P4 no entrega hasta que las conclusiones tengan cifras y la rúbrica esté marcada.
 - Ningún rol modifica el trabajo de otro sin avisar y sin volver a ejecutar el notebook.
 
 ---
@@ -446,8 +439,8 @@ Reglas del flujo:
 | **S1** | 2 h | Base reproducible | Kickoff, repo, entorno, carga, EDA, features, split | P1 | Notebook secciones 0–3 ejecutando |
 | **S2** | 2 h | Primer modelo | Pipeline SVR, baseline, configuración de MLflow, 4 runs | P2 | Sección 4–5 con 4 runs |
 | **S3** | 2 h | Optimización | 16 runs, `GridSearchCV`, tabla consolidada, figuras | P2 + P3 | Secciones 5–8 completas |
-| **S4** | 2 h | Predicción | Métricas finales, `predecir_venta()`, dos casos, permutation importance | P3 + P4 | Secciones 7, 9 y 10.1 |
-| **S5** | 2 h | Explicabilidad y cierre | SHAP, PDP/ICE, conclusiones, APA, exportación HTML | P4 + todos | Notebook completo + HTML |
+| **S4** | 2 h | Predicción | Métricas finales, `predecir_venta()`, dos casos | P3 | Secciones 7 y 9 |
+| **S5** | 2 h | Conclusiones y cierre | Conclusiones, APA, exportación HTML, revisión de rúbrica | P4 + todos | Notebook completo + HTML |
 | **S6** | 1 h | Buffer | Correcciones, ensayo de sustentación | Todos | Versión final |
 
 ### 6.2 Hitos
@@ -465,8 +458,8 @@ Reglas del flujo:
 |---|---|---|---:|
 | S1–S2 | Revisar dokumentación de SVR y preparar el pipeline | P2 | 2 h |
 | S2–S3 | Preparar funciones de métricas y figuras | P3 | 2 h |
-| S3–S4 | Investigar SHAP con SVR y preparar el guion de conclusiones | P4 | 3 h |
-| S4–S5 | Redactar borrador de conclusiones y referencias | P4 | 2 h |
+| S3–S4 | Revisar resultados y preparar el borrador de conclusiones | P4 | 2 h |
+| S4–S5 | Redactar conclusiones y referencias | P4 | 2 h |
 | S5–S6 | Ensayo individual de la sustentación | Todos | 1 h |
 
 ---
@@ -480,14 +473,14 @@ Desde `practica-002`:
 ```bash
 python3.12 -m venv .venv
 .venv/bin/python -m pip install --upgrade pip
-.venv/bin/python -m pip install pandas numpy scikit-learn mlflow shap matplotlib seaborn jupyter nbconvert
+.venv/bin/python -m pip install pandas numpy scikit-learn mlflow matplotlib seaborn jupyter nbconvert
 .venv/bin/python -m pip freeze > requirements.txt
 ```
 
 Verificación rápida:
 
 ```bash
-.venv/bin/python -c "import sklearn, mlflow, shap; print(sklearn.__version__, mlflow.__version__, shap.__version__)"
+.venv/bin/python -c "import sklearn, mlflow; print(sklearn.__version__, mlflow.__version__)"
 ```
 
 ### 7.2 Estructura de carpetas
@@ -733,70 +726,7 @@ print(predecir_venta(caso_bajo))
 Además de la predicción, mostrar el **valor real** de un registro parecido del dataset
 para comparar. Documentar que los dos samples pertenecen a productos y contextos distintos.
 
-### 7.11 Explicabilidad
-
-**(a) Importancia global por permutación**
-
-```python
-from sklearn.inspection import permutation_importance
-
-perm = permutation_importance(
-    mejor_modelo, X_test, y_test,
-    n_repeats=20, random_state=42,
-    scoring="neg_root_mean_squared_error",
-)
-# Graficar las 10 variables con mayor importancia media.
-```
-
-**(b) SHAP global y local**
-
-```python
-import shap
-
-def predecir_array(x):
-    return mejor_modelo.predict(pd.DataFrame(x, columns=COLUMNAS))
-
-fondo = shap.sample(X_train, 100, random_state=42)
-explainer = shap.KernelExplainer(predecir_array, fondo)
-
-shap_values = explainer.shap_values(X_test.iloc[:2], nsamples=100)
-
-shap.summary_plot(shap_values, X_test.iloc[:2], feature_names=COLUMNAS, show=False)
-# Guardar figura global.
-
-for i in range(2):
-    shap.plots.waterfall(
-        shap.Explanation(
-            values=shap_values[i],
-            base_values=explainer.expected_value,
-            data=X_test.iloc[i],
-            feature_names=COLUMNAS,
-        ),
-        show=False,
-    )
-    # Guardar waterfall del caso i.
-```
-
-> Usar 100 muestras de fondo y solo 2 instancias explicadas para que el cálculo sea
-> rápido. SHAP devuelve valores en unidades de ventas porque el modelo ya desescala el
-> target.
-
-**(c) PDP / ICE**
-
-```python
-from sklearn.inspection import PartialDependenceDisplay
-
-PartialDependenceDisplay.from_estimator(
-    mejor_modelo, X_train,
-    ["promedio_movil_7d", "ventas_dia_anterior"],
-    kind="both",
-)
-```
-
-Cada figura debe acompañarse de una interpretación escrita: qué variable empuja la
-predicción hacia arriba o hacia abajo y por qué tiene sentido en el negocio.
-
-### 7.12 Cierre: HTML y MLflow UI
+### 7.11 Cierre: HTML y MLflow UI
 
 ```bash
 jupyter nbconvert --to html svr_ventas.ipynb
@@ -865,14 +795,12 @@ Marcar antes de la entrega:
       resaltan el mejor modelo.
 - [ ] **3.1** `GridSearchCV` documentado con los mejores hiperparámetros.
 - [ ] **3.1** Métricas reportadas: RMSE, MAE, R² y MAPE.
-- [ ] **3.2** Permutation importance con gráfico e interpretación.
-- [ ] **3.2** SHAP global (summary) y local (waterfall) para los dos casos.
-- [ ] **3.2** PDP/ICE de al menos dos variables.
-- [ ] **3.2** Cada figura tiene una explicación en Markdown.
-- [ ] **3.3** `predecir_venta()` definida y ejecutada con dos casos distintos.
-- [ ] **3.3** Se muestra la predicción y se compara con un valor real.
+- [ ] **3.2** `predecir_venta()` definida y ejecutada con dos casos distintos.
+- [ ] **3.2** Se muestra la predicción y se compara con un valor real.
 - [ ] **3.4** Conclusiones con métricas concretas y comparación con la práctica 001.
 - [ ] **3.4** Referencias en APA 7, citadas en el texto.
+- [ ] No se incluye justificación de predicciones con SHAP, PDP/ICE ni permutation
+      importance (fuera de alcance).
 - [ ] Notebook ejecutado de inicio a fin sin errores.
 - [ ] `svr_ventas.html` generado y revisado.
 - [ ] Repositorio ordenado y `.gitignore` correcto.
@@ -885,7 +813,6 @@ Marcar antes de la entrega:
 | Riesgo | Probabilidad | Impacto | Mitigación |
 |---|---|---|---|
 | Conflictos al editar el notebook | Alta | Medio | Ramas por persona, secciones asignadas, integrador único |
-| SHAP lento o consume mucha memoria | Media | Medio | 100 muestras de fondo, 2 instancias, `nsamples=100` |
 | Kernel `sigmoid` inestable | Alta | Bajo | Documentarlo como resultado esperado; limitar C |
 | Métricas distintas entre integrantes | Media | Medio | Semilla fija, split congelado, mismos datos |
 | Fuga de información en features | Media | Alto | Revisión cruzada P1–P2 antes de modelar |
@@ -904,8 +831,8 @@ Duración total: 12–15 minutos + preguntas. Un bloque por integrante.
 |---|---:|---|---|
 | 1. Contexto | 3 | Dataset, variable objetivo, por qué SVR, split y control de fuga | P1 |
 | 2. Modelo y optimización | 4 | Pipeline, kernels, C, MLflow, GridSearch, tabla de resultados | P2 |
-| 3. Evaluación y predicción | 3 | RMSE/MAE/R², figuras, `predecir_venta()` y los dos casos | P3 |
-| 4. Explicabilidad y conclusiones | 4 | SHAP, PDP, hallazgos, limitaciones, referencias | P4 |
+| 3. Evaluación y predicción | 4 | RMSE/MAE/R², figuras, `predecir_venta()` y los dos casos | P3 |
+| 4. Conclusiones y referencias | 3 | Hallazgos, limitaciones y referencias APA | P4 |
 
 ### Preguntas probables y respuestas cortas
 
@@ -917,8 +844,8 @@ Duración total: 12–15 minutos + preguntas. Un bloque por integrante.
   lo que inflaría las métricas.
 - **¿Por qué `sigmoid` falla?** No es un kernel adecuado para este tipo de datos
   tabulares; produce predicciones extremas.
-- **¿Qué significa un SHAP positivo?** Que esa variable empuja la predicción por encima
-  del valor base del modelo.
+- **¿Por qué no se usa SHAP?** Ese punto de justificación de predicciones quedó excluido
+  del alcance acordado; la práctica se centra en optimización, predicción y conclusiones.
 - **¿El modelo sirve para producción?** No tal cual: hay 60 días y 10 productos; se
   necesita más histórico y validación temporal más larga.
 
@@ -928,14 +855,6 @@ Duración total: 12–15 minutos + preguntas. Un bloque por integrante.
 
 Cortes, C., & Vapnik, V. (1995). Support-vector networks. *Machine Learning, 20*(3),
 273–297. https://doi.org/10.1007/BF00994018
-
-Lundberg, S. M., & Lee, S.-I. (2017). A unified approach to interpreting model
-predictions. En I. Guyon, U. von Luxburg, S. Bengio, H. Wallach, R. Fergus, S.
-Vishwanathan, & R. Garnett (Eds.), *Advances in Neural Information Processing Systems 30*
-(pp. 4765–4774). Curran Associates.
-
-Molnar, C. (2022). *Interpretable machine learning: A guide for making black box models
-explainable* (2.ª ed.). https://christophm.github.io/interpretable-ml-book/
 
 Pedregosa, F., Varoquaux, G., Gramfort, A., Michel, V., Thirion, B., Grisel, O.,
 Blondel, M., Prettenhofer, P., Weiss, R., Dubourg, V., Vanderplas, J., Passos, A.,
@@ -1006,9 +925,6 @@ git log --oneline --graph --decorate
 - **C:** penalización por error; valores altos ajustan más y pueden sobreajustar.
 - **Epsilon:** ancho de la banda de tolerancia del SVR.
 - **Gamma:** alcance de influencia de cada punto en el kernel RBF.
-- **SHAP:** valores de Shapley que reparten la predicción entre las variables.
-- **PDP:** Partial Dependence Plot, efecto promedio de una variable sobre la predicción.
-- **ICE:** Individual Conditional Expectation, efecto por instancia.
 - **Fuga de información:** usar variables que contienen información del target o del futuro.
 
 ---
