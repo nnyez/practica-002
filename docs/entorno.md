@@ -34,9 +34,9 @@ antes de escribir código.
 > `shap` **no** se instala: la justificación de predicciones quedó fuera del alcance de la
 > práctica. Tampoco se usan Random Forest ni árboles de decisión.
 
-El notebook de R1 se ejecutó originalmente con Python 3.13.18, pandas 3.0.5 y numpy 2.5.3.
-Al adoptar esta base, **R1 debe re-ejecutarlo una vez** para que la tabla de versiones del
-notebook coincida con la del equipo. Los resultados no cambian de forma apreciable.
+El notebook de R1 se ejecutó originalmente con Python 3.13.18, pandas 3.0.5 y numpy 2.5.3;
+desde la entrega v4 ya corre con las versiones de esta tabla, y la celda de configuración
+lo comprueba antes de continuar. No hay entorno alternativo: todos usan estas versiones.
 
 ---
 
@@ -290,7 +290,7 @@ El archivo `.~lock.guia.docx#` es un temporal de LibreOffice: ya está fuera del
 | Síntoma | Causa | Solución |
 |---|---|---|
 | `ModuleNotFoundError: pandas` | El notebook usa el kernel del sistema | Seleccionar "Python (svr-ventas)" |
-| `FileNotFoundError: datos/ventas_features.csv` | El kernel arrancó en `src/...` | Abrir el repo como workspace y ejecutar desde la raíz |
+| `AssertionError: No se encontró datos/ventas_features.csv` | El notebook se abrió fuera del repositorio | Ejecutarlo dentro del repo: `raiz_proyecto()` lo ubica desde la raíz, `src/` o `src/<nombre>/` |
 | `pip` instala en otra ruta | Se usó `pip` sin `python -m` | `python -m pip install ...` dentro del venv |
 | `mlflow: command not found` | Venv no activado | `source .venv/bin/activate` |
 | `Address already in use` en MLflow | Puerto 5000 ocupado | `--port 5001` |
@@ -298,18 +298,3 @@ El archivo `.~lock.guia.docx#` es un temporal de LibreOffice: ya está fuera del
 | Gráficas no aparecen al exportar | Backend interactivo | `MPLBACKEND=Agg` |
 | El lock falla en Windows | Se generó en Linux | Instalar `requirements.txt` y reportar |
 
----
-
-## 11. Alternativa: mantener el entorno original de R1
-
-Si el equipo prefiere conservar el entorno exacto en que R1 ya ejecutó el notebook,
-cambien solo estas tres cosas:
-
-```txt
-Python 3.13.18
-pandas==3.0.5
-numpy==2.5.3
-```
-
-No mezclen versiones entre integrantes: o todos 3.12.7, o todos 3.13.18. La opción
-recomendada es **3.12.7** porque ya está instalada y es la que figura en el plan.

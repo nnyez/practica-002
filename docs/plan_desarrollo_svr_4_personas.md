@@ -42,6 +42,11 @@ El equipo construirá un único notebook reproducible que:
 | SVR RBF, C=10, split aleatorio | 22.42 | 16.68 | 0.848 |
 | LSTM de la práctica 001 (referencia) | 23.19 | 17.30 | — |
 
+> Estos valores se midieron durante la planificación con configuraciones distintas a la
+> final (una fila usa split aleatorio y otra selección de columnas); son una referencia
+> orientativa. La tabla consolidada de la sección 8 del notebook, generada desde el
+> registry, es la fuente definitiva.
+
 La conclusión esperada es que un SVR simple alcanza un desempeño comparable al LSTM de la
 práctica anterior con una fracción de la complejidad.
 
@@ -92,6 +97,7 @@ Estas decisiones se toman una vez y no se reabren sin acuerdo del equipo.
 | Split | Temporal 80/20 por fecha | Evita fuga entre días consecutivos; simula predecir el futuro |
 | Escalado de X | `StandardScaler` | SVR es sensible a la escala |
 | Escalado de y | `TransformedTargetRegressor` + `StandardScaler` | `epsilon` y `C` dependen de la escala del target |
+| Variables categóricas | `categoria` y `product_id` one-hot (25 columnas) | Decisión cerrada del equipo; la duplicación se documenta en la sección 3 del notebook |
 | Kernels | `linear`, `rbf`, `poly`, `sigmoid` | Requisito explícito de la guía |
 | Penalización C | `0.1, 1, 10, 100` | Requisito explícito; rango suficiente para ver sobreajuste |
 | Búsqueda fina | `GridSearchCV` 5-fold sobre C, epsilon, gamma, degree | Optimización de la sección 3.1 |
@@ -125,10 +131,13 @@ Estas decisiones se toman una vez y no se reabren sin acuerdo del equipo.
 > `promedio_movil_7d`) se eliminan: son 90 celdas en 70 filas del calentamiento de los
 > rezagos (600 → 530 registros). No se imputan porque inventaría ventas que no ocurrieron.
 
-> **Nota sobre `categoria`:** es función de `product_id` (5 de las 6 categorías tienen un
-> solo producto), así que 5 de sus dummies son idénticas a las de `product_id`. Se mantienen
-> ambas por decisión del equipo; si se prioriza la simplicidad, `CAT = ["product_id"]` deja
-> 20 columnas sin perder información.
+> **Decisión cerrada sobre `categoria`:** entra al modelo junto con `product_id` (25
+> columnas). Es función de `product_id` (5 de las 6 categorías tienen un solo producto), así
+> que 5 de sus dummies son idénticas a las de `product_id`. Se conserva por acuerdo del
+> equipo y con dos consecuencias conocidas: en el kernel lineal produce colinealidad exacta
+> y en RBF duplica el peso de la identidad del producto en la distancia. La sección 3 del
+> notebook debe explicar la duplicación; `CAT = ["product_id"]` (20 columnas) queda
+> descartado.
 
 > Regla de oro: ninguna variable puede contener información del futuro ni del target.
 > `ventas_dia_anterior` y `promedio_movil_7d` son válidas porque solo usan días previos.
@@ -202,8 +211,8 @@ y un split reproducible que el resto del equipo pueda usar sin modificarlo.
 4. Documentar los nulos de `ventas_dia_anterior` (10), `ventas_hace_7_dias` (70) y
    `promedio_movil_7d` (10), y justificar la decisión de eliminar esas filas (~530
    registros útiles).
-5. Definir las listas `NUM`, `CAT` y `TARGET`, y justificar cada exclusión
-   (`stock_actual`, textos, columnas redundantes).
+5. Definir las listas `NUM`, `CAT = ["categoria", "product_id"]` y `TARGET`, y justificar
+   cada exclusión (`stock_actual`, textos, columnas redundantes).
 6. Construir `X` con one-hot encoding y `y` con `cantidad_vendida`; verificar que no
    queden nulos ni columnas constantes.
 7. Congelar el split temporal 80/20 por fecha y guardar la lista `COLUMNAS`.
@@ -880,6 +889,7 @@ git push origin feat/modelos
 Marcar antes de la entrega:
 
 - [ ] **3.1** Se entrenaron los 4 kernels y al menos 4 valores de C.
+- [ ] **3.1** `X` tiene 25 columnas (`categoria` + `product_id`) y la sección 3.6 explica la duplicación.
 - [ ] **3.1** Los 17 runs aparecen en `mlflow ui` con parámetros y métricas.
 - [ ] **3.1** Las 17 versiones aparecen en **Models → svr_ventas** con sus tags de kernel y C.
 - [ ] **3.1** El alias `champion` apunta a la mejor y `models:/svr_ventas@champion` carga sin error.

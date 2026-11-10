@@ -42,6 +42,10 @@ escribir en 3.6 y en el informe que la duplicación existe, que duplica el peso 
 en la distancia y que se conserva por continuidad con el plan. "Lo dice el plan" no basta:
 el plan lo escribimos nosotros.
 
+> **Decisión final del equipo:** opción B, `CAT = ["categoria", "product_id"]` (25 columnas).
+> Esta recomendación queda sin efecto; el notebook debe explicar la duplicación en 3.6 y
+> ajustar el `assert` a `X.T.duplicated().sum() == 5`.
+
 ### 3. Los 7 warnings de matplotlib 3.11
 
 **Por qué.** Con las versiones fijadas (`matplotlib 3.11.2` + `seaborn 0.13.2`) los

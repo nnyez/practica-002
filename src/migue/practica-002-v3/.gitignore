@@ -1,0 +1,10 @@
+.venv/
+mlflow.db
+mlflow.db-journal
+mlartifacts/
+mlruns/
+__pycache__/
+.ipynb_checkpoints/
+*.pyc
+.DS_Store
+.~lock.*#

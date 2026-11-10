@@ -5,7 +5,9 @@ desarrollar, optimizar y evaluar un modelo **SVM de regresión (SVR)** sobre el 
 ventas de la práctica 001, además de exponer una función de predicción para un sample
 nuevo y cerrar con conclusiones y referencias en APA 7.
 
-> **Estado:** planificación. El notebook y los resultados todavía no están implementados.
+> **Estado:** en desarrollo. R1 entregó las secciones 1–3 y la v4 aprobada ya está
+> promovida en `src/svr_ventas.ipynb`; el avance de cada rol está en
+> [Estado por rol](#estado-por-rol).
 > La guía de desarrollo está en [`docs/plan_desarrollo_svr_4_personas.md`](docs/plan_desarrollo_svr_4_personas.md)
 > y su versión PDF en [`docs/plan_desarrollo_svr_4_personas.pdf`](docs/plan_desarrollo_svr_4_personas.pdf).
 
@@ -47,6 +49,7 @@ Se reutiliza el dataset de la práctica 001:
 | Kernels | `linear`, `rbf`, `poly`, `sigmoid` |
 | Penalización `C` | `0.1`, `1`, `10`, `100` |
 | Optimización | `GridSearchCV` 5-fold sobre C, epsilon, gamma y degree |
+| Variables | 11 numéricas + `categoria` y `product_id` one-hot (25 columnas; 5 duplicadas por decisión del equipo, ver sección 3.6 del notebook) |
 | Escalado | `StandardScaler` en X y en y (`TransformedTargetRegressor`) |
 | Split | Temporal 80/20 por fecha |
 | Métricas | RMSE (principal), MAE, R², MAPE |
@@ -65,6 +68,11 @@ Valores medidos previamente sobre este dataset, útiles como referencia:
 | SVR RBF, C=10, split aleatorio | 22.42 | 16.68 | 0.848 |
 | LSTM de la práctica 001 (referencia) | 23.19 | 17.30 | — |
 
+> Estos valores se midieron durante la planificación con configuraciones distintas a la
+> final (una fila usa split aleatorio y otra selección de columnas); son una referencia
+> orientativa. La tabla consolidada de la sección 8 del notebook, generada desde el
+> registry, es la fuente definitiva.
+
 La conclusión esperada es que un SVR simple alcanza un desempeño comparable al LSTM de la
 práctica anterior con mucha menor complejidad.
 
@@ -77,6 +85,7 @@ práctica anterior con mucha menor complejidad.
 | `mlflow.db` + `mlartifacts/` | Registry (17 versiones) y artefactos de los runs (locales, ignorados en Git) |
 | `resultados/modelos/` | Un `.joblib` por versión, para revisión sin MLflow |
 | `resultados/resultados_modelos.csv` | Tabla consolidada de todos los modelos |
+| `resultados/tabla_variables.csv` | Variables usadas y excluidas, con el motivo de cada exclusión |
 | `resultados/figuras/` | Figuras de EDA, comparación y evaluación |
 | `requirements.txt` | Dependencias del entorno con versiones fijas |
 | `docs/entorno.md` | Guía de instalación y verificación del entorno |
@@ -98,12 +107,15 @@ practica-002/
 ├── src/
 │   ├── migue/
 │   │   ├── practica-002-v1/           # entrega v1 de R1 (histórico)
-│   │   └── practica-002-v2/           # entrega v2 de R1
-│   └── svr_ventas.ipynb               # integración final (a generar)
+│   │   ├── practica-002-v2/           # entrega v2 de R1 (histórico)
+│   │   ├── practica-002-v3/           # entrega v3 de R1 (histórico)
+│   │   └── practica-002-v4/           # entrega v4 de R1 (aprobada)
+│   └── svr_ventas.ipynb               # integración final (secciones 1–3 listas)
 ├── resultados/
-│   ├── resultados_modelos.csv         # una fila por versión (a generar)
-│   ├── modelos/                       # un .joblib por versión (a generar)
-│   └── figuras/                       # a generar
+│   ├── resultados_modelos.csv         # una fila por versión (a generar, R3)
+│   ├── tabla_variables.csv            # variables usadas y excluidas (R1)
+│   ├── modelos/                       # un .joblib por versión (a generar, R2)
+│   └── figuras/                       # 4 figuras del EDA (R1); luego las de R3
 ├── mlflow.db                          # registry SQLite (ignorado en Git)
 ├── mlartifacts/                       # artefactos de los runs (ignorado en Git)
 ├── .python-version                    # 3.12.7
@@ -125,7 +137,20 @@ practica-002/
 
 El detalle de tareas, entregables y criterios de aceptación está en la sección 5 del plan.
 
-## Reproducción (cuando el notebook esté implementado)
+### Estado por rol
+
+| Rol | Secciones de `src/svr_ventas.ipynb` | Estado |
+|---|---|---|
+| R1 — Datos y EDA | 1 Configuración, 2 Datos y EDA, 3 Features y split | Listo (v4 aprobada y promovida) |
+| R2 — Modelado y MLflow | 4 Pipeline SVR, 5 Barrido kernels × C, 6 Optimización | Pendiente |
+| R3 — Evaluación y predicción | 7 Evaluación, 8 Resultados consolidados, 9 Función de predicción | Pendiente |
+| R4 — Conclusiones y documentación | 0 Portada, 10 Conclusiones, 11 Referencias | Pendiente |
+
+R1 entrega, para que nadie los modifique: `X_train`, `X_test`, `y_train`, `y_test`,
+`COLUMNAS` (25 columnas), `df` (limpio, 530 filas), `SEED` y `guardar()`. La revisión de
+fuga y los hallazgos para el equipo están en las secciones 3.5 y 3.6 del notebook.
+
+## Reproducción
 
 ```bash
 # 1. Verificar que los datos son los mismos
@@ -162,7 +187,7 @@ El detalle de versiones, verificación y problemas frecuentes está en
 - [`docs/plan_desarrollo_svr_4_personas.md`](docs/plan_desarrollo_svr_4_personas.md): plan de
   desarrollo con decisiones, roles, cronograma y guía técnica.
 - [`docs/plan_desarrollo_svr_4_personas.pdf`](docs/plan_desarrollo_svr_4_personas.pdf):
-  versión PDF del plan (22 páginas, A4).
+  versión PDF del plan (19 páginas, A4).
 
 ## Referencias principales
 
