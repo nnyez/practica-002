@@ -115,7 +115,7 @@ practica-002/
 │   │   └── practica-002-v1/           # entrega v1 de R2 (modelado_mlflow.ipynb, en revisión)
 │   └── svr_ventas.ipynb               # integración final (secciones 1–3 listas)
 ├── resultados/
-│   ├── resultados_modelos.csv         # una fila por versión (a generar, R3)
+│   ├── resultados_modelos.csv         # una fila por versión, ordenada por RMSE (R2)
 │   ├── tabla_variables.csv            # variables usadas y excluidas (R1)
 │   ├── modelos/                       # un .joblib por versión (a generar, R2)
 │   └── figuras/                       # 4 figuras del EDA (R1); luego las de R3
@@ -155,8 +155,9 @@ fuga y los hallazgos para el equipo están en las secciones 3.5 y 3.6 del notebo
 
 R2 entrega `construir_svr()`, `mejor_modelo` y el modelo registrado `svr_ventas`: 17 runs y 17
 versiones (v1–v16 del barrido, v17 de `GridSearchCV` con alias `champion`: `rbf`, C=10,
-`epsilon`=0.1, `gamma`=0.01), un `.joblib` por versión en `resultados/modelos/` y la tabla cruda
-`tabla_versiones` para la sección 8. La selección por CV frente a test está en la sección 6.3.
+`epsilon`=0.1, `gamma`=0.01), un `.joblib` por versión en `resultados/modelos/` y la tabla
+consolidada `resultados/resultados_modelos.csv` para la sección 8. La selección por CV frente a
+test está en la sección 6.3, y la aprobación del control de fuga de R1 en la sección 4.1.
 
 ## Reproducción
 
