@@ -7,7 +7,7 @@ nuevo y cerrar con conclusiones y referencias en APA 7.
 
 > **Estado:** en desarrollo. R1 entregó las secciones 1–3 y la v4 aprobada ya está
 > promovida en `src/svr_ventas.ipynb`. R2 entregó las secciones 4–6 en
-> `src/jose/practica-002-v1/modelado_mlflow.ipynb` (en revisión); el avance de cada rol está en
+> `src/jose/practica-002-v2/src/svr_ventas.ipynb` (en revisión); el avance de cada rol está en
 > [Estado por rol](#estado-por-rol).
 > La guía de desarrollo está en [`docs/plan_desarrollo_svr_4_personas.md`](docs/plan_desarrollo_svr_4_personas.md)
 > y su versión PDF en [`docs/plan_desarrollo_svr_4_personas.pdf`](docs/plan_desarrollo_svr_4_personas.pdf).
@@ -112,7 +112,8 @@ practica-002/
 │   │   ├── practica-002-v3/           # entrega v3 de R1 (histórico)
 │   │   └── practica-002-v4/           # entrega v4 de R1 (aprobada)
 │   ├── jose/
-│   │   └── practica-002-v1/           # entrega v1 de R2 (modelado_mlflow.ipynb, en revisión)
+│   │   ├── practica-002-v1/           # entrega v1 de R2 (histórico)
+│   │   └── practica-002-v2/           # entrega v2 de R2 (retroalimentación r2-v1, en revisión)
 │   └── svr_ventas.ipynb               # integración final (secciones 1–3 listas)
 ├── resultados/
 │   ├── resultados_modelos.csv         # una fila por versión, ordenada por RMSE (R2)
@@ -145,7 +146,7 @@ El detalle de tareas, entregables y criterios de aceptación está en la secció
 | Rol | Secciones de `src/svr_ventas.ipynb` | Estado |
 |---|---|---|
 | R1 — Datos y EDA | 1 Configuración, 2 Datos y EDA, 3 Features y split | Listo (v4 aprobada y promovida) |
-| R2 — Modelado y MLflow | 4 Pipeline SVR, 5 Barrido kernels × C, 6 Optimización | En revisión (v1 en `src/jose/practica-002-v1/`) |
+| R2 — Modelado y MLflow | 4 Pipeline SVR, 5 Barrido kernels × C, 6 Optimización | En revisión (v2 en `src/jose/practica-002-v2/`) |
 | R3 — Evaluación y predicción | 7 Evaluación, 8 Resultados consolidados, 9 Función de predicción | Pendiente |
 | R4 — Conclusiones y documentación | 0 Portada, 10 Conclusiones, 11 Referencias | Pendiente |
 
@@ -154,10 +155,12 @@ R1 entrega, para que nadie los modifique: `X_train`, `X_test`, `y_train`, `y_tes
 fuga y los hallazgos para el equipo están en las secciones 3.5 y 3.6 del notebook.
 
 R2 entrega `construir_svr()`, `mejor_modelo` y el modelo registrado `svr_ventas`: 17 runs y 17
-versiones (v1–v16 del barrido, v17 de `GridSearchCV` con alias `champion`: `rbf`, C=10,
-`epsilon`=0.1, `gamma`=0.01), un `.joblib` por versión en `resultados/modelos/` y la tabla
-consolidada `resultados/resultados_modelos.csv` para la sección 8. La selección por CV frente a
-test está en la sección 6.3, y la aprobación del control de fuga de R1 en la sección 4.1.
+versiones por ejecución (con un `mlflow.db` limpio, v1–v16 del barrido y v17 de `GridSearchCV`
+con alias `champion`: `rbf`, C=10, `epsilon`=0.1, `gamma`=0.01), un `.joblib` por versión en
+`resultados/modelos/` y la tabla consolidada `resultados/resultados_modelos.csv` para la
+sección 8. El registry es el histórico y no se limpia: cada nueva ejecución agrega 17 versiones
+y mueve `champion` a la nueva versión del `GridSearchCV`. La selección por CV frente a test
+está en la sección 6.3, y la aprobación del control de fuga de R1 en la sección 4.1.
 
 ## Reproducción
 
