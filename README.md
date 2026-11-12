@@ -5,9 +5,9 @@ desarrollar, optimizar y evaluar un modelo **SVM de regresión (SVR)** sobre el 
 ventas de la práctica 001, además de exponer una función de predicción para un sample
 nuevo y cerrar con conclusiones y referencias en APA 7.
 
-> **Estado:** en desarrollo. R1 entregó las secciones 1–3 y la v4 aprobada ya está
-> promovida en `src/svr_ventas.ipynb`. R2 entregó las secciones 4–6 en
-> `src/jose/practica-002-v2/src/svr_ventas.ipynb` (en revisión); el avance de cada rol está en
+> **Estado:** en desarrollo. R1 entregó las secciones 1–3 y la v4 aprobada está promovida.
+> R2 entregó las secciones 4–6 y la v2 aprobada ya está promovida en `src/svr_ventas.ipynb`;
+> la auditoría está en `src/jose/docs/auditoria_r2-v2.md`. El avance de cada rol está en
 > [Estado por rol](#estado-por-rol).
 > La guía de desarrollo está en [`docs/plan_desarrollo_svr_4_personas.md`](docs/plan_desarrollo_svr_4_personas.md)
 > y su versión PDF en [`docs/plan_desarrollo_svr_4_personas.pdf`](docs/plan_desarrollo_svr_4_personas.pdf).
@@ -53,9 +53,9 @@ Se reutiliza el dataset de la práctica 001:
 | Variables | 11 numéricas + `categoria` y `product_id` one-hot (25 columnas; 5 duplicadas por decisión del equipo, ver sección 3.6 del notebook) |
 | Escalado | `StandardScaler` en X y en y (`TransformedTargetRegressor`) |
 | Split | Temporal 80/20 por fecha |
-| Métricas | RMSE (principal), MAE, R², MAPE |
+| Métricas | RMSE (principal), MAE, R², MAPE (%) |
 | Tracking | MLflow local con SQLite (`mlflow.db`) y Model Registry |
-| Versiones | `svr_ventas` v1–v16 (barrido) + v17 (`GridSearchCV`), alias `champion` |
+| Versiones | 16 del barrido + 1 del `GridSearchCV` por ejecución (v1–v17 con `mlflow.db` limpio), alias `champion` |
 | Semilla | `random_state=42` |
 
 ## Resultados esperados
@@ -83,7 +83,7 @@ práctica anterior con mucha menor complejidad.
 |---|---|
 | `src/svr_ventas.ipynb` | Notebook único con datos, modelo, MLflow, evaluación y predicción |
 | `src/svr_ventas.html` | Exportación del notebook para entrega |
-| `mlflow.db` + `mlartifacts/` | Registry (17 versiones) y artefactos de los runs (locales, ignorados en Git) |
+| `mlflow.db` + `mlartifacts/` | Registry (17 versiones por ejecución) y artefactos de los runs (locales, ignorados en Git) |
 | `resultados/modelos/` | Un `.joblib` por versión, para revisión sin MLflow |
 | `resultados/resultados_modelos.csv` | Tabla consolidada de todos los modelos |
 | `resultados/tabla_variables.csv` | Variables usadas y excluidas, con el motivo de cada exclusión |
@@ -113,12 +113,12 @@ practica-002/
 │   │   └── practica-002-v4/           # entrega v4 de R1 (aprobada)
 │   ├── jose/
 │   │   ├── practica-002-v1/           # entrega v1 de R2 (histórico)
-│   │   └── practica-002-v2/           # entrega v2 de R2 (retroalimentación r2-v1, en revisión)
-│   └── svr_ventas.ipynb               # integración final (secciones 1–3 listas)
+│   │   └── practica-002-v2/           # entrega v2 de R2 (aprobada)
+│   └── svr_ventas.ipynb               # integración final (secciones 1–6; R1–R2)
 ├── resultados/
 │   ├── resultados_modelos.csv         # una fila por versión, ordenada por RMSE (R2)
 │   ├── tabla_variables.csv            # variables usadas y excluidas (R1)
-│   ├── modelos/                       # un .joblib por versión (a generar, R2)
+│   ├── modelos/                       # 17 .joblib (16 del barrido + champion)
 │   └── figuras/                       # 4 figuras del EDA (R1); luego las de R3
 ├── mlflow.db                          # registry SQLite (ignorado en Git)
 ├── mlartifacts/                       # artefactos de los runs (ignorado en Git)
@@ -146,7 +146,7 @@ El detalle de tareas, entregables y criterios de aceptación está en la secció
 | Rol | Secciones de `src/svr_ventas.ipynb` | Estado |
 |---|---|---|
 | R1 — Datos y EDA | 1 Configuración, 2 Datos y EDA, 3 Features y split | Listo (v4 aprobada y promovida) |
-| R2 — Modelado y MLflow | 4 Pipeline SVR, 5 Barrido kernels × C, 6 Optimización | En revisión (v2 en `src/jose/practica-002-v2/`) |
+| R2 — Modelado y MLflow | 4 Pipeline SVR, 5 Barrido kernels × C, 6 Optimización | Listo (v2 aprobada y promovida) |
 | R3 — Evaluación y predicción | 7 Evaluación, 8 Resultados consolidados, 9 Función de predicción | Pendiente |
 | R4 — Conclusiones y documentación | 0 Portada, 10 Conclusiones, 11 Referencias | Pendiente |
 
@@ -200,6 +200,8 @@ El detalle de versiones, verificación y problemas frecuentes está en
   desarrollo con decisiones, roles, cronograma y guía técnica.
 - [`docs/plan_desarrollo_svr_4_personas.pdf`](docs/plan_desarrollo_svr_4_personas.pdf):
   versión PDF del plan (19 páginas, A4).
+- [`src/jose/docs/auditoria_r2-v2.md`](src/jose/docs/auditoria_r2-v2.md): auditoría de la
+  entrega de R2 (secciones 4–6), con la reproducción independiente de las métricas.
 
 ## Referencias principales
 
