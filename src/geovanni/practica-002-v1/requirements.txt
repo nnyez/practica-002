@@ -1,0 +1,18 @@
+# Práctica 002 — SVR de ventas
+# Python 3.12.7 (ver .python-version)
+# Instalar con: python -m pip install -r requirements.txt
+
+numpy==2.5.4
+pandas==3.0.6
+scikit-learn==1.9.1
+joblib==1.6.0
+matplotlib==3.11.2
+seaborn==0.13.2
+
+# Tracking de experimentos (obligatorio en la guía)
+mlflow==3.18.0
+
+# Notebook y exportación
+jupyterlab==4.6.6
+nbconvert==7.17.2
+ipykernel==7.4.0

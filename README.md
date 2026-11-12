@@ -6,8 +6,10 @@ ventas de la práctica 001, además de exponer una función de predicción para 
 nuevo y cerrar con conclusiones y referencias en APA 7.
 
 > **Estado:** en desarrollo. R1 entregó las secciones 1–3 y la v4 aprobada está promovida.
-> R2 entregó las secciones 4–6 y la v2 aprobada ya está promovida en `src/svr_ventas.ipynb`;
-> la auditoría está en `src/jose/docs/auditoria_r2-v2.md`. El avance de cada rol está en
+> R2 entregó las secciones 4–6 y la v2 aprobada ya está promovida; su auditoría está en
+> `src/jose/docs/auditoria_r2-v2.md`. R3 entregó las secciones 7–9 y la v1 aprobada está
+> promovida en `src/svr_ventas.ipynb`; su auditoría está en
+> `src/geovanni/docs/auditoria_r3-v1.md`. El avance de cada rol está en
 > [Estado por rol](#estado-por-rol).
 > La guía de desarrollo está en [`docs/plan_desarrollo_svr_4_personas.md`](docs/plan_desarrollo_svr_4_personas.md)
 > y su versión PDF en [`docs/plan_desarrollo_svr_4_personas.pdf`](docs/plan_desarrollo_svr_4_personas.pdf).
@@ -74,10 +76,23 @@ Valores medidos previamente sobre este dataset, útiles como referencia:
 > orientativa. La tabla consolidada de la sección 8 del notebook, generada desde el
 > registry, es la fuente definitiva.
 
-La conclusión esperada es que un SVR simple alcanza un desempeño comparable al LSTM de la
-práctica anterior con mucha menor complejidad.
+### Resultados finales (secciones 7–8)
 
-## Entregables previstos
+| Modelo | RMSE | MAE | R² | MAPE (%) |
+|---|---:|---:|---:|---:|
+| `champion` v17 (`rbf`, C=10, `epsilon`=0.1, `gamma`=0.01) | 26.90 | 20.18 | 0.756 | 12.47 |
+| Mejor de test del barrido (`linear`, C=10) | 26.26 | 20.08 | 0.768 | 12.30 |
+| Baseline ingenuo (`promedio_movil_7d`) | 41.72 | 31.42 | 0.414 | 18.39 |
+
+El `champion` se eligió por el menor RMSE de validación cruzada (19.04), no por test, así
+que no es el mejor de la tabla de test: elegir mirando test convertiría la evaluación en
+parte del entrenamiento. Sobre 100 filas y 10 días, el error típico queda en torno a 20
+unidades por producto y día, con 74 % de los residuos dentro de ±RMSE.
+
+La conclusión es que un SVR simple alcanza un desempeño comparable al LSTM de la práctica
+anterior con mucha menor complejidad.
+
+## Entregables
 
 | Archivo | Descripción |
 |---|---|
@@ -89,6 +104,7 @@ práctica anterior con mucha menor complejidad.
 | `resultados/tabla_variables.csv` | Variables usadas y excluidas, con el motivo de cada exclusión |
 | `resultados/figuras/` | Figuras de EDA, comparación y evaluación |
 | `requirements.txt` | Dependencias del entorno con versiones fijas |
+| `requirements-lock.txt` | Resolución completa del entorno (`pip freeze`) |
 | `docs/entorno.md` | Guía de instalación y verificación del entorno |
 
 ## Estructura del repositorio
@@ -112,14 +128,19 @@ practica-002/
 │   │   ├── practica-002-v3/           # entrega v3 de R1 (histórico)
 │   │   └── practica-002-v4/           # entrega v4 de R1 (aprobada)
 │   ├── jose/
+│   │   ├── docs/                      # retroalimentación r2-v1 y auditoría r2-v2
 │   │   ├── practica-002-v1/           # entrega v1 de R2 (histórico)
 │   │   └── practica-002-v2/           # entrega v2 de R2 (aprobada)
-│   └── svr_ventas.ipynb               # integración final (secciones 1–6; R1–R2)
+│   ├── geovanni/
+│   │   ├── docs/                      # auditoría r3-v1
+│   │   └── practica-002-v1/           # entrega v1 de R3 (aprobada)
+│   ├── svr_ventas.ipynb               # integración final (secciones 1–9; R1–R3)
+│   └── svr_ventas.html                # exportación del notebook
 ├── resultados/
-│   ├── resultados_modelos.csv         # una fila por versión, ordenada por RMSE (R2)
+│   ├── resultados_modelos.csv         # una fila por versión, ordenada por RMSE (R3)
 │   ├── tabla_variables.csv            # variables usadas y excluidas (R1)
 │   ├── modelos/                       # 17 .joblib (16 del barrido + champion)
-│   └── figuras/                       # 4 figuras del EDA (R1); luego las de R3
+│   └── figuras/                       # 4 del EDA (R1) y 3 de evaluación (R3)
 ├── mlflow.db                          # registry SQLite (ignorado en Git)
 ├── mlartifacts/                       # artefactos de los runs (ignorado en Git)
 ├── .python-version                    # 3.12.7
@@ -127,7 +148,7 @@ practica-002/
 ├── .gitattributes
 ├── datos.sha256                       # huellas de los CSV
 ├── requirements.txt                   # dependencias con versión fija
-└── requirements-lock.txt              # a generar con pip freeze
+└── requirements-lock.txt              # resolución completa del entorno
 ```
 
 ## Equipo y roles
@@ -147,7 +168,7 @@ El detalle de tareas, entregables y criterios de aceptación está en la secció
 |---|---|---|
 | R1 — Datos y EDA | 1 Configuración, 2 Datos y EDA, 3 Features y split | Listo (v4 aprobada y promovida) |
 | R2 — Modelado y MLflow | 4 Pipeline SVR, 5 Barrido kernels × C, 6 Optimización | Listo (v2 aprobada y promovida) |
-| R3 — Evaluación y predicción | 7 Evaluación, 8 Resultados consolidados, 9 Función de predicción | Pendiente |
+| R3 — Evaluación y predicción | 7 Evaluación, 8 Resultados consolidados, 9 Función de predicción | Listo (v1 aprobada y promovida) |
 | R4 — Conclusiones y documentación | 0 Portada, 10 Conclusiones, 11 Referencias | Pendiente |
 
 R1 entrega, para que nadie los modifique: `X_train`, `X_test`, `y_train`, `y_test`,
@@ -161,6 +182,14 @@ con alias `champion`: `rbf`, C=10, `epsilon`=0.1, `gamma`=0.01), un `.joblib` po
 sección 8. El registry es el histórico y no se limpia: cada nueva ejecución agrega 17 versiones
 y mueve `champion` a la nueva versión del `GridSearchCV`. La selección por CV frente a test
 está en la sección 6.3, y la aprobación del control de fuga de R1 en la sección 4.1.
+
+R3 entrega la evaluación del `champion` cargado del registry, la tabla consolidada
+reconstruida desde `search_model_versions`, las tres figuras de evaluación y
+`predecir_venta(nuevo_sample)`. La función alinea las columnas con `COLUMNAS`, deriva
+`categoria` desde `product_id` con el catálogo, rechaza combinaciones inconsistentes, rellena
+las categóricas ausentes con 0 y devuelve la predicción redondeada. Los dos casos
+demostrativos (demanda alta y baja) y las pruebas límite están en la sección 9; el contrato
+completo se documenta en 9.1.
 
 ## Reproducción
 
@@ -202,6 +231,8 @@ El detalle de versiones, verificación y problemas frecuentes está en
   versión PDF del plan (19 páginas, A4).
 - [`src/jose/docs/auditoria_r2-v2.md`](src/jose/docs/auditoria_r2-v2.md): auditoría de la
   entrega de R2 (secciones 4–6), con la reproducción independiente de las métricas.
+- [`src/geovanni/docs/auditoria_r3-v1.md`](src/geovanni/docs/auditoria_r3-v1.md): auditoría de
+  la entrega de R3 (secciones 7–9), con la reproducción de las métricas y el estado de los P2.
 
 ## Referencias principales
 
