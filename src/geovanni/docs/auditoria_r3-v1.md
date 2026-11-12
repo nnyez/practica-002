@@ -5,7 +5,7 @@
 | **Revisado** | `src/geovanni/practica-002-v1/` (notebook, HTML, datos, resultados y README) |
 | **Alcance** | Secciones 7 a 9 |
 | **Fecha** | 11 de noviembre de 2026 |
-| **Veredicto** | **APROBADA** — sin P0 ni P1; quedan 6 observaciones P2, ninguna bloquea la promoción |
+| **Veredicto** | **APROBADA** — sin P0, P1 ni P2 abiertos; la v1 corregida puede promoverse |
 
 La v1 implementa la evaluación del champion cargado del registry, la tabla consolidada
 reconstruida desde las versiones registradas, las tres figuras de evaluación y
@@ -13,7 +13,8 @@ reconstruida desde las versiones registradas, las tres figuras de evaluación y
 a punta (31 celdas de código, counts 1–31, 0 errores). Las secciones 1–6 son idénticas a R2
 v2, tanto en fuente como en salidas; la única diferencia es la celda de portada. Además de
 revisar la entrega, reconstruí el split y recalculé las métricas por fuera del notebook,
-cargué los 17 `.joblib` y consulté el registry en `mlflow.db`.
+cargué los 17 `.joblib` y consulté el registry en `mlflow.db`. Las seis observaciones P2 de
+la primera revisión están corregidas y verificadas (tabla al final).
 
 ---
 
@@ -82,84 +83,29 @@ Ninguno.
 
 ## P2
 
-### 1. Salto de numeración de 9.3 a 9.5
+Ninguno abierto. La primera revisión dejó seis observaciones; R3 las corrigió en `0b964ea`
+y esta revisión comprobó cada corrección:
 
-**Por qué.** La sección 9.3 es «Pruebas límite» y la siguiente es 9.5 «Entrega de R3 a R4»;
-no existe 9.4. Quien lee el índice o busca la subsección faltante no sabe si se perdió un
-bloque o si solo se saltó un número. La referencia interna de 9.5 a «las pruebas límite en
-9.3» sigue siendo correcta.
-
-**Qué.** Renumerar 9.5 como 9.4, o agregar el 9.4 que se había previsto. Es solo el
-encabezado; no hay que reejecutar nada.
-
-### 2. El criterio `tabla_coincide = True` es tautológico
-
-**Por qué.** En la celda 63 se asigna `tabla_coincide = True` y la celda 77 lo usa como
-cuarto criterio del checklist. Ese ítem siempre se muestra en ✔ aunque la comparación real
-falle; la comprobación efectiva es el `assert_frame_equal` de la celda 63, que sí detiene el
-notebook. El checklist da una falsa sensación de verificación independiente.
-
-**Qué.** Eliminar el ítem del checklist y dejar el `assert_frame_equal` como única
-comprobación, o calcular el booleano con una comparación real (por ejemplo, `np.allclose`
-columna a columna sobre las columnas numéricas y `equals` sobre `kernel`, `C`, `origen` y
-`run`).
-
-### 3. El README de la entrega conserva el estado y el árbol anteriores a R2
-
-**Por qué.** El bloque «Estado» y la tabla «Estado por rol» dicen que R2 está «En revisión»,
-pero en el raíz ya figura como «Listo (v2 aprobada y promovida)». El árbol sigue diciendo
-`src/svr_ventas.ipynb # integración final (secciones 1–3 listas)`, cuando el notebook ya
-cubre las secciones 1–9, y describe `resultados_modelos.csv` como de R2. La entrega de R3 se
-lee como si el proyecto estuviera en un estado anterior al real.
-
-**Qué.** Actualizar el estado a «R2 v2 aprobada y promovida» y «R3 v1 aprobada y
-promovida», y corregir el árbol: `src/svr_ventas.ipynb # integración final (secciones 1–9;
-R1–R3)`, `practica-002-v1/ # entrega v1 de R3 (aprobada)`,
-`resultados_modelos.csv # una fila por versión, ordenada por RMSE (R3)` y
-`modelos/ # 17 .joblib (16 del barrido + champion)`.
-
-### 4. Los enlaces relativos del README no resuelven desde la carpeta de entrega
-
-**Por qué.** El README es una copia del raíz: enlaza `docs/entorno.md`, `docs/guia.md`,
-`docs/guia.docx`, `docs/plan_desarrollo_svr_4_personas.md` y su PDF, pero
-`src/geovanni/practica-002-v1/` no tiene `docs/`. Tampoco incluye el enlace a la auditoría de
-R2 ni a la de R3. Quien recibe la carpeta no llega a la guía, al plan ni al entorno.
-
-**Qué.** En la copia de la entrega, apuntar los enlaces a `../../../docs/...` (o quitarlos) y
-agregar `../docs/auditoria_r3-v1.md`. La copia del raíz se actualiza al promover.
-
-### 5. El kernel del notebook no es el documentado
-
-**Por qué.** `docs/entorno.md` y el README indican instalar y seleccionar el kernel
-`svr-ventas`; el notebook declara `kernelspec` con `name: python3` y
-`display_name: .venv (3.12.7)`. Quien abra la entrega en otra máquina verá un kernel que
-puede no existir y el paso de reproducción del README no coincidirá con lo que el archivo
-declara. No afecta a los resultados: la celda 1 valida las versiones instaladas.
-
-**Qué.** Dejar `metadata.kernelspec = {"name": "svr-ventas", "display_name": "Python
-(svr-ventas)", "language": "python"}`. Es solo metadato; no hay que reejecutar.
-
-### 6. La unidad de MAPE no está escrita en el README
-
-**Por qué.** `evaluar()` multiplica por 100 y el CSV guarda 12.469, pero la tabla de
-métricas del README dice solo «MAPE». El notebook ya usa «MAPE (%)» en las tablas de las
-secciones 7 y 8, así que la copia del README es la que puede inducir a leerlo como fracción
-(1247 %).
-
-**Qué.** Cambiar «MAPE» por «MAPE (%)» en la tabla de enfoque técnico del README. Mantener el
-nombre de la columna `MAPE` para no romper el contrato con R2.
+| # | Observación en la v1 recibida | Corrección verificada |
+|---|---|---|
+| 1 | Salto de 9.3 a 9.5, sin 9.4 | 9.4 «Entrega de R3 a R4» existe; la referencia interna a las pruebas límite sigue apuntando a 9.3 |
+| 2 | `tabla_coincide = True` como cuarto criterio del checklist | Eliminado; el checklist recalcula cada booleano en `criterios` y conserva el `assert_frame_equal` |
+| 3 | README con el estado y el árbol anteriores a R2 | Estado y tabla por rol con R1–R3 aprobadas; árbol con secciones 1–9, 17 `.joblib` y CSV de R3 |
+| 4 | Enlaces del README sin resolver desde la carpeta de entrega | Apuntan a `../../../docs/` e incluyen `../docs/auditoria_r3-v1.md` y `../../jose/docs/auditoria_r2-v2.md` |
+| 5 | `kernelspec` `python3` en vez de `svr-ventas` | `kernelspec` = `svr-ventas` |
+| 6 | MAPE sin unidad en el README | La tabla dice `MAPE (%)`; la columna del CSV conserva el nombre `MAPE` |
 
 ---
 
 ## Cierre
 
-- [ ] Renumerar 9.5 como 9.4 (o agregar el 9.4 previsto).
-- [ ] Reemplazar `tabla_coincide = True` por una comprobación real o quitar el ítem del
-  checklist.
-- [ ] README de la entrega con el estado y el árbol actualizados a R2/R3 aprobados.
-- [ ] README de la entrega con enlaces válidos y enlace a `auditoria_r3-v1.md`.
-- [ ] `kernelspec` del notebook = `svr-ventas` (solo metadatos).
-- [ ] Unidad de MAPE documentada como porcentaje en el README.
+- [x] Renumerar 9.5 como 9.4.
+- [x] Quitar `tabla_coincide = True` y dejar la comprobación real en `criterios`.
+- [x] README de la entrega con el estado y el árbol actualizados a R1–R3 aprobados.
+- [x] README de la entrega con enlaces válidos y enlace a `auditoria_r3-v1.md`.
+- [x] `kernelspec` del notebook = `svr-ventas` (solo metadatos).
+- [x] Unidad de MAPE documentada como porcentaje en el README.
 
-Sin P0 ni P1, la v1 puede promoverse a `src/svr_ventas.ipynb`. Los seis P2 se resuelven sin
-volver a entrenar: son numeración, metadatos y texto.
+Sin P0, P1 ni P2 abiertos, la v1 puede promoverse a `src/svr_ventas.ipynb`. Las seis
+correcciones fueron de numeración, metadatos y texto; no cambian código de modelado ni
+resultados, y no requieren volver a entrenar.
