@@ -4,32 +4,32 @@ Guía para que los cuatro integrantes trabajen con exactamente las mismas versio
 mismos datos y las mismas convenciones. Si algo no coincide con esta tabla, se corrige
 antes de escribir código.
 
-| Campo | Valor |
-|---|---|
-| **Proyecto** | Práctica 002 — SVR de ventas |
-| **Python** | 3.12.7 |
-| **Entorno** | `venv` local en `.venv/` |
-| **Kernel de Jupyter** | `svr-ventas` |
-| **Datos** | `datos/ventas_features.csv` (hash en `datos.sha256`) |
-| **Tracking** | MLflow local con SQLite (`mlflow.db`) y Model Registry |
+| Campo                       | Valor                                                    |
+| --------------------------- | -------------------------------------------------------- |
+| **Proyecto**          | Práctica 002 — SVR de ventas                           |
+| **Python**            | 3.12.7                                                   |
+| **Entorno**           | `venv` local en `.venv/`                             |
+| **Kernel de Jupyter** | `svr-ventas`                                           |
+| **Datos**             | `datos/ventas_features.csv` (hash en `datos.sha256`) |
+| **Tracking**          | MLflow local con SQLite (`mlflow.db`) y Model Registry |
 
 ---
 
 ## 1. Versiones fijadas
 
-| Componente | Versión | Uso |
-|---|---|---|
-| Python | **3.12.7** | Intérprete común |
-| numpy | 2.5.4 | Álgebra |
-| pandas | 3.0.6 | Carga y transformación de datos |
-| scikit-learn | 1.9.1 | `SVR`, `GridSearchCV`, métricas |
-| joblib | 1.6.0 | Guardado de modelos `.joblib` |
-| matplotlib | 3.11.2 | Figuras |
-| seaborn | 0.13.2 | Figuras |
-| mlflow | 3.18.0 | Registro de experimentos y versiones |
-| jupyterlab | 4.6.6 | Notebook |
-| nbconvert | 7.17.2 | Exportación HTML |
-| ipykernel | 7.4.0 | Kernel |
+| Componente   | Versión         | Uso                                  |
+| ------------ | ---------------- | ------------------------------------ |
+| Python       | **3.12.7** | Intérprete común                   |
+| numpy        | 2.5.4            | Álgebra                             |
+| pandas       | 3.0.6            | Carga y transformación de datos     |
+| scikit-learn | 1.9.1            | `SVR`, `GridSearchCV`, métricas |
+| joblib       | 1.6.0            | Guardado de modelos `.joblib`      |
+| matplotlib   | 3.11.2           | Figuras                              |
+| seaborn      | 0.13.2           | Figuras                              |
+| mlflow       | 3.18.0           | Registro de experimentos y versiones |
+| jupyterlab   | 4.6.6            | Notebook                             |
+| nbconvert    | 7.17.2           | Exportación HTML                    |
+| ipykernel    | 7.4.0            | Kernel                               |
 
 > `shap` **no** se instala: la justificación de predicciones quedó fuera del alcance de la
 > práctica. Tampoco se usan Random Forest ni árboles de decisión.
@@ -42,14 +42,14 @@ lo comprueba antes de continuar. No hay entorno alternativo: todos usan estas ve
 
 ## 2. Archivos de entorno
 
-| Archivo | Para qué |
-|---|---|
-| `requirements.txt` | Dependencias directas con versión exacta |
-| `requirements-lock.txt` | Dependencias transitivas congeladas (se genera, opcional) |
-| `.python-version` | Versión de Python para `pyenv` |
-| `datos.sha256` | Huellas de los tres CSV |
-| `.gitignore` | Evita commitear `.venv/`, `mlflow.db`, `mlartifacts/` y temporales |
-| `.gitattributes` | Fuerza LF y marca los PDF como binarios |
+| Archivo                   | Para qué                                                                |
+| ------------------------- | ------------------------------------------------------------------------ |
+| `requirements.txt`      | Dependencias directas con versión exacta                                |
+| `requirements-lock.txt` | Dependencias transitivas congeladas (se genera, opcional)                |
+| `.python-version`       | Versión de Python para `pyenv`                                        |
+| `datos.sha256`          | Huellas de los tres CSV                                                  |
+| `.gitignore`            | Evita commitear `.venv/`, `mlflow.db`, `mlartifacts/` y temporales |
+| `.gitattributes`        | Fuerza LF y marca los PDF como binarios                                  |
 
 ### `requirements.txt`
 
@@ -290,14 +290,13 @@ El archivo `.~lock.guia.docx#` es un temporal de LibreOffice: ya está fuera del
 
 ## 10. Problemas frecuentes
 
-| Síntoma | Causa | Solución |
-|---|---|---|
-| `ModuleNotFoundError: pandas` | El notebook usa el kernel del sistema | Seleccionar "Python (svr-ventas)" |
+| Síntoma                                                      | Causa                                       | Solución                                                                                             |
+| ------------------------------------------------------------- | ------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| `ModuleNotFoundError: pandas`                               | El notebook usa el kernel del sistema       | Seleccionar "Python (svr-ventas)"                                                                     |
 | `AssertionError: No se encontró datos/ventas_features.csv` | El notebook se abrió fuera del repositorio | Ejecutarlo dentro del repo: `raiz_proyecto()` lo ubica desde la raíz, `src/` o `src/<nombre>/` |
-| `pip` instala en otra ruta | Se usó `pip` sin `python -m` | `python -m pip install ...` dentro del venv |
-| `mlflow: command not found` | Venv no activado | `source .venv/bin/activate` |
-| `Address already in use` en MLflow | Puerto 5000 ocupado | `--port 5001` |
-| `Model Registry features are not supported` | Tracking URI `file:./mlruns` | Usar `sqlite:///mlflow.db` |
-| Gráficas no aparecen al exportar | Backend interactivo | `MPLBACKEND=Agg` |
-| El lock falla en Windows | Se generó en Linux | Instalar `requirements.txt` y reportar |
-
+| `pip` instala en otra ruta                                  | Se usó `pip` sin `python -m`           | `python -m pip install ...` dentro del venv                                                         |
+| `mlflow: command not found`                                 | Venv no activado                            | `source .venv/bin/activate`                                                                         |
+| `Address already in use` en MLflow                          | Puerto 5000 ocupado                         | `--port 5001`                                                                                       |
+| `Model Registry features are not supported`                 | Tracking URI `file:./mlruns`              | Usar `sqlite:///mlflow.db`                                                                          |
+| Gráficas no aparecen al exportar                             | Backend interactivo                         | `MPLBACKEND=Agg`                                                                                    |
+| El lock falla en Windows                                      | Se generó en Linux                         | Instalar `requirements.txt` y reportar                                                              |
