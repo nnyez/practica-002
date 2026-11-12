@@ -671,6 +671,16 @@ for kernel in ["linear", "rbf", "poly", "sigmoid"]:
 > `sigmoid` puede producir valores extremos. Es un resultado esperado y sirve para la
 > discusión: no todos los kernels son adecuados para datos tabulares.
 
+> **El registry no se limpia en re-ejecuciones** (decisión del equipo). El notebook no
+> borra el modelo registrado ni los runs al empezar: re-ejecutar agrega 17 versiones
+> nuevas (v18–v34 en la segunda corrida) y el alias `champion` pasa a la nueva versión
+> del `GridSearchCV`, que es justamente el propósito del alias. Por eso los `assert` de
+> versiones son **relativos** y no números absolutos: se captura
+> `version_inicial = len(cliente.search_model_versions(f"name='{NOMBRE}'"))` antes del
+> barrido y se comprueba `version == version_inicial + 17` en el `GridSearchCV`. La
+> única excepción es el run de prueba de la configuración (tarea 1), que se borra a sí
+> mismo porque no es un entrenamiento.
+
 ### 7.7 Optimización con GridSearchCV
 
 ```python
@@ -758,6 +768,10 @@ sale de las **versiones**, no de los runs sueltos.
 > run. Por eso hay que unir cada versión con su run (`get_run(v.run_id)`) para comparar
 > RMSE/MAE. La columna `version` permite volver a cargar cualquier modelo con
 > `models:/svr_ventas/<version>`.
+
+> Si el notebook se re-ejecutó y el registry acumula versiones de corridas anteriores,
+> filtra `search_model_versions` a los runs de la ejecución corriente para que la tabla
+> quede con las 17 filas de esa corrida.
 
 Incluir una figura de barras: eje X = C, eje Y = RMSE, una barra por kernel.
 

@@ -237,8 +237,11 @@ mlflow ui --backend-store-uri sqlite:///mlflow.db
 - Tracking URI: `sqlite:///mlflow.db`. **No** `file:./mlruns`: el Model Registry exige un
   backend SQL y con `file:` falla.
 - Un *run* por combinación de kernel y `C`, y **una versión** del modelo registrado
-  `svr_ventas` por run. La versión 17 es la del `GridSearchCV` y lleva el alias
-  `champion`.
+  `svr_ventas` por run. La versión 17 (primera ejecución) es la del `GridSearchCV` y
+  lleva el alias `champion`.
+- El registry **no se limpia** al re-ejecutar el notebook: cada ejecución agrega 17
+  versiones nuevas y el alias `champion` pasa a la nueva versión del `GridSearchCV`; el
+  histórico queda visible en `mlflow ui`.
 - Artefactos en `mlartifacts/` (por defecto con backend SQL).
 - `mlflow.db` y `mlartifacts/` no se commitean: se regeneran ejecutando el notebook. Los
   modelos para revisión se guardan como `.joblib` en `resultados/modelos/`.
