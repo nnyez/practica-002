@@ -5,13 +5,11 @@ desarrollar, optimizar y evaluar un modelo **SVM de regresión (SVR)** sobre el 
 ventas de la práctica 001, además de exponer una función de predicción para un sample
 nuevo y cerrar con conclusiones y referencias en APA 7.
 
-> **Estado:** R1 entregó las secciones 1–3 (v4 aprobada) y R2 las secciones 4–6 (v2 con la
-> retroalimentación r2-v1). R3 entregó las secciones 7–9 en
-> `src/geovanni/practica-002-v1/src/svr_ventas.ipynb`, con las figuras de evaluación, el CSV
-> consolidado y la función `predecir_venta()`. El avance de cada rol está en
-> [Estado por rol](#estado-por-rol).
-> La guía de desarrollo está en [`docs/plan_desarrollo_svr_4_personas.md`](docs/plan_desarrollo_svr_4_personas.md)
-> y su versión PDF en [`docs/plan_desarrollo_svr_4_personas.pdf`](docs/plan_desarrollo_svr_4_personas.pdf).
+> **Estado:** R1 v4 aprobada y promovida; R2 v2 aprobada y promovida; R3 v1 aprobada y
+> promovida en `src/svr_ventas.ipynb` (entrega en `src/geovanni/practica-002-v1/`). El avance
+> de cada rol está en [Estado por rol](#estado-por-rol).
+> La guía de desarrollo está en [`../../../docs/plan_desarrollo_svr_4_personas.md`](../../../docs/plan_desarrollo_svr_4_personas.md)
+> y su versión PDF en [`../../../docs/plan_desarrollo_svr_4_personas.pdf`](../../../docs/plan_desarrollo_svr_4_personas.pdf).
 
 ---
 
@@ -54,7 +52,7 @@ Se reutiliza el dataset de la práctica 001:
 | Variables | 11 numéricas + `categoria` y `product_id` one-hot (25 columnas; 5 duplicadas por decisión del equipo, ver sección 3.6 del notebook) |
 | Escalado | `StandardScaler` en X y en y (`TransformedTargetRegressor`) |
 | Split | Temporal 80/20 por fecha |
-| Métricas | RMSE (principal), MAE, R², MAPE |
+| Métricas | RMSE (principal), MAE, R², MAPE (%) |
 | Tracking | MLflow local con SQLite (`mlflow.db`) y Model Registry |
 | Versiones | una por kernel × C (16) + la del `GridSearchCV` (17 por ejecución), alias `champion` |
 | Semilla | `random_state=42` |
@@ -116,12 +114,12 @@ practica-002/
 │   │   ├── practica-002-v1/           # entrega v1 de R2 (histórico)
 │   │   └── practica-002-v2/           # entrega v2 de R2 (aprobada)
 │   ├── geovanni/
-│   │   └── practica-002-v1/           # entrega v1 de R3 (secciones 7–9)
-│   └── svr_ventas.ipynb               # integración final (secciones 1–3 listas)
+│   │   └── practica-002-v1/           # entrega v1 de R3 (aprobada)
+│   └── svr_ventas.ipynb               # integración final (secciones 1–9; R1–R3)
 ├── resultados/
-│   ├── resultados_modelos.csv         # una fila por versión, reconstruida desde el registry (R3)
+│   ├── resultados_modelos.csv         # una fila por versión, ordenada por RMSE (R3)
 │   ├── tabla_variables.csv            # variables usadas y excluidas (R1)
-│   ├── modelos/                       # un .joblib por versión (R2)
+│   ├── modelos/                       # 17 .joblib (16 del barrido + champion)
 │   └── figuras/                       # 4 del EDA (R1) + 3 de evaluación (R3)
 ├── mlflow.db                          # registry SQLite (ignorado en Git)
 ├── mlartifacts/                       # artefactos de los runs (ignorado en Git)
@@ -149,8 +147,8 @@ El detalle de tareas, entregables y criterios de aceptación está en la secció
 | Rol | Secciones de `src/svr_ventas.ipynb` | Estado |
 |---|---|---|
 | R1 — Datos y EDA | 1 Configuración, 2 Datos y EDA, 3 Features y split | Listo (v4 aprobada y promovida) |
-| R2 — Modelado y MLflow | 4 Pipeline SVR, 5 Barrido kernels × C, 6 Optimización | En revisión (v2 en `src/jose/practica-002-v2/`) |
-| R3 — Evaluación y predicción | 7 Evaluación, 8 Resultados consolidados, 9 Función de predicción | Listo (v1 en `src/geovanni/practica-002-v1/`) |
+| R2 — Modelado y MLflow | 4 Pipeline SVR, 5 Barrido kernels × C, 6 Optimización | Listo (v2 aprobada y promovida) |
+| R3 — Evaluación y predicción | 7 Evaluación, 8 Resultados consolidados, 9 Función de predicción | Listo (v1 aprobada y promovida) |
 | R4 — Conclusiones y documentación | 0 Portada, 10 Conclusiones, 11 Referencias | Pendiente |
 
 R1 entrega, para que nadie los modifique: `X_train`, `X_test`, `y_train`, `y_test`,
@@ -200,17 +198,19 @@ mlflow ui --backend-store-uri sqlite:///mlflow.db
 ```
 
 El detalle de versiones, verificación y problemas frecuentes está en
-[`docs/entorno.md`](docs/entorno.md).
+[`../../../docs/entorno.md`](../../../docs/entorno.md).
 
 ## Documentación
 
-- [`docs/entorno.md`](docs/entorno.md): instalación, versiones y verificación del entorno.
-- [`docs/guia.md`](docs/guia.md): enunciado resumido de la práctica.
-- [`docs/guia.docx`](docs/guia.docx): guía oficial completa.
-- [`docs/plan_desarrollo_svr_4_personas.md`](docs/plan_desarrollo_svr_4_personas.md): plan de
+- [`../../../docs/entorno.md`](../../../docs/entorno.md): instalación, versiones y verificación del entorno.
+- [`../../../docs/guia.md`](../../../docs/guia.md): enunciado resumido de la práctica.
+- [`../../../docs/guia.docx`](../../../docs/guia.docx): guía oficial completa.
+- [`../../../docs/plan_desarrollo_svr_4_personas.md`](../../../docs/plan_desarrollo_svr_4_personas.md): plan de
   desarrollo con decisiones, roles, cronograma y guía técnica.
-- [`docs/plan_desarrollo_svr_4_personas.pdf`](docs/plan_desarrollo_svr_4_personas.pdf):
+- [`../../../docs/plan_desarrollo_svr_4_personas.pdf`](../../../docs/plan_desarrollo_svr_4_personas.pdf):
   versión PDF del plan (19 páginas, A4).
+- [`../docs/auditoria_r3-v1.md`](../docs/auditoria_r3-v1.md): auditoría de esta entrega.
+- [`../../jose/docs/auditoria_r2-v2.md`](../../jose/docs/auditoria_r2-v2.md): auditoría de R2 v2.
 
 ## Referencias principales
 

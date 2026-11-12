@@ -12395,7 +12395,6 @@ Name: GridSearchCV, dtype: object</pre>
                               <span class="n">check_dtype</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">check_exact</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">1e-9</span><span class="p">)</span>
 <span class="k">assert</span> <span class="nb">list</span><span class="p">(</span><span class="n">export</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span> <span class="o">==</span> <span class="n">COLS</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">export</span><span class="p">)</span> <span class="o">==</span> <span class="mi">17</span> <span class="ow">and</span> <span class="n">export</span><span class="p">[</span><span class="s2">"RMSE"</span><span class="p">]</span><span class="o">.</span><span class="n">is_monotonic_increasing</span>
 <span class="k">assert</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">RUTA_TABLA</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="mi">17</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
-<span class="n">tabla_coincide</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># el assert_frame_equal anterior falla si la consulta al registry no coincide con R2</span>
 
 <span class="n">vista</span> <span class="o">=</span> <span class="n">export</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="s2">"run"</span><span class="p">)</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">"version"</span><span class="p">)</span>
 
@@ -12418,23 +12417,23 @@ Name: GridSearchCV, dtype: object</pre>
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output" data-mime-type="text/html" tabindex="0">
 <style type="text/css">
-#T_f1afa_row5_col0, #T_f1afa_row5_col1, #T_f1afa_row5_col2, #T_f1afa_row5_col3, #T_f1afa_row5_col4, #T_f1afa_row5_col5, #T_f1afa_row5_col6, #T_f1afa_row5_col7 {
+#T_695be_row5_col0, #T_695be_row5_col1, #T_695be_row5_col2, #T_695be_row5_col3, #T_695be_row5_col4, #T_695be_row5_col5, #T_695be_row5_col6, #T_695be_row5_col7 {
   font-weight: bold;
   background-color: #fff3cd;
 }
 </style>
-<table id="T_f1afa">
+<table id="T_695be">
 <thead>
 <tr>
 <th class="blank level0"> </th>
-<th class="col_heading level0 col0" id="T_f1afa_level0_col0">kernel</th>
-<th class="col_heading level0 col1" id="T_f1afa_level0_col1">C</th>
-<th class="col_heading level0 col2" id="T_f1afa_level0_col2">origen</th>
-<th class="col_heading level0 col3" id="T_f1afa_level0_col3">RMSE</th>
-<th class="col_heading level0 col4" id="T_f1afa_level0_col4">MAE</th>
-<th class="col_heading level0 col5" id="T_f1afa_level0_col5">R2</th>
-<th class="col_heading level0 col6" id="T_f1afa_level0_col6">MAPE</th>
-<th class="col_heading level0 col7" id="T_f1afa_level0_col7">RMSE_CV</th>
+<th class="col_heading level0 col0" id="T_695be_level0_col0">kernel</th>
+<th class="col_heading level0 col1" id="T_695be_level0_col1">C</th>
+<th class="col_heading level0 col2" id="T_695be_level0_col2">origen</th>
+<th class="col_heading level0 col3" id="T_695be_level0_col3">RMSE</th>
+<th class="col_heading level0 col4" id="T_695be_level0_col4">MAE</th>
+<th class="col_heading level0 col5" id="T_695be_level0_col5">R2</th>
+<th class="col_heading level0 col6" id="T_695be_level0_col6">MAPE</th>
+<th class="col_heading level0 col7" id="T_695be_level0_col7">RMSE_CV</th>
 </tr>
 <tr>
 <th class="index_name level0">version</th>
@@ -12450,191 +12449,191 @@ Name: GridSearchCV, dtype: object</pre>
 </thead>
 <tbody>
 <tr>
-<th class="row_heading level0 row0" id="T_f1afa_level0_row0">3</th>
-<td class="data row0 col0" id="T_f1afa_row0_col0">linear</td>
-<td class="data row0 col1" id="T_f1afa_row0_col1">10.000</td>
-<td class="data row0 col2" id="T_f1afa_row0_col2">barrido</td>
-<td class="data row0 col3" id="T_f1afa_row0_col3">26.256</td>
-<td class="data row0 col4" id="T_f1afa_row0_col4">20.080</td>
-<td class="data row0 col5" id="T_f1afa_row0_col5">0.768</td>
-<td class="data row0 col6" id="T_f1afa_row0_col6">12.295</td>
-<td class="data row0 col7" id="T_f1afa_row0_col7">20.765</td>
+<th class="row_heading level0 row0" id="T_695be_level0_row0">3</th>
+<td class="data row0 col0" id="T_695be_row0_col0">linear</td>
+<td class="data row0 col1" id="T_695be_row0_col1">10.000</td>
+<td class="data row0 col2" id="T_695be_row0_col2">barrido</td>
+<td class="data row0 col3" id="T_695be_row0_col3">26.256</td>
+<td class="data row0 col4" id="T_695be_row0_col4">20.080</td>
+<td class="data row0 col5" id="T_695be_row0_col5">0.768</td>
+<td class="data row0 col6" id="T_695be_row0_col6">12.295</td>
+<td class="data row0 col7" id="T_695be_row0_col7">20.765</td>
 </tr>
 <tr>
-<th class="row_heading level0 row1" id="T_f1afa_level0_row1">1</th>
-<td class="data row1 col0" id="T_f1afa_row1_col0">linear</td>
-<td class="data row1 col1" id="T_f1afa_row1_col1">1.000</td>
-<td class="data row1 col2" id="T_f1afa_row1_col2">barrido</td>
-<td class="data row1 col3" id="T_f1afa_row1_col3">26.266</td>
-<td class="data row1 col4" id="T_f1afa_row1_col4">20.124</td>
-<td class="data row1 col5" id="T_f1afa_row1_col5">0.768</td>
-<td class="data row1 col6" id="T_f1afa_row1_col6">12.305</td>
-<td class="data row1 col7" id="T_f1afa_row1_col7">20.740</td>
+<th class="row_heading level0 row1" id="T_695be_level0_row1">1</th>
+<td class="data row1 col0" id="T_695be_row1_col0">linear</td>
+<td class="data row1 col1" id="T_695be_row1_col1">1.000</td>
+<td class="data row1 col2" id="T_695be_row1_col2">barrido</td>
+<td class="data row1 col3" id="T_695be_row1_col3">26.266</td>
+<td class="data row1 col4" id="T_695be_row1_col4">20.124</td>
+<td class="data row1 col5" id="T_695be_row1_col5">0.768</td>
+<td class="data row1 col6" id="T_695be_row1_col6">12.305</td>
+<td class="data row1 col7" id="T_695be_row1_col7">20.740</td>
 </tr>
 <tr>
-<th class="row_heading level0 row2" id="T_f1afa_level0_row2">4</th>
-<td class="data row2 col0" id="T_f1afa_row2_col0">linear</td>
-<td class="data row2 col1" id="T_f1afa_row2_col1">100.000</td>
-<td class="data row2 col2" id="T_f1afa_row2_col2">barrido</td>
-<td class="data row2 col3" id="T_f1afa_row2_col3">26.270</td>
-<td class="data row2 col4" id="T_f1afa_row2_col4">20.084</td>
-<td class="data row2 col5" id="T_f1afa_row2_col5">0.768</td>
-<td class="data row2 col6" id="T_f1afa_row2_col6">12.294</td>
-<td class="data row2 col7" id="T_f1afa_row2_col7">20.761</td>
+<th class="row_heading level0 row2" id="T_695be_level0_row2">4</th>
+<td class="data row2 col0" id="T_695be_row2_col0">linear</td>
+<td class="data row2 col1" id="T_695be_row2_col1">100.000</td>
+<td class="data row2 col2" id="T_695be_row2_col2">barrido</td>
+<td class="data row2 col3" id="T_695be_row2_col3">26.270</td>
+<td class="data row2 col4" id="T_695be_row2_col4">20.084</td>
+<td class="data row2 col5" id="T_695be_row2_col5">0.768</td>
+<td class="data row2 col6" id="T_695be_row2_col6">12.294</td>
+<td class="data row2 col7" id="T_695be_row2_col7">20.761</td>
 </tr>
 <tr>
-<th class="row_heading level0 row3" id="T_f1afa_level0_row3">6</th>
-<td class="data row3 col0" id="T_f1afa_row3_col0">rbf</td>
-<td class="data row3 col1" id="T_f1afa_row3_col1">1.000</td>
-<td class="data row3 col2" id="T_f1afa_row3_col2">barrido</td>
-<td class="data row3 col3" id="T_f1afa_row3_col3">26.459</td>
-<td class="data row3 col4" id="T_f1afa_row3_col4">20.196</td>
-<td class="data row3 col5" id="T_f1afa_row3_col5">0.764</td>
-<td class="data row3 col6" id="T_f1afa_row3_col6">11.996</td>
-<td class="data row3 col7" id="T_f1afa_row3_col7">20.224</td>
+<th class="row_heading level0 row3" id="T_695be_level0_row3">6</th>
+<td class="data row3 col0" id="T_695be_row3_col0">rbf</td>
+<td class="data row3 col1" id="T_695be_row3_col1">1.000</td>
+<td class="data row3 col2" id="T_695be_row3_col2">barrido</td>
+<td class="data row3 col3" id="T_695be_row3_col3">26.459</td>
+<td class="data row3 col4" id="T_695be_row3_col4">20.196</td>
+<td class="data row3 col5" id="T_695be_row3_col5">0.764</td>
+<td class="data row3 col6" id="T_695be_row3_col6">11.996</td>
+<td class="data row3 col7" id="T_695be_row3_col7">20.224</td>
 </tr>
 <tr>
-<th class="row_heading level0 row4" id="T_f1afa_level0_row4">2</th>
-<td class="data row4 col0" id="T_f1afa_row4_col0">linear</td>
-<td class="data row4 col1" id="T_f1afa_row4_col1">0.100</td>
-<td class="data row4 col2" id="T_f1afa_row4_col2">barrido</td>
-<td class="data row4 col3" id="T_f1afa_row4_col3">26.734</td>
-<td class="data row4 col4" id="T_f1afa_row4_col4">20.566</td>
-<td class="data row4 col5" id="T_f1afa_row4_col5">0.759</td>
-<td class="data row4 col6" id="T_f1afa_row4_col6">12.530</td>
-<td class="data row4 col7" id="T_f1afa_row4_col7">21.056</td>
+<th class="row_heading level0 row4" id="T_695be_level0_row4">2</th>
+<td class="data row4 col0" id="T_695be_row4_col0">linear</td>
+<td class="data row4 col1" id="T_695be_row4_col1">0.100</td>
+<td class="data row4 col2" id="T_695be_row4_col2">barrido</td>
+<td class="data row4 col3" id="T_695be_row4_col3">26.734</td>
+<td class="data row4 col4" id="T_695be_row4_col4">20.566</td>
+<td class="data row4 col5" id="T_695be_row4_col5">0.759</td>
+<td class="data row4 col6" id="T_695be_row4_col6">12.530</td>
+<td class="data row4 col7" id="T_695be_row4_col7">21.056</td>
 </tr>
 <tr>
-<th class="row_heading level0 row5" id="T_f1afa_level0_row5">17</th>
-<td class="data row5 col0" id="T_f1afa_row5_col0">rbf</td>
-<td class="data row5 col1" id="T_f1afa_row5_col1">10.000</td>
-<td class="data row5 col2" id="T_f1afa_row5_col2">gridsearch</td>
-<td class="data row5 col3" id="T_f1afa_row5_col3">26.904</td>
-<td class="data row5 col4" id="T_f1afa_row5_col4">20.182</td>
-<td class="data row5 col5" id="T_f1afa_row5_col5">0.756</td>
-<td class="data row5 col6" id="T_f1afa_row5_col6">12.469</td>
-<td class="data row5 col7" id="T_f1afa_row5_col7">19.040</td>
+<th class="row_heading level0 row5" id="T_695be_level0_row5">17</th>
+<td class="data row5 col0" id="T_695be_row5_col0">rbf</td>
+<td class="data row5 col1" id="T_695be_row5_col1">10.000</td>
+<td class="data row5 col2" id="T_695be_row5_col2">gridsearch</td>
+<td class="data row5 col3" id="T_695be_row5_col3">26.904</td>
+<td class="data row5 col4" id="T_695be_row5_col4">20.182</td>
+<td class="data row5 col5" id="T_695be_row5_col5">0.756</td>
+<td class="data row5 col6" id="T_695be_row5_col6">12.469</td>
+<td class="data row5 col7" id="T_695be_row5_col7">19.040</td>
 </tr>
 <tr>
-<th class="row_heading level0 row6" id="T_f1afa_level0_row6">7</th>
-<td class="data row6 col0" id="T_f1afa_row6_col0">rbf</td>
-<td class="data row6 col1" id="T_f1afa_row6_col1">10.000</td>
-<td class="data row6 col2" id="T_f1afa_row6_col2">barrido</td>
-<td class="data row6 col3" id="T_f1afa_row6_col3">30.150</td>
-<td class="data row6 col4" id="T_f1afa_row6_col4">22.413</td>
-<td class="data row6 col5" id="T_f1afa_row6_col5">0.694</td>
-<td class="data row6 col6" id="T_f1afa_row6_col6">13.593</td>
-<td class="data row6 col7" id="T_f1afa_row6_col7">20.463</td>
+<th class="row_heading level0 row6" id="T_695be_level0_row6">7</th>
+<td class="data row6 col0" id="T_695be_row6_col0">rbf</td>
+<td class="data row6 col1" id="T_695be_row6_col1">10.000</td>
+<td class="data row6 col2" id="T_695be_row6_col2">barrido</td>
+<td class="data row6 col3" id="T_695be_row6_col3">30.150</td>
+<td class="data row6 col4" id="T_695be_row6_col4">22.413</td>
+<td class="data row6 col5" id="T_695be_row6_col5">0.694</td>
+<td class="data row6 col6" id="T_695be_row6_col6">13.593</td>
+<td class="data row6 col7" id="T_695be_row6_col7">20.463</td>
 </tr>
 <tr>
-<th class="row_heading level0 row7" id="T_f1afa_level0_row7">9</th>
-<td class="data row7 col0" id="T_f1afa_row7_col0">poly</td>
-<td class="data row7 col1" id="T_f1afa_row7_col1">0.100</td>
-<td class="data row7 col2" id="T_f1afa_row7_col2">barrido</td>
-<td class="data row7 col3" id="T_f1afa_row7_col3">31.016</td>
-<td class="data row7 col4" id="T_f1afa_row7_col4">24.551</td>
-<td class="data row7 col5" id="T_f1afa_row7_col5">0.676</td>
-<td class="data row7 col6" id="T_f1afa_row7_col6">14.481</td>
-<td class="data row7 col7" id="T_f1afa_row7_col7">28.277</td>
+<th class="row_heading level0 row7" id="T_695be_level0_row7">9</th>
+<td class="data row7 col0" id="T_695be_row7_col0">poly</td>
+<td class="data row7 col1" id="T_695be_row7_col1">0.100</td>
+<td class="data row7 col2" id="T_695be_row7_col2">barrido</td>
+<td class="data row7 col3" id="T_695be_row7_col3">31.016</td>
+<td class="data row7 col4" id="T_695be_row7_col4">24.551</td>
+<td class="data row7 col5" id="T_695be_row7_col5">0.676</td>
+<td class="data row7 col6" id="T_695be_row7_col6">14.481</td>
+<td class="data row7 col7" id="T_695be_row7_col7">28.277</td>
 </tr>
 <tr>
-<th class="row_heading level0 row8" id="T_f1afa_level0_row8">13</th>
-<td class="data row8 col0" id="T_f1afa_row8_col0">sigmoid</td>
-<td class="data row8 col1" id="T_f1afa_row8_col1">0.100</td>
-<td class="data row8 col2" id="T_f1afa_row8_col2">barrido</td>
-<td class="data row8 col3" id="T_f1afa_row8_col3">31.298</td>
-<td class="data row8 col4" id="T_f1afa_row8_col4">23.247</td>
-<td class="data row8 col5" id="T_f1afa_row8_col5">0.670</td>
-<td class="data row8 col6" id="T_f1afa_row8_col6">13.384</td>
-<td class="data row8 col7" id="T_f1afa_row8_col7">25.475</td>
+<th class="row_heading level0 row8" id="T_695be_level0_row8">13</th>
+<td class="data row8 col0" id="T_695be_row8_col0">sigmoid</td>
+<td class="data row8 col1" id="T_695be_row8_col1">0.100</td>
+<td class="data row8 col2" id="T_695be_row8_col2">barrido</td>
+<td class="data row8 col3" id="T_695be_row8_col3">31.298</td>
+<td class="data row8 col4" id="T_695be_row8_col4">23.247</td>
+<td class="data row8 col5" id="T_695be_row8_col5">0.670</td>
+<td class="data row8 col6" id="T_695be_row8_col6">13.384</td>
+<td class="data row8 col7" id="T_695be_row8_col7">25.475</td>
 </tr>
 <tr>
-<th class="row_heading level0 row9" id="T_f1afa_level0_row9">10</th>
-<td class="data row9 col0" id="T_f1afa_row9_col0">poly</td>
-<td class="data row9 col1" id="T_f1afa_row9_col1">1.000</td>
-<td class="data row9 col2" id="T_f1afa_row9_col2">barrido</td>
-<td class="data row9 col3" id="T_f1afa_row9_col3">35.262</td>
-<td class="data row9 col4" id="T_f1afa_row9_col4">25.333</td>
-<td class="data row9 col5" id="T_f1afa_row9_col5">0.582</td>
-<td class="data row9 col6" id="T_f1afa_row9_col6">15.664</td>
-<td class="data row9 col7" id="T_f1afa_row9_col7">23.315</td>
+<th class="row_heading level0 row9" id="T_695be_level0_row9">10</th>
+<td class="data row9 col0" id="T_695be_row9_col0">poly</td>
+<td class="data row9 col1" id="T_695be_row9_col1">1.000</td>
+<td class="data row9 col2" id="T_695be_row9_col2">barrido</td>
+<td class="data row9 col3" id="T_695be_row9_col3">35.262</td>
+<td class="data row9 col4" id="T_695be_row9_col4">25.333</td>
+<td class="data row9 col5" id="T_695be_row9_col5">0.582</td>
+<td class="data row9 col6" id="T_695be_row9_col6">15.664</td>
+<td class="data row9 col7" id="T_695be_row9_col7">23.315</td>
 </tr>
 <tr>
-<th class="row_heading level0 row10" id="T_f1afa_level0_row10">8</th>
-<td class="data row10 col0" id="T_f1afa_row10_col0">rbf</td>
-<td class="data row10 col1" id="T_f1afa_row10_col1">100.000</td>
-<td class="data row10 col2" id="T_f1afa_row10_col2">barrido</td>
-<td class="data row10 col3" id="T_f1afa_row10_col3">36.975</td>
-<td class="data row10 col4" id="T_f1afa_row10_col4">29.017</td>
-<td class="data row10 col5" id="T_f1afa_row10_col5">0.540</td>
-<td class="data row10 col6" id="T_f1afa_row10_col6">17.927</td>
-<td class="data row10 col7" id="T_f1afa_row10_col7">22.670</td>
+<th class="row_heading level0 row10" id="T_695be_level0_row10">8</th>
+<td class="data row10 col0" id="T_695be_row10_col0">rbf</td>
+<td class="data row10 col1" id="T_695be_row10_col1">100.000</td>
+<td class="data row10 col2" id="T_695be_row10_col2">barrido</td>
+<td class="data row10 col3" id="T_695be_row10_col3">36.975</td>
+<td class="data row10 col4" id="T_695be_row10_col4">29.017</td>
+<td class="data row10 col5" id="T_695be_row10_col5">0.540</td>
+<td class="data row10 col6" id="T_695be_row10_col6">17.927</td>
+<td class="data row10 col7" id="T_695be_row10_col7">22.670</td>
 </tr>
 <tr>
-<th class="row_heading level0 row11" id="T_f1afa_level0_row11">5</th>
-<td class="data row11 col0" id="T_f1afa_row11_col0">rbf</td>
-<td class="data row11 col1" id="T_f1afa_row11_col1">0.100</td>
-<td class="data row11 col2" id="T_f1afa_row11_col2">barrido</td>
-<td class="data row11 col3" id="T_f1afa_row11_col3">37.151</td>
-<td class="data row11 col4" id="T_f1afa_row11_col4">25.191</td>
-<td class="data row11 col5" id="T_f1afa_row11_col5">0.536</td>
-<td class="data row11 col6" id="T_f1afa_row11_col6">13.692</td>
-<td class="data row11 col7" id="T_f1afa_row11_col7">31.844</td>
+<th class="row_heading level0 row11" id="T_695be_level0_row11">5</th>
+<td class="data row11 col0" id="T_695be_row11_col0">rbf</td>
+<td class="data row11 col1" id="T_695be_row11_col1">0.100</td>
+<td class="data row11 col2" id="T_695be_row11_col2">barrido</td>
+<td class="data row11 col3" id="T_695be_row11_col3">37.151</td>
+<td class="data row11 col4" id="T_695be_row11_col4">25.191</td>
+<td class="data row11 col5" id="T_695be_row11_col5">0.536</td>
+<td class="data row11 col6" id="T_695be_row11_col6">13.692</td>
+<td class="data row11 col7" id="T_695be_row11_col7">31.844</td>
 </tr>
 <tr>
-<th class="row_heading level0 row12" id="T_f1afa_level0_row12">11</th>
-<td class="data row12 col0" id="T_f1afa_row12_col0">poly</td>
-<td class="data row12 col1" id="T_f1afa_row12_col1">10.000</td>
-<td class="data row12 col2" id="T_f1afa_row12_col2">barrido</td>
-<td class="data row12 col3" id="T_f1afa_row12_col3">40.471</td>
-<td class="data row12 col4" id="T_f1afa_row12_col4">28.978</td>
-<td class="data row12 col5" id="T_f1afa_row12_col5">0.449</td>
-<td class="data row12 col6" id="T_f1afa_row12_col6">18.572</td>
-<td class="data row12 col7" id="T_f1afa_row12_col7">25.522</td>
+<th class="row_heading level0 row12" id="T_695be_level0_row12">11</th>
+<td class="data row12 col0" id="T_695be_row12_col0">poly</td>
+<td class="data row12 col1" id="T_695be_row12_col1">10.000</td>
+<td class="data row12 col2" id="T_695be_row12_col2">barrido</td>
+<td class="data row12 col3" id="T_695be_row12_col3">40.471</td>
+<td class="data row12 col4" id="T_695be_row12_col4">28.978</td>
+<td class="data row12 col5" id="T_695be_row12_col5">0.449</td>
+<td class="data row12 col6" id="T_695be_row12_col6">18.572</td>
+<td class="data row12 col7" id="T_695be_row12_col7">25.522</td>
 </tr>
 <tr>
-<th class="row_heading level0 row13" id="T_f1afa_level0_row13">12</th>
-<td class="data row13 col0" id="T_f1afa_row13_col0">poly</td>
-<td class="data row13 col1" id="T_f1afa_row13_col1">100.000</td>
-<td class="data row13 col2" id="T_f1afa_row13_col2">barrido</td>
-<td class="data row13 col3" id="T_f1afa_row13_col3">53.667</td>
-<td class="data row13 col4" id="T_f1afa_row13_col4">38.492</td>
-<td class="data row13 col5" id="T_f1afa_row13_col5">0.031</td>
-<td class="data row13 col6" id="T_f1afa_row13_col6">24.228</td>
-<td class="data row13 col7" id="T_f1afa_row13_col7">34.071</td>
+<th class="row_heading level0 row13" id="T_695be_level0_row13">12</th>
+<td class="data row13 col0" id="T_695be_row13_col0">poly</td>
+<td class="data row13 col1" id="T_695be_row13_col1">100.000</td>
+<td class="data row13 col2" id="T_695be_row13_col2">barrido</td>
+<td class="data row13 col3" id="T_695be_row13_col3">53.667</td>
+<td class="data row13 col4" id="T_695be_row13_col4">38.492</td>
+<td class="data row13 col5" id="T_695be_row13_col5">0.031</td>
+<td class="data row13 col6" id="T_695be_row13_col6">24.228</td>
+<td class="data row13 col7" id="T_695be_row13_col7">34.071</td>
 </tr>
 <tr>
-<th class="row_heading level0 row14" id="T_f1afa_level0_row14">14</th>
-<td class="data row14 col0" id="T_f1afa_row14_col0">sigmoid</td>
-<td class="data row14 col1" id="T_f1afa_row14_col1">1.000</td>
-<td class="data row14 col2" id="T_f1afa_row14_col2">barrido</td>
-<td class="data row14 col3" id="T_f1afa_row14_col3">93.924</td>
-<td class="data row14 col4" id="T_f1afa_row14_col4">59.662</td>
-<td class="data row14 col5" id="T_f1afa_row14_col5">-1.969</td>
-<td class="data row14 col6" id="T_f1afa_row14_col6">33.691</td>
-<td class="data row14 col7" id="T_f1afa_row14_col7">68.856</td>
+<th class="row_heading level0 row14" id="T_695be_level0_row14">14</th>
+<td class="data row14 col0" id="T_695be_row14_col0">sigmoid</td>
+<td class="data row14 col1" id="T_695be_row14_col1">1.000</td>
+<td class="data row14 col2" id="T_695be_row14_col2">barrido</td>
+<td class="data row14 col3" id="T_695be_row14_col3">93.924</td>
+<td class="data row14 col4" id="T_695be_row14_col4">59.662</td>
+<td class="data row14 col5" id="T_695be_row14_col5">-1.969</td>
+<td class="data row14 col6" id="T_695be_row14_col6">33.691</td>
+<td class="data row14 col7" id="T_695be_row14_col7">68.856</td>
 </tr>
 <tr>
-<th class="row_heading level0 row15" id="T_f1afa_level0_row15">15</th>
-<td class="data row15 col0" id="T_f1afa_row15_col0">sigmoid</td>
-<td class="data row15 col1" id="T_f1afa_row15_col1">10.000</td>
-<td class="data row15 col2" id="T_f1afa_row15_col2">barrido</td>
-<td class="data row15 col3" id="T_f1afa_row15_col3">1477.778</td>
-<td class="data row15 col4" id="T_f1afa_row15_col4">1242.765</td>
-<td class="data row15 col5" id="T_f1afa_row15_col5">-733.858</td>
-<td class="data row15 col6" id="T_f1afa_row15_col6">819.803</td>
-<td class="data row15 col7" id="T_f1afa_row15_col7">639.657</td>
+<th class="row_heading level0 row15" id="T_695be_level0_row15">15</th>
+<td class="data row15 col0" id="T_695be_row15_col0">sigmoid</td>
+<td class="data row15 col1" id="T_695be_row15_col1">10.000</td>
+<td class="data row15 col2" id="T_695be_row15_col2">barrido</td>
+<td class="data row15 col3" id="T_695be_row15_col3">1477.778</td>
+<td class="data row15 col4" id="T_695be_row15_col4">1242.765</td>
+<td class="data row15 col5" id="T_695be_row15_col5">-733.858</td>
+<td class="data row15 col6" id="T_695be_row15_col6">819.803</td>
+<td class="data row15 col7" id="T_695be_row15_col7">639.657</td>
 </tr>
 <tr>
-<th class="row_heading level0 row16" id="T_f1afa_level0_row16">16</th>
-<td class="data row16 col0" id="T_f1afa_row16_col0">sigmoid</td>
-<td class="data row16 col1" id="T_f1afa_row16_col1">100.000</td>
-<td class="data row16 col2" id="T_f1afa_row16_col2">barrido</td>
-<td class="data row16 col3" id="T_f1afa_row16_col3">10485.817</td>
-<td class="data row16 col4" id="T_f1afa_row16_col4">6263.352</td>
-<td class="data row16 col5" id="T_f1afa_row16_col5">-36997.980</td>
-<td class="data row16 col6" id="T_f1afa_row16_col6">3415.876</td>
-<td class="data row16 col7" id="T_f1afa_row16_col7">6553.411</td>
+<th class="row_heading level0 row16" id="T_695be_level0_row16">16</th>
+<td class="data row16 col0" id="T_695be_row16_col0">sigmoid</td>
+<td class="data row16 col1" id="T_695be_row16_col1">100.000</td>
+<td class="data row16 col2" id="T_695be_row16_col2">barrido</td>
+<td class="data row16 col3" id="T_695be_row16_col3">10485.817</td>
+<td class="data row16 col4" id="T_695be_row16_col4">6263.352</td>
+<td class="data row16 col5" id="T_695be_row16_col5">-36997.980</td>
+<td class="data row16 col6" id="T_695be_row16_col6">3415.876</td>
+<td class="data row16 col7" id="T_695be_row16_col7">6553.411</td>
 </tr>
 </tbody>
 </table>
@@ -13102,7 +13101,6 @@ Name: GridSearchCV, dtype: object</pre>
     <span class="s2">"resultados_modelos.csv con 17 filas, 10 columnas y ordenado por RMSE"</span><span class="p">:</span> <span class="nb">bool</span><span class="p">(</span>
         <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">RUTA_TABLA</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="mi">17</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
         <span class="ow">and</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">RUTA_TABLA</span><span class="p">)[</span><span class="s2">"RMSE"</span><span class="p">]</span><span class="o">.</span><span class="n">is_monotonic_increasing</span><span class="p">),</span>
-    <span class="s2">"tabla exportada = tabla de R2 (assert_frame_equal)"</span><span class="p">:</span> <span class="n">tabla_coincide</span><span class="p">,</span>
     <span class="s2">"los dos casos devuelven venta_estimada"</span><span class="p">:</span> <span class="nb">bool</span><span class="p">(</span><span class="n">tabla_casos</span><span class="p">[</span><span class="s2">"venta_estimada"</span><span class="p">]</span><span class="o">.</span><span class="n">notna</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">()),</span>
     <span class="s2">"caso alto &gt; caso bajo"</span><span class="p">:</span> <span class="nb">bool</span><span class="p">(</span>
         <span class="n">tabla_casos</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">"demanda alta"</span><span class="p">,</span> <span class="s2">"venta_estimada"</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">tabla_casos</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">"demanda baja"</span><span class="p">,</span> <span class="s2">"venta_estimada"</span><span class="p">]),</span>
@@ -13160,10 +13158,6 @@ Name: GridSearchCV, dtype: object</pre>
 <td>✔</td>
 </tr>
 <tr>
-<th>tabla exportada = tabla de R2 (assert_frame_equal)</th>
-<td>✔</td>
-</tr>
-<tr>
 <th>los dos casos devuelven venta_estimada</th>
 <td>✔</td>
 </tr>
@@ -13197,7 +13191,7 @@ Name: GridSearchCV, dtype: object</pre>
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h3 id="9.5-Entrega-de-R3-a-R4">9.5 Entrega de R3 a R4<a class="anchor-link" href="#9.5-Entrega-de-R3-a-R4">¶</a></h3><ul>
+<h3 id="9.4-Entrega-de-R3-a-R4">9.4 Entrega de R3 a R4<a class="anchor-link" href="#9.4-Entrega-de-R3-a-R4">¶</a></h3><ul>
 <li>Modelo evaluado: <code>models:/svr_ventas@champion</code> (la versión vigente; en esta ejecución, la del <code>GridSearchCV</code>). Artefacto portable: <code>resultados/modelos/svr_mejor.joblib</code>.</li>
 <li>Métricas de test del champion: RMSE 26.904, MAE 20.182, R² 0.756, MAPE 12.47 %; RMSE de CV 19.040. Mejor RMSE de test del barrido: 26.256 (<code>linear</code>, C=10). Baseline ingenuo: 41.723. LSTM de la práctica 001: 23.19 (referencia externa).</li>
 <li>Figuras: <code>resultados/figuras/predicho_vs_real.png</code>, <code>resultados/figuras/residuos.png</code>, <code>resultados/figuras/comparacion_kernels.png</code>.</li>
