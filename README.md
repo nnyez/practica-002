@@ -9,9 +9,9 @@ nuevo y cerrar con conclusiones y referencias en APA 7.
 > R2 entregó las secciones 4–6 y la v2 aprobada ya está promovida; su auditoría está en
 > `src/jose/docs/auditoria_r2-v2.md`. R3 entregó las secciones 7–9 y la v1 aprobada está
 > promovida en `src/svr_ventas.ipynb`; su auditoría está en
-> `src/geovanni/docs/auditoria_r3-v1.md`. R4 entregó la portada y las secciones 10–11 y su v1
-> está en revisión con cambios: `src/diana/docs/auditoria_r4-v1.md`. El avance de cada rol está
-> en [Estado por rol](#estado-por-rol).
+> `src/geovanni/docs/auditoria_r3-v1.md`. R4 entregó la portada y las secciones 10–11; su v2
+> está en revisión con cambios menores: `src/diana/docs/auditoria_r4-v2.md`. El avance de cada
+> rol está en [Estado por rol](#estado-por-rol).
 > La guía de desarrollo está en [`docs/plan_desarrollo_svr_4_personas.md`](docs/plan_desarrollo_svr_4_personas.md)
 > y su versión PDF en [`docs/plan_desarrollo_svr_4_personas.pdf`](docs/plan_desarrollo_svr_4_personas.pdf).
 
@@ -170,7 +170,7 @@ El detalle de tareas, entregables y criterios de aceptación está en la secció
 | R1 — Datos y EDA | 1 Configuración, 2 Datos y EDA, 3 Features y split | Listo (v4 aprobada y promovida) |
 | R2 — Modelado y MLflow | 4 Pipeline SVR, 5 Barrido kernels × C, 6 Optimización | Listo (v2 aprobada y promovida) |
 | R3 — Evaluación y predicción | 7 Evaluación, 8 Resultados consolidados, 9 Función de predicción | Listo (v1 aprobada y promovida) |
-| R4 — Conclusiones y documentación | 0 Portada, 10 Conclusiones, 11 Referencias | En revisión (v1 auditada con cambios: `src/diana/docs/auditoria_r4-v1.md`) |
+| R4 — Conclusiones y documentación | 0 Portada, 10 Conclusiones, 11 Referencias | En revisión (v2 auditada con cambios: `src/diana/docs/auditoria_r4-v2.md`) |
 
 R1 entrega, para que nadie los modifique: `X_train`, `X_test`, `y_train`, `y_test`,
 `COLUMNAS` (25 columnas), `df` (limpio, 530 filas), `SEED` y `guardar()`. La revisión de
@@ -234,9 +234,9 @@ El detalle de versiones, verificación y problemas frecuentes está en
   entrega de R2 (secciones 4–6), con la reproducción independiente de las métricas.
 - [`src/geovanni/docs/auditoria_r3-v1.md`](src/geovanni/docs/auditoria_r3-v1.md): auditoría de
   la entrega de R3 (secciones 7–9), con la reproducción de las métricas y el estado de los P2.
-- [`src/diana/docs/auditoria_r4-v1.md`](src/diana/docs/auditoria_r4-v1.md): auditoría de la
-  entrega de R4 (portada y secciones 10–11), con la verificación de las cifras y la regresión
-  sobre las secciones 1–9.
+- [`src/diana/docs/auditoria_r4-v2.md`](src/diana/docs/auditoria_r4-v2.md): auditoría de la
+  entrega de R4 (portada y secciones 10–11), con la verificación de las cifras y el estado de
+  los puntos de la v1.
 
 ## Referencias principales
 
