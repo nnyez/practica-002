@@ -5,14 +5,15 @@
 | **Revisado** | `src/diana/practica-002-v2/svr_ventas.ipynb` |
 | **Alcance** | Portada, secciones 10–11, cifras de las conclusiones y regresión sobre las secciones 1–9 |
 | **Fecha** | 12 de noviembre de 2026 |
-| **Veredicto** | **APROBADA CON CAMBIOS** — sin P0; 1 P1 y 3 P2 que corregir antes de promover |
+| **Veredicto** | **APROBADA** — los 4 cambios se aplicaron y el notebook se promovió |
 
 La v2 cierra los dos P1 de la revisión anterior: las conclusiones ya citan R², `C`, `epsilon`,
 `gamma`, el baseline y el LSTM, y las seis referencias están citadas en el texto con fascículos,
 cursivas y `s. f.-a`/`s. f.-b`. También repone las justificaciones de 2.2, 3.1 y 6.2 y corrige
-las dos cifras imprecisas. Queda un error en la referencia de Pedregosa (perdió la inicial) y
+las dos cifras imprecisas. Quedaba un error en la referencia de Pedregosa (perdió la inicial) y
 tres P2, todos de edición: encabezados aún en negritas, cinco erratas en el texto y el alcance
-de `raiz_proyecto()` sin reponer.
+de `raiz_proyecto()` sin reponer. Los cuatro puntos se corrigieron antes de promover el
+notebook (ver Cierre).
 
 ---
 
@@ -116,12 +117,16 @@ como está, pero completa el detalle que pedía la v1.
       de protocolo.
 - [x] Referencias citadas en el texto y corregidas en APA 7 (fascículos, cursivas,
       `s. f.-a`/`s. f.-b`).
-- [ ] Referencia de Pedregosa con la inicial correcta.
+- [x] Referencia de Pedregosa con la inicial correcta.
 - [x] Detalle técnico repuesto en 2.2, 3.1 y 6.2.
-- [ ] Alcance de `raiz_proyecto()` repuesto en §1.
+- [x] Alcance de `raiz_proyecto()` repuesto en §1.
 - [x] «Poca representación de feriados» y «entre 26 y 30» corregidos.
-- [ ] Encabezados en `##`/`###`, sin negritas.
-- [ ] Erratas de las celdas 18, 20, 22, 46 y 77 corregidas.
+- [x] Encabezados en `##`/`###`, sin negritas.
+- [x] Erratas de las celdas 18, 20, 22, 46 y 77 corregidas.
+
+Correcciones aplicadas: `edregosa` → `Pedregosa`; encabezados sin negritas y con jerarquía
+`#`/`##`/`###` (sección 11 en `##`); las cinco erratas; y una línea en §1 sobre el alcance de
+`raiz_proyecto()`. Los 31 bloques de código y sus salidas quedaron sin cambios.
 
 Con la errata de Pedregosa corregida y los tres P2 aplicados, la entrega completa puede
 promoverse a `src/svr_ventas.ipynb`.

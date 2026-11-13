@@ -7802,7 +7802,28 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h1 id="Pr%C3%A1ctica-002:-SVR-para-predecir-ventas-diarias">Práctica 002: SVR para predecir ventas diarias<a class="anchor-link" href="#Pr%C3%A1ctica-002:-SVR-para-predecir-ventas-diarias">¶</a></h1><p>La portada (sección 0) la completa R4. Este archivo tiene las secciones 1 a 3 de R1 (aprobadas, sin cambios), las secciones 4 a 6 de R2 (Modelado y MLflow) y las secciones 7 a 9 de R3 (Evaluación y predicción).</p>
+<h1 id="Pr%C3%A1ctica-002:-SVR-para-predecir-ventas-diarias">Práctica 002: SVR para predecir ventas diarias<a class="anchor-link" href="#Pr%C3%A1ctica-002:-SVR-para-predecir-ventas-diarias">¶</a></h1><h2 id="UNIVERSIDAD-POLIT%C3%89CNICA-SALESIANA">UNIVERSIDAD POLITÉCNICA SALESIANA<a class="anchor-link" href="#UNIVERSIDAD-POLIT%C3%89CNICA-SALESIANA">¶</a></h2><h3 id="Integrantes:">Integrantes:<a class="anchor-link" href="#Integrantes:">¶</a></h3><ul>
+<li>Diana Avila</li>
+<li>Miguel Vanegas</li>
+<li>Jose Vanegas</li>
+<li>Geovanni Zuñiga</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=f8c23cea">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<h3 id="Objetivo-de-la-pr%C3%A1ctica">Objetivo de la práctica<a class="anchor-link" href="#Objetivo-de-la-pr%C3%A1ctica">¶</a></h3><p>Desarrollar y optimizar un modelo de regresión mediante Máquinas de Soporte Vectorial (SVR) para estimar la cantidad diaria de ventas. Se comparan distintos kernels y valores del parámetro C, se seleccionan hiperparámetros mediante validación cruzada, se registran los experimentos con MLflow y se implementa una función reutilizable para predecir un nuevo registro.</p>
+<h3 id="Dataset">Dataset<a class="anchor-link" href="#Dataset">¶</a></h3><ul>
+<li>Se utiliza el conjunto de datos construido para la práctica anterior: 10 productos con 60 días de historial de ventas.</li>
+<li>La variable objetivo es <code>cantidad_vendida</code>, expresada en unidades por producto y día.</li>
+<li>Después de eliminar las observaciones sin historial suficiente para calcular las variables rezagadas, se utilizan 530 registros para el modelado.</li>
+</ul>
 </div>
 </div>
 </div>
@@ -7813,7 +7834,8 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="1.-Configuraci%C3%B3n">1. Configuración<a class="anchor-link" href="#1.-Configuraci%C3%B3n">¶</a></h2><p>Imports, rutas, semilla (<code>SEED = 42</code>) y versiones. <code>raiz_proyecto()</code> encuentra el repositorio aunque el kernel arranque en <code>src/</code> o en <code>src/&lt;nombre&gt;/</code>. La tabla compara las versiones instaladas con <code>requirements.txt</code> y <code>.python-version</code>: la celda falla solo si difiere Python o una librería que afecta a los resultados (<code>CLAVE</code>); <code>jupyterlab</code>, <code>nbconvert</code> e <code>ipykernel</code> se muestran como aviso. El único filtro de avisos es el de <code>vert=</code>, que emite seaborn 0.13.2 con matplotlib 3.11 y no depende de este código.</p>
+<h2 id="1.-Configuraci%C3%B3n">1. Configuración<a class="anchor-link" href="#1.-Configuraci%C3%B3n">¶</a></h2><p>Se importan las librerías necesarias, se configuran las rutas del proyecto y se establecen los parámetros generales para garantizar la ejecución correcta del notebook.</p>
+<p>La función <code>raiz_proyecto()</code> busca la carpeta del repositorio desde el directorio de trabajo, de modo que el notebook encuentra <code>datos/ventas_features.csv</code> aunque se abra desde otra carpeta.</p>
 </div>
 </div>
 </div>
@@ -7989,8 +8011,19 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="2.-Datos-y-EDA-m%C3%ADnimo">2. Datos y EDA mínimo<a class="anchor-link" href="#2.-Datos-y-EDA-m%C3%ADnimo">¶</a></h2><p>Usamos <code>ventas_features.csv</code> (práctica 001): ventas diarias de 10 productos durante 60 días, con calendario, rezagos de ventas, stock y caducidad. El target <code>cantidad_vendida</code> es continuo (unidades por día), por eso el modelo es una regresión (SVR). El EDA usa el dataset completo; el modelado usa solo las filas sin nulos (sección 3.2).</p>
-<h3 id="2.1-Carga-y-validaci%C3%B3n">2.1 Carga y validación<a class="anchor-link" href="#2.1-Carga-y-validaci%C3%B3n">¶</a></h3><p>Cargamos el CSV con la fecha como fecha real y comprobamos con <code>assert</code> que tiene la forma esperada, sin duplicados y con rangos coherentes.</p>
+<h2 id="2.-Datos-y-EDA-m%C3%ADnimo">2. Datos y EDA mínimo<a class="anchor-link" href="#2.-Datos-y-EDA-m%C3%ADnimo">¶</a></h2><ul>
+<li><p>Se carga el dataset <code>ventas_features.csv</code>, que contiene las ventas diarias de 10 productos durante 60 días, junto con variables de calendario, rezagos de ventas, stock y caducidad.</p>
+</li>
+<li><p>La variable objetivo <code>cantidad_vendida</code> representa unidades vendidas por producto y día; al ser numérica continua, el problema se aborda mediante regresión SVR.</p>
+</li>
+<li><p>El análisis exploratorio utiliza los 600 registros originales, mientras que el modelado trabaja con las observaciones que cuentan con historial suficiente (sección 3.2).</p>
+</li>
+</ul>
+<h3 id="2.1-Carga-y-validaci%C3%B3n">2.1 Carga y validación<a class="anchor-link" href="#2.1-Carga-y-validaci%C3%B3n">¶</a></h3><p>Se carga el archivo y se valida su estructura, integridad y rangos.</p>
+<ul>
+<li>La fecha se convierte al tipo <code>datetime</code> para permitir el orden cronológico.</li>
+<li>Las comprobaciones verifican las dimensiones esperadas, la existencia de 10 productos, 60 fechas por producto, ausencia de duplicados y valores válidos en las variables temporales.</li>
+</ul>
 </div>
 </div>
 </div>
@@ -8245,7 +8278,11 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h3 id="2.2-Valores-nulos">2.2 Valores nulos<a class="anchor-link" href="#2.2-Valores-nulos">¶</a></h3><p>El dataset original (<code>sales_history.csv</code>) no tiene nulos. Los de <code>ventas_features.csv</code> son estructurales: son el periodo de calentamiento de los rezagos, porque el día 1 de cada producto no tiene día anterior y los días 1 a 7 no tienen "hace 7 días". Son 90 celdas repartidas en 70 filas (el día 1 tiene 3 nulos y los días 2 a 7 tienen 1). Los <code>assert</code> lo comprueban y el mapa muestra dónde caen.</p>
+<h3 id="2.2-Valores-nulos">2.2 Valores nulos<a class="anchor-link" href="#2.2-Valores-nulos">¶</a></h3><p>El archivo de ventas original no contiene valores nulos.</p>
+<ul>
+<li>Los 90 valores faltantes de <code>ventas_dia_anterior</code>, <code>ventas_hace_7_dias</code> y <code>promedio_movil_7d</code> son estructurales: corresponden al periodo inicial en el que todavía no existe suficiente historial para calcular esos indicadores y se concentran en 70 filas de los primeros días de cada producto.</li>
+</ul>
+<p><strong>Importante:</strong> No se imputan estos valores, porque sustituirlos por ceros o promedios inventaría ventas que no ocurrieron y alteraría la información temporal. Por ello, las filas incompletas se excluyen del modelado mediante <code>dropna</code> en la sección 3.2.</p>
 </div>
 </div>
 </div>
@@ -8299,7 +8336,7 @@ a.anchor-link {
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
 <p>La decisión es eliminar esas filas (<code>dropna</code>, sección 3.2) y no imputarlas: rellenar un rezago con la media o con ceros inventaría ventas que no ocurrieron.</p>
-<h3 id="2.3-Distribuci%C3%B3n-del-target">2.3 Distribución del target<a class="anchor-link" href="#2.3-Distribuci%C3%B3n-del-target">¶</a></h3><p>¿Cómo se distribuyen las ventas y cuánto cambian según el día de la semana?</p>
+<h3 id="2.3-Distribuci%C3%B3n-del-target">2.3 Distribución del target<a class="anchor-link" href="#2.3-Distribuci%C3%B3n-del-target">¶</a></h3><p><strong>¿Cómo se distribuyen las ventas y cuánto cambian según el día de la semana?</strong></p>
 </div>
 </div>
 </div>
@@ -8399,8 +8436,8 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<p>Interpretación: la distribución tiene cola derecha (la media supera a la mediana) y el sábado y el domingo venden claramente más que entre semana. Por eso esperamos que <code>dia_semana</code> y <code>es_fin_de_semana</code> aporten, y por eso el target se escala dentro del pipeline (R2).</p>
-<h3 id="2.4-Ventas-por-categor%C3%ADa-y-producto">2.4 Ventas por categoría y producto<a class="anchor-link" href="#2.4-Ventas-por-categor%C3%ADa-y-producto">¶</a></h3><p>¿Cuánto cambia el nivel de ventas entre categorías y productos?</p>
+<p><strong>Interpretación:</strong> la distribución presenta una cola hacia la derecha, porque la media supera a la mediana. Además, sábado y domingo registran mayores ventas que los días laborables. Por ello, se espera que <code>dia_semana</code> y <code>es_fin_de_semana</code> aporten información al modelo; el target también se escala dentro del pipeline.</p>
+<h3 id="2.4-Ventas-por-categor%C3%ADa-y-producto">2.4 Ventas por categoría y producto<a class="anchor-link" href="#2.4-Ventas-por-categor%C3%ADa-y-producto">¶</a></h3><p><strong>¿Cuánto cambia el nivel de ventas entre categorías y productos?</strong></p>
 </div>
 </div>
 </div>
@@ -8541,8 +8578,11 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<p>Interpretación: Agua embotellada (Bebidas) y Galletas (Snacks) venden casi el doble que Detergente en polvo y Aceite vegetal, y su dispersión es mayor que la de Cuidado personal. Cinco de las seis categorías tienen un solo producto y Alimentos tiene cinco, así que <code>categoria</code> aporta lo mismo que <code>product_id</code>; se conserva por decisión del equipo (ver 3.1 y 3.6).</p>
-<h3 id="2.5-Evoluci%C3%B3n-temporal">2.5 Evolución temporal<a class="anchor-link" href="#2.5-Evoluci%C3%B3n-temporal">¶</a></h3><p>¿Hay tendencia, estacionalidad semanal o efecto de feriados?</p>
+<p><strong>Interpretación:</strong> Agua embotellada (Bebidas) y Galletas (Snacks) venden casi el doble que Detergente en polvo y Aceite vegetal, y su dispersión es mayor que la de Cuidado personal.</p>
+<ul>
+<li>Cinco de las seis categorías tienen un solo producto y Alimentos tiene cinco, así que <code>categoria</code> aporta lo mismo que <code>product_id</code>; se conserva por decisión del equipo (ver 3.1 y 3.6).</li>
+</ul>
+<h3 id="2.5-Evoluci%C3%B3n-temporal">2.5 Evolución temporal<a class="anchor-link" href="#2.5-Evoluci%C3%B3n-temporal">¶</a></h3><p><strong>¿Hay tendencia, estacionalidad semanal o efecto de feriados?</strong></p>
 </div>
 </div>
 </div>
@@ -8600,7 +8640,7 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<p>Interpretación: la estacionalidad semanal es clara (pico el sábado, mínimo a mitad de semana) y no hay una tendencia marcada, salvo un leve aumento de los picos en febrero. <code>ventas_hace_7_dias</code> captura justamente ese patrón semanal.</p>
+<p><strong>Interpretación:</strong> la estacionalidad semanal es clara (pico el sábado, mínimo a mitad de semana) y no hay una tendencia marcada, salvo un leve aumento de los picos en febrero. <code>ventas_hace_7_dias</code> captura justamente ese patrón semanal.</p>
 <p>Hay tres feriados: el 1-ene, que se pierde con <code>dropna</code> porque cae en el calentamiento de los rezagos, y el 28-feb y el 1-mar, que quedan en test. El modelo no ve ningún feriado en entrenamiento (ver 3.6).</p>
 </div>
 </div>
@@ -8612,7 +8652,8 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="3.-Features-y-split">3. Features y split<a class="anchor-link" href="#3.-Features-y-split">¶</a></h2><p>Regla del plan: ninguna variable puede contener información del futuro ni del target. R2, R3 y R4 reciben <code>X_train</code>, <code>X_test</code>, <code>y_train</code>, <code>y_test</code> y <code>COLUMNAS</code> sin modificarlos.</p>
+<h2 id="3.-Features-y-split">3. Features y split<a class="anchor-link" href="#3.-Features-y-split">¶</a></h2><p>Se seleccionan las variables predictoras, se construyen las matrices de entrada y se separan los datos cronológicamente para entrenamiento y prueba.</p>
+<p>Esta preparación busca conservar la información temporal y evitar que el modelo utilice datos futuros.</p>
 </div>
 </div>
 </div>
@@ -8623,7 +8664,15 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h3 id="3.1-Variables">3.1 Variables<a class="anchor-link" href="#3.1-Variables">¶</a></h3><p>Entran 11 predictoras numéricas y dos categóricas en one-hot, <code>categoria</code> y <code>product_id</code>; el target es <code>cantidad_vendida</code>. <code>categoria</code> es función de <code>product_id</code>, pero se conserva por decisión del equipo (plan, sección 3.1); sus consecuencias se ven en 3.6. El resto se excluye:</p>
+<h3 id="3.1-Variables">3.1 Variables<a class="anchor-link" href="#3.1-Variables">¶</a></h3><p>Se utilizan 11 variables numéricas y dos categóricas: <code>categoria</code> y <code>product_id</code>.</p>
+<ul>
+<li>Las variables categóricas se codifican mediante One-Hot Encoding para que puedan ser procesadas por SVR.</li>
+</ul>
+<p>Se conserva <code>categoria</code> aunque se deriva de <code>product_id</code> porque se decidió evaluar ambas características y mantener la información de producto y categoría explícita.</p>
+<ul>
+<li>Esta decisión genera cinco pares de columnas dummy duplicadas (P0006 a P0010), lo que produce colinealidad exacta en el kernel lineal y duplica el peso de la identidad del producto en la distancia del kernel RBF.</li>
+</ul>
+<p>Esta redundancia se documenta y se considera al interpretar los resultados.</p>
 <table>
 <thead>
 <tr>
@@ -8688,7 +8737,10 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h3 id="3.2-Eliminaci%C3%B3n-de-filas-con-nulos">3.2 Eliminación de filas con nulos<a class="anchor-link" href="#3.2-Eliminaci%C3%B3n-de-filas-con-nulos">¶</a></h3><p>Aplicamos <code>dropna</code> sobre las predictoras numéricas y el target. Desde aquí <code>df</code> es el dataset limpio (el del modelado) y <code>df_crudo</code> conserva las filas originales, así que la celda se puede ejecutar de nuevo sin romper la auditoría de 3.5.</p>
+<h3 id="3.2-Eliminaci%C3%B3n-de-filas-con-nulos">3.2 Eliminación de filas con nulos<a class="anchor-link" href="#3.2-Eliminaci%C3%B3n-de-filas-con-nulos">¶</a></h3><ul>
+<li>Se aplica <code>dropna</code> sobre las variables predictoras numéricas y el target para retirar las observaciones sin historial suficiente. De esta forma, el conjunto pasa de 600 a 530 filas.</li>
+<li>Se conserva <code>df_crudo</code> con los datos originales y <code>df</code> como conjunto limpio para el modelado, lo que permite repetir las comprobaciones sin perder la referencia inicial.</li>
+</ul>
 </div>
 </div>
 </div>
@@ -8772,7 +8824,16 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h3 id="3.3-Matriz-X-y-vector-y">3.3 Matriz X y vector y<a class="anchor-link" href="#3.3-Matriz-X-y-vector-y">¶</a></h3><p>El SVR solo trabaja con números, así que <code>categoria</code> y <code>product_id</code> pasan a columnas 0/1 (one-hot). Con <code>drop_first=True</code>, Alimentos y P0001 quedan como referencia implícita: 11 numéricas + 5 dummies de <code>categoria</code> + 9 de <code>product_id</code> = 25 columnas. Verificamos que <code>X</code> no tenga nulos ni columnas constantes y que el target no esté entre las predictoras.</p>
+<h3 id="3.3-Matriz-X-y-vector-y">3.3 Matriz X y vector y<a class="anchor-link" href="#3.3-Matriz-X-y-vector-y">¶</a></h3><p>Se construye la matriz de características <code>X</code> y el vector objetivo <code>y</code>, definido como <code>cantidad_vendida</code>.</p>
+<ul>
+<li>SVR requiere entradas numéricas, por lo que <code>categoria</code> y <code>product_id</code> se transforman mediante One-Hot Encoding.</li>
+<li>Con <code>drop_first=True</code>, Alimentos y P0001 quedan como categorías de referencia.</li>
+</ul>
+<p>El resultado contiene 25 columnas: 11 numéricas, 5 dummies de <code>categoria</code> y 9 dummies de <code>product_id</code>.</p>
+<ul>
+<li>Se conservan ambas variables categóricas por decisión del equipo, aunque cinco dummies de categoría duplican columnas de producto.</li>
+</ul>
+<p>Finalmente, se verifica que <code>X</code> no tenga nulos ni columnas constantes y que el target no forme parte de las predictoras.</p>
 </div>
 </div>
 </div>
@@ -8823,7 +8884,14 @@ Name: X, dtype: int64</pre>
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h3 id="3.4-Split-temporal-80/20-y-lista-COLUMNAS">3.4 Split temporal 80/20 y lista COLUMNAS<a class="anchor-link" href="#3.4-Split-temporal-80/20-y-lista-COLUMNAS">¶</a></h3><p>El split es por fecha, no aleatorio: uno aleatorio dejaría en train días vecinos de los de test y las métricas saldrían infladas. El corte es el cuantil 0,8 de <code>fecha_venta</code> y se hace por días completos, así que los 10 productos entran juntos. <code>COLUMNAS</code> guarda el orden de columnas que R3 necesita en <code>predecir_venta()</code>.</p>
+<h3 id="3.4-Split-temporal-80/20-y-lista-COLUMNAS">3.4 Split temporal 80/20 y lista COLUMNAS<a class="anchor-link" href="#3.4-Split-temporal-80/20-y-lista-COLUMNAS">¶</a></h3><ul>
+<li><p>Los registros se dividen por fecha, no de forma aleatoria, para evitar que días cercanos queden repartidos entre entrenamiento y prueba y produzcan métricas demasiado optimistas.</p>
+</li>
+<li><p>El corte corresponde al cuantil 0,8 de <code>fecha_venta</code> y se realiza por días completos, de modo que los 10 productos de una misma fecha permanezcan juntos.</p>
+</li>
+<li><p>Se conserva también la lista <code>COLUMNAS</code> con el orden exacto de las características, necesaria para construir entradas compatibles en la función de predicción.</p>
+</li>
+</ul>
 </div>
 </div>
 </div>
@@ -8930,7 +8998,10 @@ Name: X, dtype: int64</pre>
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h3 id="3.5-Revisi%C3%B3n-de-fuga-de-informaci%C3%B3n">3.5 Revisión de fuga de información<a class="anchor-link" href="#3.5-Revisi%C3%B3n-de-fuga-de-informaci%C3%B3n">¶</a></h3><p>Comprobamos con cálculos que ninguna predictora usa información del futuro ni del target. Cada control da verdadero o falso y la celda falla si alguno no se cumple.</p>
+<h3 id="3.5-Revisi%C3%B3n-de-fuga-de-informaci%C3%B3n">3.5 Revisión de fuga de información<a class="anchor-link" href="#3.5-Revisi%C3%B3n-de-fuga-de-informaci%C3%B3n">¶</a></h3><p>Se ejecutan controles para comprobar que ninguna variable predictora utilice información futura ni incluya directa o indirectamente el valor objetivo.</p>
+<ul>
+<li>Cada comprobación devuelve un resultado verificable y la celda falla si algún control no se cumple.</li>
+</ul>
 </div>
 </div>
 </div>
@@ -9053,8 +9124,11 @@ Name: X, dtype: int64</pre>
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<p>Resultado: los rezagos usan solo días previos y <code>stock_en_momento</code> es el inventario al inicio del día, así que ninguna variable usa información del futuro.</p>
-<h3 id="3.6-Diagn%C3%B3stico-para-R2-y-R4">3.6 Diagnóstico para R2 y R4<a class="anchor-link" href="#3.6-Diagn%C3%B3stico-para-R2-y-R4">¶</a></h3><p>Con un split temporal, algunas variables salen del rango de train. La tabla muestra qué porcentaje de test queda fuera de ese rango.</p>
+<p><strong>Resultado:</strong> los rezagos se calculan únicamente con ventas de días anteriores y <code>stock_en_momento</code> representa el inventario al inicio del día. Por tanto, las variables revisadas no utilizan información futura.</p>
+<h3 id="3.6-Diagn%C3%B3stico">3.6 Diagnóstico<a class="anchor-link" href="#3.6-Diagn%C3%B3stico">¶</a></h3><ul>
+<li>Se analiza si los valores de las variables del conjunto de prueba quedan fuera de los rangos observados durante el entrenamiento.</li>
+</ul>
+<p>Este diagnóstico permite identificar posibles riesgos de extrapolación y limitaciones del split temporal.</p>
 </div>
 </div>
 </div>
@@ -9171,7 +9245,12 @@ Name: X, dtype: int64</pre>
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<p>Las 5 dummies de <code>categoria</code> que entran al modelo son copias exactas de otras tantas de <code>product_id</code> (P0006 a P0010, cada una único producto de su categoría). Se conservan por decisión del equipo: en el kernel lineal producen colinealidad exacta y en RBF duplican el peso de la identidad del producto en la distancia. P0002 a P0005 no se duplican porque <code>categoria_Alimentos</code> es la de referencia y sería su suma. La tabla muestra cada par.</p>
+<ul>
+<li>Las 5 dummies de <code>categoria</code> que entran al modelo son copias exactas de cinco dummies de <code>product_id</code> (P0006 a P0010), porque cada uno de esos productos pertenece a una categoría exclusiva.</li>
+<li>Se conservan por decisión del equipo: en el kernel lineal generan colinealidad exacta y en RBF duplican el peso de la identidad del producto en la distancia.</li>
+<li>P0002 a P0005 no tienen una dummy duplicada porque <code>categoria_Alimentos</code> es la categoría de referencia y se representa mediante la combinación de productos.</li>
+</ul>
+<p>La tabla muestra cada par de columnas equivalentes.</p>
 </div>
 </div>
 </div>
@@ -9260,13 +9339,13 @@ Name: X, dtype: int64</pre>
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<p>Hallazgos para el equipo:</p>
+<p><strong>Hallazgos importantes:</strong></p>
 <ul>
-<li><code>es_feriado</code> vale 0 en train: el 1-ene se pierde con <code>dropna</code> y el 28-feb y el 1-mar caen en test, así que el modelo no aprende el efecto de un feriado y el caso de demanda alta de <code>predecir_venta()</code> no puede apoyarse en esa variable.</li>
-<li><code>mes</code>, <code>semana_del_periodo</code> y <code>dias_para_expirar</code> salen del rango de train (primera tabla): riesgo de extrapolación.</li>
-<li><code>X</code> tiene 25 columnas y 5 de ellas están duplicadas (<code>categoria</code> repite a <code>product_id</code>). Se conservan por decisión del equipo: en el kernel lineal hay colinealidad exacta y en RBF el producto pesa el doble en la distancia.</li>
-<li>Test tiene 100 filas y 10 días: las métricas serán ruidosas, conviene reportar también el RMSE de validación cruzada.</li>
-<li>En test los rezagos usan ventas reales del día anterior: es un pronóstico a 1 día, no a varios (importante al comparar con el LSTM de la práctica 001).</li>
+<li><code>es_feriado</code> vale 0 en todo el conjunto de entrenamiento: el 1-ene se elimina durante <code>dropna</code>, mientras que el 28-feb y el 1-mar quedan en test. Por tanto, el modelo no aprende directamente el efecto de los feriados.</li>
+<li><code>mes</code>, <code>semana_del_periodo</code> y <code>dias_para_expirar</code> presentan valores de test fuera del rango de entrenamiento, lo que implica riesgo de extrapolación.</li>
+<li><code>X</code> contiene 25 columnas; cinco dummies de <code>categoria</code> duplican dummies de <code>product_id</code>. Se mantienen por decisión del equipo, aunque generan colinealidad en el kernel lineal y duplican el peso del producto en RBF.</li>
+<li>Test contiene 100 filas correspondientes a 10 días, por lo que sus métricas pueden ser sensibles a pocos registros. Por eso también se reporta el RMSE de validación cruzada.</li>
+<li>En test, los rezagos utilizan las ventas reales del día anterior. Se trata de un pronóstico a un día, no de una predicción recursiva a varios días; esta diferencia debe considerarse al comparar con el LSTM de la práctica 001.</li>
 </ul>
 </div>
 </div>
@@ -9278,7 +9357,14 @@ Name: X, dtype: int64</pre>
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="4.-Pipeline-SVR">4. Pipeline SVR<a class="anchor-link" href="#4.-Pipeline-SVR">¶</a></h2><h3 id="4.1-Aprobaci%C3%B3n-del-control-de-fuga">4.1 Aprobación del control de fuga<a class="anchor-link" href="#4.1-Aprobaci%C3%B3n-del-control-de-fuga">¶</a></h3><p>El plan pide que R2 apruebe el split y el control de fuga de R1 antes de modelar (matriz 5.3 y regla 5.5). La celda vuelve a comprobar, sobre los mismos objetos que va a usar el modelo, que los 9 controles de la sección 3.5 se cumplen, que train termina antes de que empiece test y que <code>X_train</code> y <code>X_test</code> tienen exactamente las 25 columnas de <code>COLUMNAS</code>, sin el target.</p>
+<h2 id="4.-Pipeline-SVR">4. Pipeline SVR<a class="anchor-link" href="#4.-Pipeline-SVR">¶</a></h2><p>Se construye el flujo de procesamiento y entrenamiento del modelo de regresión SVR.</p>
+<ul>
+<li>El pipeline integra el escalado de las características y el estimador para que las transformaciones se ajusten únicamente con los datos de entrenamiento de cada ajuste (<code>fit</code>).</li>
+</ul>
+<h3 id="4.1-Aprobaci%C3%B3n-del-control-de-fuga">4.1 Aprobación del control de fuga<a class="anchor-link" href="#4.1-Aprobaci%C3%B3n-del-control-de-fuga">¶</a></h3><p>Se verifican los controles de separación temporal y fuga de información antes de entrenar.</p>
+<ul>
+<li>Con los cuatro controles aprobados, el modelado utiliza <code>X_train</code>, <code>X_test</code>, <code>y_train</code> y <code>y_test</code> sin modificar la partición.</li>
+</ul>
 </div>
 </div>
 </div>
@@ -9363,8 +9449,20 @@ Name: X, dtype: int64</pre>
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<p>Con los cuatro controles en ✔, R2 aprueba el split temporal y el control de fuga de R1: el modelado de las secciones 5 y 6 parte de <code>X_train</code>, <code>X_test</code>, <code>y_train</code> y <code>y_test</code> sin modificarlos.</p>
-<h3 id="4.2-Constructor-del-modelo">4.2 Constructor del modelo<a class="anchor-link" href="#4.2-Constructor-del-modelo">¶</a></h3><p><code>construir_svr()</code> arma el modelo que usan el barrido y la optimización. <code>StandardScaler</code> estandariza <code>X</code> dentro del pipeline (se ajusta solo con los datos de entrenamiento de cada <code>fit</code>), y <code>TransformedTargetRegressor</code> estandariza también <code>y</code>. Escalar el target importa en SVR: <code>epsilon</code> es una banda de tolerancia en unidades del target, y con ventas de 67 a 411 unidades un <code>epsilon=0.1</code> obligaría a ajustar casi cada punto. Con <code>y</code> estandarizado, <code>epsilon</code> y <code>C</code> se leen en desviaciones estándar y son comparables entre corridas. Las predicciones vuelven solas a unidades/día.</p>
+<h3 id="4.2-Constructor-del-modelo">4.2 Constructor del modelo<a class="anchor-link" href="#4.2-Constructor-del-modelo">¶</a></h3><ul>
+<li><p>La función <code>construir_svr()</code> crea el estimador que se utiliza tanto en el barrido manual como en la optimización.</p>
+</li>
+<li><p>El uso de pipelines y transformadores de scikit-learn permite integrar el preprocesamiento y el estimador en un flujo reproducible (Pedregosa et al., 2011).</p>
+</li>
+<li><p><code>StandardScaler</code> estandariza las variables de entrada dentro del pipeline y <code>TransformedTargetRegressor</code> estandariza también el target.</p>
+</li>
+<li><p>Escalar <code>y</code> es importante porque <code>epsilon</code> define una banda de tolerancia en la escala del objetivo. Como las ventas oscilan entre 67 y 411 unidades, un <code>epsilon=0.1</code> sin escalar obligaría a ajustar casi todos los puntos.</p>
+</li>
+<li><p>Al estandarizar <code>y</code>, los parámetros <code>epsilon</code> y <code>C</code> se interpretan en una escala comparable entre experimentos, y las predicciones se devuelven automáticamente a unidades de venta.</p>
+</li>
+<li><p>La formulación SVR y el papel de sus parámetros se fundamentan en Cortes y Vapnik (1995) y Smola y Schölkopf (2004).</p>
+</li>
+</ul>
 </div>
 </div>
 </div>
@@ -10611,9 +10709,17 @@ forceTheme('sk-container-id-1');</script></body>
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="5.-Barrido-kernels-%C3%97-C-con-MLflow">5. Barrido kernels × C con MLflow<a class="anchor-link" href="#5.-Barrido-kernels-%C3%97-C-con-MLflow">¶</a></h2><h3 id="5.1-Configuraci%C3%B3n-de-MLflow">5.1 Configuración de MLflow<a class="anchor-link" href="#5.1-Configuraci%C3%B3n-de-MLflow">¶</a></h3><p>El tracking usa SQLite (<code>mlflow.db</code>), porque el Model Registry necesita un backend SQL, y los artefactos van a <code>mlartifacts/</code>; los dos quedan en la raíz del proyecto y no se suben a Git. Cada corrida será un run del experimento <code>svr_ventas</code> y una versión del modelo registrado <code>svr_ventas</code>. El registry es el histórico de entrenamientos y no se limpia: volver a ejecutar agrega 17 versiones nuevas y mueve <code>champion</code> a la nueva versión del <code>GridSearchCV</code>, y el histórico queda visible en <code>mlflow ui</code>. Por eso la celda guarda en <code>version_inicial</code> el último número de versión que ya existe, y todas las comprobaciones de las secciones 5 y 6 se cuentan desde ahí.</p>
-<p>Para validar la configuración (tarea 1 del plan) se crea un run de prueba: se escribe una métrica, se lee de vuelta desde la base y el run se borra. Así se comprueba que el tracking funciona sin agregar un run a los 17 de esta ejecución que verifica la sección 6.4.</p>
-<p><code>evaluar()</code> calcula las métricas del plan sobre test, y <code>rmse_cv()</code> el RMSE de validación cruzada con los mismos 5 folds que usará <code>GridSearchCV</code>, para comparar todas las versiones con la misma vara.</p>
+<h2 id="5.-Barrido-kernels-%C3%97-C-con-MLflow">5. Barrido kernels × C con MLflow<a class="anchor-link" href="#5.-Barrido-kernels-%C3%97-C-con-MLflow">¶</a></h2><p>Se entrenan modelos SVR con diferentes funciones kernel y valores del parámetro <code>C</code>.</p>
+<ul>
+<li>Cada ejecución se registra en MLflow para conservar sus parámetros, métricas y artefactos, y permitir la comparación posterior (MLflow, s. f.-b).</li>
+</ul>
+<h3 id="5.1-Configuraci%C3%B3n-de-MLflow">5.1 Configuración de MLflow<a class="anchor-link" href="#5.1-Configuraci%C3%B3n-de-MLflow">¶</a></h3><p>Se configura MLflow Tracking y el Model Registry para almacenar y consultar los experimentos y las versiones de los modelos (MLflow, s. f.-a, s. f.-b).</p>
+<ul>
+<li><p>El registry conserva el histórico de entrenamientos y no se limpia automáticamente. Una nueva ejecución agrega 17 versiones y actualiza el alias <code>champion</code> a la nueva versión seleccionada por <code>GridSearchCV</code>.</p>
+</li>
+<li><p><code>evaluar()</code> calcula las métricas sobre test y <code>rmse_cv()</code> obtiene el RMSE de validación cruzada con los mismos cinco folds que utilizará <code>GridSearchCV</code>, para comparar las configuraciones bajo el mismo criterio.</p>
+</li>
+</ul>
 </div>
 </div>
 </div>
@@ -10715,12 +10821,13 @@ Name: MLflow, dtype: object</pre>
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h3 id="5.2-Barrido:-4-kernels-%C3%97-4-valores-de-C">5.2 Barrido: 4 kernels × 4 valores de C<a class="anchor-link" href="#5.2-Barrido:-4-kernels-%C3%97-4-valores-de-C">¶</a></h3><p>Se entrenan 16 modelos con <code>epsilon=0.1</code>, <code>gamma="scale"</code> y <code>degree=3</code> (valores por defecto), variando solo el kernel y <code>C</code>. El baseline del plan (<code>linear</code>, C=1) es el primer run, así que queda como la primera versión de la ejecución; no se crea un run extra. Los números de versión que citan los textos (v1, v7, v17) son los de la ejecución entregada, hecha con un <code>mlflow.db</code> limpio; en una nueva ejecución MLflow sigue numerando (v18 a v34, y así). Cada iteración:</p>
+<h3 id="5.2-Barrido:-4-kernels-%C3%97-4-valores-de-C">5.2 Barrido: 4 kernels × 4 valores de C<a class="anchor-link" href="#5.2-Barrido:-4-kernels-%C3%97-4-valores-de-C">¶</a></h3><p>Se entrenan 16 combinaciones, cruzando cuatro kernels (<code>linear</code>, <code>rbf</code>, <code>poly</code> y <code>sigmoid</code>) con cuatro valores de <code>C</code>. El parámetro <code>C</code> controla la penalización de los errores: valores mayores dan más peso a los errores de entrenamiento y pueden aumentar el riesgo de sobreajuste (Smola &amp; Schölkopf, 2004).</p>
+<p>Cada combinación:</p>
 <ol>
-<li>entrena con <code>X_train</code> y evalúa en <code>X_test</code> (RMSE, MAE, R², MAPE) y con validación cruzada (<code>rmse_cv</code>);</li>
-<li>registra parámetros, métricas y el modelo en un run de MLflow;</li>
-<li>registra el modelo como nueva versión de <code>svr_ventas</code>, con los tags <code>kernel</code> y <code>C</code>;</li>
-<li>guarda una copia en <code>resultados/modelos/&lt;kernel&gt;_C&lt;C&gt;.joblib</code> para revisarla sin MLflow.</li>
+<li>Se ajusta con <code>X_train</code> y se evalúa en <code>X_test</code> mediante RMSE, MAE, R² y MAPE, además del RMSE de validación cruzada (<code>rmse_cv</code>).</li>
+<li>Registra parámetros, métricas y modelo en una ejecución de MLflow.</li>
+<li>Registra una versión de <code>svr_ventas</code> con etiquetas de kernel y <code>C</code>.</li>
+<li>Guarda una copia <code>.joblib</code> en <code>resultados/modelos/</code> para su revisión independiente del registry.</li>
 </ol>
 </div>
 </div>
@@ -10979,7 +11086,10 @@ Name: MLflow, dtype: object</pre>
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h3 id="5.3-Baseline-y-comparaci%C3%B3n-por-kernel">5.3 Baseline y comparación por kernel<a class="anchor-link" href="#5.3-Baseline-y-comparaci%C3%B3n-por-kernel">¶</a></h3><p>El punto de partida es la primera versión del barrido (<code>linear</code>, C=1). Como referencia sin modelo se agrega un baseline ingenuo: predecir con <code>promedio_movil_7d</code>, que ya está en los datos. La tabla de abajo cruza kernel y <code>C</code> con el RMSE de test.</p>
+<h3 id="5.3-Baseline-y-comparaci%C3%B3n-por-kernel">5.3 Baseline y comparación por kernel<a class="anchor-link" href="#5.3-Baseline-y-comparaci%C3%B3n-por-kernel">¶</a></h3><ul>
+<li>Se compara el rendimiento de las configuraciones SVR con un baseline de persistencia basado en <code>promedio_movil_7d</code>.</li>
+</ul>
+<p>Esta referencia permite determinar si los modelos aprenden patrones adicionales y reducen el error frente a una estimación sencilla.</p>
 </div>
 </div>
 </div>
@@ -11129,13 +11239,13 @@ Name: MLflow, dtype: object</pre>
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<p>Interpretación del barrido:</p>
+<p><strong>Interpretación del barrido:</strong></p>
 <ul>
-<li>Los cuatro modelos lineales y el <code>rbf</code> con C=1 mejoran mucho al baseline ingenuo: el RMSE de test baja de 41.7 a entre 26.3 y 26.7 unidades/día y el R² sube de 0.41 a 0.76–0.77.</li>
-<li><code>linear</code> casi no depende de <code>C</code> (26.3 a 26.7): la venta se explica en buena parte por relaciones lineales con los rezagos, sobre todo <code>ventas_hace_7_dias</code>.</li>
-<li><code>rbf</code> funciona mejor con C=1 (26.5). Con C=10 el RMSE de CV casi no cambia (20.5) pero el de test sube a 30.2: el modelo más flexible extrapola peor hacia días futuros. Con C=100 empeoran los dos (22.7 en CV y 37.0 en test), señal de sobreajuste.</li>
-<li><code>poly</code> empeora a medida que crece <code>C</code> (de 31.0 a 53.7): con grado 3 extrapola mal los valores de test que quedan fuera del rango de train (sección 3.6).</li>
-<li><code>sigmoid</code> es inestable y se reporta tal cual: con C=0.1 da un RMSE de 31.3, pero con C=1, 10 y 100 sube a 93.9, 1 477.8 y 10 485.8, con R² muy negativos. Este kernel no es definido positivo para la mayoría de sus parámetros y, al darle más peso a los errores (C alto), el modelo produce predicciones absurdas. Por eso no entra en la búsqueda de la sección 6.</li>
+<li>Los cuatro modelos lineales y el <code>rbf</code> con C=1 mejoran al baseline: el RMSE de test baja de 41.7 a un rango aproximado de 26.3 a 26.7 unidades/día y el R² sube de 0.41 a 0.76–0.77.</li>
+<li><code>linear</code> cambia poco frente a los valores de <code>C</code> (RMSE entre 26.3 y 26.7), lo que sugiere que los rezagos, especialmente <code>ventas_hace_7_dias</code>, explican buena parte de la demanda mediante relaciones lineales.</li>
+<li><code>rbf</code> funciona mejor en test con C=1 (26.46). Con C=10, el RMSE de test sube a 30.15, aunque el de CV casi no cambia (20.5). Con C=100 empeoran ambos resultados, lo que sugiere menor capacidad de generalización.</li>
+<li><code>poly</code> empeora al aumentar <code>C</code> (de 31.02 a 53.67), posiblemente por una extrapolación deficiente hacia valores de test fuera del rango de entrenamiento.</li>
+<li><code>sigmoid</code> es inestable: con C=0.1 obtiene RMSE 31.30, pero con C=1, 10 y 100 aumenta a 93.92, 1 477.78 y 10 485.82. Por estos errores elevados, no se incluye en la búsqueda de la sección 6.</li>
 </ul>
 </div>
 </div>
@@ -11147,7 +11257,11 @@ Name: MLflow, dtype: object</pre>
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="6.-Optimizaci%C3%B3n-con-GridSearchCV">6. Optimización con GridSearchCV<a class="anchor-link" href="#6.-Optimizaci%C3%B3n-con-GridSearchCV">¶</a></h2><h3 id="6.1-B%C3%BAsqueda-de-hiperpar%C3%A1metros">6.1 Búsqueda de hiperparámetros<a class="anchor-link" href="#6.1-B%C3%BAsqueda-de-hiperpar%C3%A1metros">¶</a></h3><p><code>GridSearchCV</code> prueba combinaciones de <code>C</code>, <code>epsilon</code>, <code>gamma</code> y <code>degree</code> para <code>linear</code>, <code>rbf</code> y <code>poly</code> (el <code>param_grid</code> del plan, sección 7.7) con validación cruzada de 5 folds sobre train y elige por RMSE. <code>sigmoid</code> queda fuera por lo visto en el barrido. Con <code>refit=True</code> (valor por defecto), el mejor modelo se reentrena con todo <code>X_train</code>.</p>
+<h2 id="6.-Optimizaci%C3%B3n-con-GridSearchCV">6. Optimización con GridSearchCV<a class="anchor-link" href="#6.-Optimizaci%C3%B3n-con-GridSearchCV">¶</a></h2><p>Se realiza una búsqueda sistemática de hiperparámetros para encontrar una configuración SVR con buen rendimiento de validación cruzada.</p>
+<ul>
+<li>La búsqueda se implementa con <code>GridSearchCV</code> de scikit-learn, que evalúa las combinaciones definidas mediante validación cruzada (scikit-learn developers, s. f.).</li>
+</ul>
+<h3 id="6.1-B%C3%BAsqueda-de-hiperpar%C3%A1metros">6.1 Búsqueda de hiperparámetros<a class="anchor-link" href="#6.1-B%C3%BAsqueda-de-hiperpar%C3%A1metros">¶</a></h3><p>Se prueban diferentes valores de <code>C</code>, <code>epsilon</code>, <code>gamma</code> y <code>degree</code>, según el kernel, utilizando los folds de validación definidos para comparar las configuraciones.</p>
 </div>
 </div>
 </div>
@@ -11268,7 +11382,14 @@ Name: GridSearchCV, dtype: object</pre>
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h3 id="6.2-Registro-de-la-versi%C3%B3n-del-GridSearchCV-y-alias-champion">6.2 Registro de la versión del GridSearchCV y alias <code>champion</code><a class="anchor-link" href="#6.2-Registro-de-la-versi%C3%B3n-del-GridSearchCV-y-alias-champion">¶</a></h3><p>La búsqueda se registra como un run más (<code>gridsearch</code>) con sus mejores parámetros, el RMSE de CV y las mismas métricas de test que el barrido, y el mejor modelo como la versión 17 de la ejecución, con los mismos tags. Antes de mover <code>champion</code> a esa versión se comprueba que es la de menor RMSE de CV entre las 17 de la ejecución: la elección se hace con validación cruzada y no mirando test, para no ajustar el modelo al conjunto que lo evalúa.</p>
+<h3 id="6.2-Registro-de-la-versi%C3%B3n-del-GridSearchCV-y-alias-champion">6.2 Registro de la versión del GridSearchCV y alias <code>champion</code><a class="anchor-link" href="#6.2-Registro-de-la-versi%C3%B3n-del-GridSearchCV-y-alias-champion">¶</a></h3><ul>
+<li><p>El mejor estimador de <code>GridSearchCV</code> se registra en MLflow como una nueva versión del modelo <code>svr_ventas</code>, y se le asigna el alias <code>champion</code> para identificarlo y recuperarlo posteriormente (MLflow, s. f.-a).</p>
+</li>
+<li><p>La selección se realiza por el menor RMSE de validación cruzada, no por el RMSE de test.</p>
+</li>
+<li><p>El conjunto de prueba se reserva para la evaluación final; elegir el modelo con base en test introduciría sesgo en la estimación de generalización.</p>
+</li>
+</ul>
 </div>
 </div>
 </div>
@@ -11372,7 +11493,10 @@ Name: GridSearchCV, dtype: object</pre>
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h3 id="6.3-RMSE-de-validaci%C3%B3n-cruzada-frente-a-RMSE-de-test">6.3 RMSE de validación cruzada frente a RMSE de test<a class="anchor-link" href="#6.3-RMSE-de-validaci%C3%B3n-cruzada-frente-a-RMSE-de-test">¶</a></h3><p>La tabla ordena las 17 versiones por RMSE de CV y muestra al lado el RMSE de test y la diferencia entre ambos.</p>
+<h3 id="6.3-RMSE-de-validaci%C3%B3n-cruzada-frente-a-RMSE-de-test">6.3 RMSE de validación cruzada frente a RMSE de test<a class="anchor-link" href="#6.3-RMSE-de-validaci%C3%B3n-cruzada-frente-a-RMSE-de-test">¶</a></h3><ul>
+<li>Se comparan los errores de validación cruzada y de prueba para analizar la capacidad de generalización.</li>
+<li>La tabla ordena las 17 versiones por RMSE de CV y presenta junto a este valor el RMSE de test y su diferencia.</li>
+</ul>
 </div>
 </div>
 </div>
@@ -11583,12 +11707,12 @@ Name: GridSearchCV, dtype: object</pre>
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<p>Interpretación:</p>
+<p><strong>Interpretación:</strong></p>
 <ul>
-<li>La validación cruzada elige la versión 17 (<code>rbf</code>, C=10, <code>epsilon</code>=0.1, <code>gamma</code>=0.01), con el menor RMSE de CV (19.04). Comparada con la versión 7 (<code>rbf</code>, C=10, <code>gamma="scale"</code>), lo que cambia es <code>gamma</code>: con <code>X</code> estandarizado, <code>"scale"</code> equivale a 1/25 = 0.04, y bajarlo a 0.01 hace la función más suave. El RMSE de test pasa de 30.15 a 26.90.</li>
-<li>En test, la versión 17 queda algo por detrás de las cuatro <code>linear</code> (26.26 a 26.73) y de <code>rbf</code> con C=1 (26.46). La diferencia entre los mejores es menor a 0.7 unidades/día (≈ 2.5 %), dentro del ruido de un test de 100 filas.</li>
-<li>El RMSE de test es mayor que el de CV en todas las versiones (entre 5.5 y 7.9 en las versiones <code>linear</code>, <code>rbf</code> con C=1 y la 17), por dos motivos. Primero, <code>KFold</code> con <code>shuffle</code> (decisión del plan) valida días rodeados de días de entrenamiento, así que mide interpolación y es optimista. Segundo, test es el futuro: tiene los dos feriados que train nunca vio y valores de <code>mes</code>, <code>semana_del_periodo</code> y <code>dias_para_expirar</code> fuera del rango de train (sección 3.6).</li>
-<li><code>champion</code> va a la versión 17 aunque no tenga el menor RMSE de test: elegir mirando test convertiría el conjunto de evaluación en parte del entrenamiento y su RMSE dejaría de ser una estimación honesta del error en días futuros. La selección se hace con CV y test se reporta como estimación final.</li>
+<li>La validación cruzada selecciona la versión 17 (<code>rbf</code>, C=10, <code>epsilon</code>=0.1, <code>gamma</code>=0.01), con el menor RMSE de CV (19.040). Frente a la versión 7 (<code>rbf</code>, C=10, <code>gamma="scale"</code>), la diferencia está en <code>gamma</code>: con <code>X</code> estandarizado, <code>"scale"</code> equivale a 1/25 = 0.04; utilizar 0.01 suaviza la función y reduce el RMSE de test de 30.15 a 26.90.</li>
+<li>En test, la versión 17 queda ligeramente por detrás de las configuraciones <code>linear</code> (26.26–26.73) y de <code>rbf</code> con C=1 (26.46). La diferencia entre los mejores resultados es inferior a 0.7 unidades/día, aproximadamente 2.5 % del RMSE más bajo.</li>
+<li>El RMSE de test supera al de CV. Una razón es que <code>KFold</code> con <code>shuffle</code> valida días rodeados por días de entrenamiento y puede ofrecer una estimación optimista. Además, test corresponde a fechas futuras e incluye dos feriados ausentes en train y valores de <code>mes</code>, <code>semana_del_periodo</code> y <code>dias_para_expirar</code> fuera del rango de entrenamiento.</li>
+<li>El alias <code>champion</code> se asigna a la versión 17 por su mejor RMSE de CV, aunque no tenga el menor RMSE de test. Elegir mirando test convertiría el conjunto de evaluación en parte del proceso de selección y dejaría de ser una estimación independiente del error futuro.</li>
 </ul>
 </div>
 </div>
@@ -11600,7 +11724,16 @@ Name: GridSearchCV, dtype: object</pre>
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h3 id="6.4-Verificaci%C3%B3n-del-registry-y-tabla-consolidada">6.4 Verificación del registry y tabla consolidada<a class="anchor-link" href="#6.4-Verificaci%C3%B3n-del-registry-y-tabla-consolidada">¶</a></h3><p>La tabla consolidada se arma como pide el plan (sección 7.8): cada versión de <code>search_model_versions</code> se une con las métricas de su run, porque la tabla de versiones de MLflow no muestra métricas. Como el registry acumula ejecuciones, la tabla se filtra a las 17 versiones de esta ejecución (las de sus runs). Se guarda en <code>resultados/resultados_modelos.csv</code>, ordenada por RMSE de test, con las columnas del plan más <code>origen</code> y <code>RMSE_CV</code>. Después se comprueban los criterios de aceptación de R2: los 17 runs de esta ejecución terminados y activos, 17 versiones nuevas y consecutivas con los tags <code>kernel</code> y <code>C</code>, métricas completas en cada run, <code>champion</code> cargable desde el registry sin reentrenar (y con las mismas predicciones que el modelo en memoria), un <code>.joblib</code> por versión y el CSV con sus 17 filas.</p>
+<h3 id="6.4-Verificaci%C3%B3n-del-registry-y-tabla-consolidada">6.4 Verificación del registry y tabla consolidada<a class="anchor-link" href="#6.4-Verificaci%C3%B3n-del-registry-y-tabla-consolidada">¶</a></h3><ul>
+<li><p>Se verifica que MLflow haya registrado correctamente los experimentos, las versiones y sus métricas.</p>
+</li>
+<li><p>Las métricas de cada ejecución se unen a la información de <code>search_model_versions</code>, ya que la tabla de versiones del registry no las presenta directamente.</p>
+</li>
+<li><p>La tabla se filtra a las 17 versiones de esta ejecución y se guarda en <code>resultados/resultados_modelos.csv</code>, ordenada por RMSE de test.</p>
+</li>
+<li><p>También se comprueba que los runs hayan finalizado, que las versiones tengan las etiquetas <code>kernel</code> y <code>C</code>, que el alias <code>champion</code> pueda cargarse sin reentrenar, que sus predicciones coincidan con las del modelo en memoria y que existan los archivos <code>.joblib</code> y el CSV esperado.</p>
+</li>
+</ul>
 </div>
 </div>
 </div>
@@ -11954,31 +12087,16 @@ Name: GridSearchCV, dtype: object</pre>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=a9bf8e2e">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<p>Entrega de R2 a R3 y R4:</p>
-<ul>
-<li>Modelo final: <code>models:/svr_ventas@champion</code> (en la ejecución entregada, la versión 17: <code>rbf</code>, C=10, <code>epsilon</code>=0.1, <code>gamma</code>=0.01). También está en <code>resultados/modelos/svr_mejor.joblib</code>. R3 lo carga sin reentrenar.</li>
-<li><code>resultados/resultados_modelos.csv</code> (17 filas ordenadas por RMSE: versión, kernel, C, origen, RMSE, MAE, R², MAPE, RMSE de CV y run) es la tabla consolidada que pide el hito M2. R3 la usa en la sección 8 para la tabla final y la figura de barras; en memoria también quedan <code>resultados_modelos</code> y <code>tabla_versiones</code>.</li>
-<li>Para conclusiones (R4): el mejor RMSE de test es 26.26 (<code>linear</code>, C=10), el de <code>champion</code> 26.90, el del baseline ingenuo 41.72 y el del LSTM de la práctica 001 23.19 (referencia orientativa del README). <code>sigmoid</code> es inestable con C ≥ 1, y la brecha entre CV y test de la sección 6.3 va en limitaciones.</li>
-<li>El registry es el histórico de entrenamientos: volver a ejecutar agrega 17 versiones nuevas y mueve <code>champion</code> a la nueva versión del <code>GridSearchCV</code>; las anteriores siguen visibles en <code>mlflow ui</code>. La ejecución entregada se hizo con un <code>mlflow.db</code> limpio, por eso muestra v1 a v17.</li>
-</ul>
-</div>
-</div>
-</div>
-</div>
 <div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=eb67f835">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="7.-Evaluaci%C3%B3n-del-modelo-final">7. Evaluación del modelo final<a class="anchor-link" href="#7.-Evaluaci%C3%B3n-del-modelo-final">¶</a></h2><p>La evaluación se hace sobre <code>X_test</code>, el 20 % final por fecha que el modelo nunca vio: 100 filas y 10 días. El modelo se carga desde el registry con el alias <code>champion</code>, no desde la variable en memoria, para comprobar que la versión registrada es la que se evalúa y que se puede reutilizar sin reentrenar. Las métricas usan <code>evaluar()</code> de la sección 5.1 (RMSE, MAE, R² y MAPE en %), la misma función del barrido y del <code>GridSearchCV</code>.</p>
-<p><code>champion</code> se eligió por el menor RMSE de validación cruzada (sección 6.3), no por test. Por eso no tiene que ser el menor RMSE de test: la tabla muestra al lado el mejor modelo por test para dejar explícita la diferencia. Elegir mirando test convertiría el conjunto de evaluación en parte del entrenamiento y su RMSE dejaría de ser una estimación honesta del error en días futuros.</p>
+<h2 id="7.-Evaluaci%C3%B3n-del-modelo-final">7. Evaluación del modelo final<a class="anchor-link" href="#7.-Evaluaci%C3%B3n-del-modelo-final">¶</a></h2><ul>
+<li>La evaluación se hace sobre <code>X_test</code>, el 20 % final por fecha que el modelo nunca vio: 100 filas y 10 días.</li>
+<li>El modelo se carga desde el registry, no desde la variable en memoria, para comprobar que la versión registrada es la que se evalúa y que se puede reutilizar sin reentrenar.</li>
+</ul>
 </div>
 </div>
 </div>
@@ -11989,7 +12107,7 @@ Name: GridSearchCV, dtype: object</pre>
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h3 id="7.1-M%C3%A9tricas-del-modelo-final">7.1 Métricas del modelo final<a class="anchor-link" href="#7.1-M%C3%A9tricas-del-modelo-final">¶</a></h3>
+<h3 id="7.1-M%C3%A9tricas-del-modelo-final">7.1 Métricas del modelo final<a class="anchor-link" href="#7.1-M%C3%A9tricas-del-modelo-final">¶</a></h3><p>Se calculan RMSE, MAE, R² y MAPE para cuantificar el error de predicción y el ajuste del modelo sobre el conjunto de prueba.</p>
 </div>
 </div>
 </div>
@@ -12163,8 +12281,11 @@ Name: GridSearchCV, dtype: object</pre>
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<p>La tabla deja explícito el punto importante: <strong>el champion no es el mejor en test</strong>. El champion (<code>rbf</code>, C=10, ε=0.1, γ=0.01) obtiene RMSE 26.904 y R² 0.756 en test, mientras que <code>linear</code> con C=10 obtiene 26.256 y R² 0.768. La diferencia es 0.648 unidades/día (≈ 2.5 % del RMSE del mejor), pequeña frente al ruido de 100 filas y 10 días.</p>
-<p>La elección no se hizo mirando test: en validación cruzada de 5 folds el champion tiene RMSE 19.040, el menor de las 17 versiones, mientras que <code>linear</code> C=10 queda en 20.765. La validación cruzada favorece al <code>rbf</code> con <code>gamma=0.01</code>; test favorece levemente al <code>linear</code>. Se reporta el champion por la regla acordada (selección por CV) y se muestra el mejor por test para que la comparación quede a la vista. El baseline ingenuo (<code>promedio_movil_7d</code>) queda muy atrás: RMSE 41.723, R² 0.414 y MAPE 18.39 %. El LSTM de la práctica 001 (RMSE 23.19, MAE 17.30) se mantiene como referencia externa: el SVR no lo supera en test, pero se acerca con un modelo mucho más simple.</p>
+<p><strong>Interpretación de la tabla:</strong></p>
+<p><strong>Champion no es el mejor en test</strong>.</p>
+<ul>
+<li>El champion (<code>rbf</code>, C=10, ε=0.1, γ=0.01) obtiene RMSE 26.904 y R² 0.756 en test, mientras que <code>linear</code> con C=10 obtiene 26.256 y R² 0.768. La diferencia es 0.648 unidades/día (≈ 2.5 % del RMSE del mejor), pequeña frente al ruido de 100 filas y 10 días.</li>
+</ul>
 </div>
 </div>
 </div>
@@ -12175,7 +12296,10 @@ Name: GridSearchCV, dtype: object</pre>
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h3 id="7.2-Predicho-frente-a-real">7.2 Predicho frente a real<a class="anchor-link" href="#7.2-Predicho-frente-a-real">¶</a></h3><p>Cada punto es una fila de test: en el eje X la venta real y en el Y la predicción del champion. La recta <code>y = x</code> marca la predicción perfecta. Un punto por encima de la recta es una sobreestimación; por debajo, una subestimación. La figura se guarda en <code>resultados/figuras/predicho_vs_real.png</code>.</p>
+<h3 id="7.2-Predicho-frente-a-real">7.2 Predicho frente a real<a class="anchor-link" href="#7.2-Predicho-frente-a-real">¶</a></h3><p>Se comparan gráficamente las ventas reales y las predicciones del modelo <code>champion</code>.</p>
+<ul>
+<li>Cada punto representa un registro del conjunto de prueba; la recta <code>y = x</code> representa una predicción perfecta.</li>
+</ul>
 </div>
 </div>
 </div>
@@ -12224,7 +12348,12 @@ Name: GridSearchCV, dtype: object</pre>
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<p>La nube sigue la diagonal: el modelo captura la escala general de la venta y no muestra un sesgo global fuerte. La media de los residuos es +5.34 unidades/día (sección 7.3), así que en promedio subestima un poco. Los errores más grandes se concentran en los extremos y en los feriados: el peor residuo es +90.12 (P0008 el 28-feb, predijo 161.88 para una venta real de 252) y el más negativo es −69.86 (P0005 el 27-feb, predijo 258.86 para 189). El 28-feb y el 1-mar son los dos feriados del test y el modelo no vio ninguno en train.</p>
+<p><strong>Interpretación:</strong> La nube sigue la diagonal, el modelo captura la escala general de la venta y no muestra un sesgo global fuerte.</p>
+<ul>
+<li>La media de los residuos es +5.34 unidades/día, así que en promedio subestima un poco.</li>
+<li>Los errores más grandes se concentran en los extremos y en los feriados: el peor residuo es +90.12 (P0008 el 28-feb, predijo 161.88 para una venta real de 252) y el más negativo es −69.86 (P0005 el 27-feb, predijo 258.86 para 189).</li>
+<li>El 28-feb y el 1-mar son los dos feriados del test y el modelo no vio ninguno en train.</li>
+</ul>
 </div>
 </div>
 </div>
@@ -12235,7 +12364,7 @@ Name: GridSearchCV, dtype: object</pre>
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h3 id="7.3-Residuos">7.3 Residuos<a class="anchor-link" href="#7.3-Residuos">¶</a></h3><p>El residuo es <code>y_test - pred</code>. Un residuo positivo significa que el modelo subestimó la venta; uno negativo, que la sobreestimó. El histograma muestra la forma de la distribución y la línea roja la media. La tabla resume el sesgo y la dispersión, y el porcentaje de errores dentro de ±RMSE. Se guarda en <code>resultados/figuras/residuos.png</code>.</p>
+<h3 id="7.3-Residuos">7.3 Residuos<a class="anchor-link" href="#7.3-Residuos">¶</a></h3><p>Se analizan los residuos, calculados como la diferencia entre el valor real y el predicho. Su distribución permite identificar sesgos, dispersión y fechas o productos con errores elevados.</p>
 </div>
 </div>
 </div>
@@ -12345,7 +12474,13 @@ Name: GridSearchCV, dtype: object</pre>
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<p>La media es +5.34 unidades/día y la mediana +5.05: el modelo subestima en promedio, pero poco frente a la dispersión (desviación estándar 26.50). El 74 % de los residuos cae dentro de ±RMSE; el mínimo es −69.86 y el máximo +90.12. Los errores más grandes no están repartidos al azar: los promedios diarios más altos son el 28-feb (+49.14) y el 1-mar (+31.59), los dos feriados que caen en test y que <code>es_feriado</code> no puede aprender porque vale 0 en train (sección 3.6). Por producto, P0005 (30.19 de error absoluto medio), P0008 (26.17) y P0009 (24.94) concentran la mayor dispersión; P0006 (10.58) es el más estable.</p>
+<p><strong>Interpretación:</strong></p>
+<ul>
+<li>La media es +5.34 unidades/día y la mediana +5.05: el modelo subestima en promedio, pero poco frente a la dispersión (desviación estándar 26.50).</li>
+<li>El 74 % de los residuos cae dentro de ±RMSE; el mínimo es −69.86 y el máximo +90.12.</li>
+<li>Los errores más grandes no están repartidos al azar: los promedios diarios más altos son el 28-feb (+49.14) y el 1-mar (+31.59), los dos feriados que caen en test y que <code>es_feriado</code> no puede aprender porque vale 0 en train (sección 3.6).</li>
+<li>Por producto, P0005 (30.19 de error absoluto medio), P0008 (26.17) y P0009 (24.94) concentran la mayor dispersión; P0006 (10.58) es el más estable.</li>
+</ul>
 </div>
 </div>
 </div>
@@ -12356,7 +12491,7 @@ Name: GridSearchCV, dtype: object</pre>
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="8.-Resultados-consolidados">8. Resultados consolidados<a class="anchor-link" href="#8.-Resultados-consolidados">¶</a></h2><p>La guía pide la lista de resultados de todos los modelos. La tabla se reconstruye desde las versiones registradas en MLflow: para cada versión de esta ejecución se leen sus tags (<code>kernel</code>, <code>C</code>, <code>origen</code>) y las métricas de su run (<code>rmse</code>, <code>mae</code>, <code>r2</code>, <code>mape</code>, <code>rmse_cv</code>). No se copia el DataFrame en memoria: la consulta a <code>search_model_versions</code> filtrada a los <code>run_id</code> de esta ejecución es la verificación de que el registry y el CSV coinciden. El CSV resultante tiene las mismas 10 columnas de R2 y 17 filas, ordenado por RMSE de test. El champion se resalta en la tabla mostrada; el CSV no lleva columnas extra.</p>
+<h2 id="8.-Resultados-consolidados">8. Resultados consolidados<a class="anchor-link" href="#8.-Resultados-consolidados">¶</a></h2><p>Se reúnen los resultados de las versiones registradas para comparar el desempeño de los modelos y reconocer las configuraciones con menor error.</p>
 </div>
 </div>
 </div>
@@ -12367,7 +12502,7 @@ Name: GridSearchCV, dtype: object</pre>
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h3 id="8.1-Tabla-consolidada-y-CSV">8.1 Tabla consolidada y CSV<a class="anchor-link" href="#8.1-Tabla-consolidada-y-CSV">¶</a></h3>
+<h3 id="8.1-Tabla-consolidada-y-CSV">8.1 Tabla consolidada y CSV<a class="anchor-link" href="#8.1-Tabla-consolidada-y-CSV">¶</a></h3><p>Se presenta y exporta una tabla con los parámetros y las métricas de las 17 versiones registradas, incluyendo el origen de cada modelo y su RMSE de validación cruzada.</p>
 </div>
 </div>
 </div>
@@ -12648,8 +12783,18 @@ Name: GridSearchCV, dtype: object</pre>
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<p>La tabla está ordenada por RMSE de test, no por el orden del registry. El mejor test es <code>linear</code> con C=10 (RMSE 26.256, R² 0.768); el champion es <code>rbf</code> con C=10 y γ=0.01 (26.904, R² 0.756), sexto en la lista. La diferencia entre ambos es 0.648 unidades/día, como se explicó en 7.1: el champion se eligió por CV (19.040 frente a 20.765).</p>
-<p>El barrido muestra tres patrones: <code>linear</code> es casi plano frente a C (26.26–26.73), señal de que los rezagos explican buena parte de la venta de forma lineal; <code>rbf</code> mejora con C=1 (26.46) y empeora con C=10 (30.15) y C=100 (36.97) en test, aunque en CV el C=10 con γ=0.01 es el mejor; <code>poly</code> se degrada de 31.02 a 53.67 al crecer C, y <code>sigmoid</code> explota (31.30, 93.92, 1477.78 y 10485.82). El CSV tiene 17 filas y 10 columnas, y coincide exactamente con la tabla que dejó R2 en 6.4.</p>
+<p><strong>Interpretación:</strong></p>
+<p><strong>El mejor test es <code>linear</code></strong> con C=10 (RMSE 26.256, R² 0.768); el champion es <code>rbf</code> con C=10 y γ=0.01 (26.904, R² 0.756), sexto en la lista.</p>
+<ul>
+<li>La diferencia entre ambos es 0.648 unidades/día, como se explicó en 7.1: el champion se eligió por CV (19.040 frente a 20.765).</li>
+</ul>
+<p>El barrido muestra tres patrones:</p>
+<ul>
+<li><code>linear</code> es casi plano frente a C (26.26–26.73), señal de que los rezagos explican buena parte de la venta de forma lineal.</li>
+<li><code>rbf</code> mejora con C=1 (26.46) y empeora con C=10 (30.15) y C=100 (36.97) en test, aunque en CV el C=10 con γ=0.01 es el mejor.</li>
+<li><code>poly</code> se degrada de 31.02 a 53.67 al crecer C.</li>
+<li><code>sigmoid</code> explota (31.30, 93.92, 1477.78 y 10485.82). El CSV tiene 17 filas y 10 columnas, y coincide exactamente con la tabla que dejó R2 en 6.4.</li>
+</ul>
 </div>
 </div>
 </div>
@@ -12660,7 +12805,10 @@ Name: GridSearchCV, dtype: object</pre>
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h3 id="8.2-RMSE-por-kernel-y-por-C">8.2 RMSE por kernel y por C<a class="anchor-link" href="#8.2-RMSE-por-kernel-y-por-C">¶</a></h3><p>La figura compara las 17 versiones en una escala logarítmica, necesaria para que <code>sigmoid</code> con C=10 y C=100 no aplaste al resto. Cada barra es una versión; el color es el kernel y la barra del champion lleva borde rojo y rayado, y su etiqueta está en rojo. Los valores están anotados para que la escala logarítmica no obligue a estimar alturas. Se guarda en <code>resultados/figuras/comparacion_kernels.png</code>.</p>
+<h3 id="8.2-RMSE-por-kernel-y-por-C">8.2 RMSE por kernel y por C<a class="anchor-link" href="#8.2-RMSE-por-kernel-y-por-C">¶</a></h3><p>Se visualiza el RMSE de test de cada configuración según el kernel y el valor de <code>C</code>.</p>
+<ul>
+<li>La escala logarítmica permite comparar resultados que presentan diferencias de varios órdenes de magnitud; el modelo <code>champion</code> se resalta en la gráfica.</li>
+</ul>
 </div>
 </div>
 </div>
@@ -12727,7 +12875,12 @@ Name: GridSearchCV, dtype: object</pre>
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<p>La escala logarítmica deja ver los tres órdenes de magnitud del barrido. <code>linear</code> y <code>rbf</code> con C=1 y C=10 se mantienen entre 26 y 30; <code>poly</code> sube con C; <code>sigmoid</code> pasa de 31.30 a 10 485.82. La barra resaltada es el champion (<code>rbf</code>, C=10, γ=0.01), que no es la más baja: la más baja es <code>linear</code> C=10. La figura y la tabla cuentan la misma historia que la sección 6.3: el kernel lineal es el más estable en test, el RBF con γ pequeño generaliza mejor en CV, y <code>sigmoid</code> no es adecuado para estos datos.</p>
+<p><strong>Interpretación:</strong> la escala logarítmica permite observar los distintos órdenes de magnitud del barrido.</p>
+<ul>
+<li><code>linear</code> y <code>rbf</code> con C=1 y C=10 quedan entre 26.26 y 30.15 unidades/día; <code>poly</code> aumenta su error con <code>C</code> y <code>sigmoid</code> alcanza hasta 10 485.82.</li>
+<li>La barra resaltada corresponde al <code>champion</code> (<code>rbf</code>, C=10, γ=0.01), aunque no es la más baja; el menor RMSE de test corresponde a <code>linear</code> con C=10.</li>
+<li>La tabla y la gráfica muestran que <code>linear</code> es estable en test, RBF con gamma pequeño fue seleccionado por CV y <code>sigmoid</code> no resulta adecuado para estos datos.</li>
+</ul>
 </div>
 </div>
 </div>
@@ -12738,8 +12891,10 @@ Name: GridSearchCV, dtype: object</pre>
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="9.-Funci%C3%B3n-de-predicci%C3%B3n-para-un-sample-nuevo">9. Función de predicción para un sample nuevo<a class="anchor-link" href="#9.-Funci%C3%B3n-de-predicci%C3%B3n-para-un-sample-nuevo">¶</a></h2><p><code>predecir_venta()</code> recibe un <code>dict</code> con las 11 variables numéricas de <code>NUM</code> y, opcionalmente, <code>categoria</code> y <code>product_id</code>. Carga el modelo vigente desde <code>models:/svr_ventas@champion</code>, arma una fila con el mismo one-hot de la sección 3.3 y la alinea con <code>COLUMNAS</code>; las columnas que falten quedan en 0. Devuelve <code>{"venta_estimada": ..., "unidad": "unidades/día"}</code>.</p>
-<p><code>categoria</code> es función de <code>product_id</code> en el dataset (sección 3.6). Por eso la función no acepta combinaciones imposibles: si viene <code>product_id</code> y falta <code>categoria</code>, la deriva del catálogo; si vienen ambas, exige que coincidan; si solo viene <code>categoria</code>, falla porque no alcanza para determinar el producto; y solo si faltan las dos usa la referencia <code>P0001</code>/<code>Alimentos</code>. Un producto o una categoría que no existan en el catálogo también fallan con un mensaje que lista los valores válidos. No se imputan numéricos: si falta uno, la función falla en vez de inventar contexto de ventas.</p>
+<h2 id="9.-Funci%C3%B3n-de-predicci%C3%B3n-para-un-sample-nuevo">9. Función de predicción para un sample nuevo<a class="anchor-link" href="#9.-Funci%C3%B3n-de-predicci%C3%B3n-para-un-sample-nuevo">¶</a></h2><p>Se implementa una función que recupera el modelo registrado en MLflow y estima las ventas de un nuevo registro sin volver a entrenarlo.</p>
+<ul>
+<li>El uso del alias <code>champion</code> permite identificar la versión seleccionada durante la optimización.</li>
+</ul>
 </div>
 </div>
 </div>
@@ -12750,7 +12905,7 @@ Name: GridSearchCV, dtype: object</pre>
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h3 id="9.1-Funci%C3%B3n-y-contrato-de-entrada">9.1 Función y contrato de entrada<a class="anchor-link" href="#9.1-Funci%C3%B3n-y-contrato-de-entrada">¶</a></h3>
+<h3 id="9.1-Funci%C3%B3n-y-contrato-de-entrada">9.1 Función y contrato de entrada<a class="anchor-link" href="#9.1-Funci%C3%B3n-y-contrato-de-entrada">¶</a></h3><p>Se define <code>predecir_venta()</code>, que recibe un registro con las variables requeridas, mantiene el orden de columnas utilizado durante el entrenamiento y carga el modelo <code>models:/svr_ventas@champion</code> desde MLflow.</p>
 </div>
 </div>
 </div>
@@ -12821,7 +12976,13 @@ Name: GridSearchCV, dtype: object</pre>
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h3 id="9.2-Dos-casos:-demanda-alta-y-demanda-baja">9.2 Dos casos: demanda alta y demanda baja<a class="anchor-link" href="#9.2-Dos-casos:-demanda-alta-y-demanda-baja">¶</a></h3><p>Los dos casos son filas reales de test convertidas al <code>dict</code> de entrada, sin el target. Así la comparación con la venta real es directa: no se inventan rezagos ni se mezcla el error del modelo con un cambio de contexto. El caso alto es <code>P0008</code> (Agua embotellada, Bebidas) el sábado 26-feb-2022, con venta real 333; el caso bajo es <code>P0004</code> (Aceite vegetal, Alimentos) el miércoles 23-feb-2022, con venta real 100. Los dos son días de test que el modelo no vio y ninguno es feriado, para no mezclar la extrapolación de <code>es_feriado</code> con la comparación.</p>
+<h3 id="9.2-Dos-casos:-demanda-alta-y-demanda-baja">9.2 Dos casos: demanda alta y demanda baja<a class="anchor-link" href="#9.2-Dos-casos:-demanda-alta-y-demanda-baja">¶</a></h3><p>Se prueban dos registros reales del conjunto de test, convertidos a diccionarios de entrada sin incluir el target.</p>
+<p>Esto permite comparar la predicción con la venta registrada sin inventar rezagos ni modificar el contexto de cada observación.</p>
+<ul>
+<li>El caso de demanda alta corresponde a <code>P0008</code> (Agua embotellada, Bebidas), el 26-feb-2022, con venta real de 333 unidades.</li>
+<li>El caso de demanda baja corresponde a <code>P0004</code> (Aceite vegetal, Alimentos), el 23-feb-2022, con venta real de 100 unidades.</li>
+<li>Ambos registros pertenecen a test y no corresponden a feriados, por lo que la comparación no mezcla el efecto de fechas especiales.</li>
+</ul>
 </div>
 </div>
 </div>
@@ -12936,7 +13097,13 @@ Name: GridSearchCV, dtype: object</pre>
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<p>El caso alto queda casi exacto: 332.5 frente a 333 reales (−0.5 unidades/día, 0.15 %). El caso bajo se queda corto: 87.0 frente a 100 (−13.0 unidades/día, 13.00 %). La diferencia es coherente con el MAPE del champion (12.47 %): el modelo acierta este día de venta alta, pero subestima los días flojos de mitad de semana, donde el promedio móvil y los rezagos bajan y la venta real se recupera un poco. Los dos casos son filas reales de test, así que la comparación no está contaminada por lags inventados.</p>
+<p><strong>Interpretación:</strong></p>
+<ul>
+<li>El caso alto queda casi exacto: 332.5 frente a 333 reales (−0.5 unidades/día, 0.15 %).</li>
+<li>El caso bajo se queda corto: 87.0 frente a 100 (−13.0 unidades/día, 13.00 %).</li>
+<li>La diferencia es coherente con el MAPE del champion (12.47 %): el modelo acierta este día de venta alta, pero subestima los días flojos de mitad de semana, donde el promedio móvil y los rezagos bajan y la venta real se recupera un poco.</li>
+<li>Los dos casos son filas reales de test, así que la comparación no está contaminada por lags inventados.</li>
+</ul>
 </div>
 </div>
 </div>
@@ -12947,7 +13114,16 @@ Name: GridSearchCV, dtype: object</pre>
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h3 id="9.3-Pruebas-l%C3%ADmite">9.3 Pruebas límite<a class="anchor-link" href="#9.3-Pruebas-l%C3%ADmite">¶</a></h3><p>Se prueban los casos que el contrato debe rechazar o resolver sin producir una combinación imposible. La tabla muestra el resultado de cada prueba: las que deben fallar lanzan un <code>ValueError</code> controlado; las que deben funcionar devuelven una predicción. La prueba clave es la de <code>categoria</code> ausente: la función deriva la categoría del catálogo y debe dar exactamente la misma predicción que el caso completo, porque la categoría duplicada es una columna del modelo y dejarla en 0 cambiaría el resultado.</p>
+<h3 id="9.3-Pruebas-l%C3%ADmite">9.3 Pruebas límite<a class="anchor-link" href="#9.3-Pruebas-l%C3%ADmite">¶</a></h3><p>Se comprueba el comportamiento de <code>predecir_venta()</code> ante datos incompletos, productos inexistentes y combinaciones de características no válidas.</p>
+<p>Las entradas incorrectas deben producir un <code>ValueError</code> controlado; las entradas válidas deben devolver una predicción.</p>
+<p>El contrato garantiza que:</p>
+<ul>
+<li>Cada campo numérico requerido se valida y genera un mensaje específico si falta o contiene un valor no válido.</li>
+<li>Los valores de categoría y producto se contrastan con los valores admitidos; los productos o categorías desconocidos se rechazan.</li>
+<li>Una combinación de producto y categoría imposible se detecta y genera un error.</li>
+<li>Si no se proporciona <code>categoria</code>, la función la obtiene del catálogo del producto.</li>
+<li>No se imputan automáticamente campos faltantes, para evitar inventar información y alterar la predicción.</li>
+</ul>
 </div>
 </div>
 </div>
@@ -13073,17 +13249,6 @@ Name: GridSearchCV, dtype: object</pre>
 </div>
 </div>
 </div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=be9282e9">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<p>Las pruebas confirman el contrato: los numéricos faltantes o no numéricos fallan con un mensaje que dice cuál campo es; una categoría o un producto desconocidos fallan y listan los valores válidos; una categoría que no corresponde al producto falla en vez de crear una combinación imposible. La categoría ausente se deriva del catálogo y da la misma predicción que el caso completo; si faltan las dos categóricas, se usa <code>P0001</code>/<code>Alimentos</code> como referencia y se documenta. No se imputa ningún numérico.</p>
-</div>
-</div>
-</div>
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=0349c9b9">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
@@ -13191,25 +13356,43 @@ Name: GridSearchCV, dtype: object</pre>
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h3 id="9.4-Entrega-de-R3-a-R4">9.4 Entrega de R3 a R4<a class="anchor-link" href="#9.4-Entrega-de-R3-a-R4">¶</a></h3><ul>
-<li>Modelo evaluado: <code>models:/svr_ventas@champion</code> (la versión vigente; en esta ejecución, la del <code>GridSearchCV</code>). Artefacto portable: <code>resultados/modelos/svr_mejor.joblib</code>.</li>
-<li>Métricas de test del champion: RMSE 26.904, MAE 20.182, R² 0.756, MAPE 12.47 %; RMSE de CV 19.040. Mejor RMSE de test del barrido: 26.256 (<code>linear</code>, C=10). Baseline ingenuo: 41.723. LSTM de la práctica 001: 23.19 (referencia externa).</li>
-<li>Figuras: <code>resultados/figuras/predicho_vs_real.png</code>, <code>resultados/figuras/residuos.png</code>, <code>resultados/figuras/comparacion_kernels.png</code>.</li>
-<li>Casos: demanda alta 332.5 vs 333 reales; demanda baja 87.0 vs 100 reales. La función está en la sección 9.1 y las pruebas límite en 9.3.</li>
-<li>Limitaciones para las conclusiones: test de 100 filas y 10 días; <code>es_feriado</code> vale 0 en train y los dos feriados caen en test; <code>categoria</code> duplica 5 dummies de <code>product_id</code>; el champion no es el mejor en test porque se eligió por CV. Nada de SHAP, PDP/ICE ni permutation importance.</li>
+<h2 id="10.-Conclusiones">10. Conclusiones<a class="anchor-link" href="#10.-Conclusiones">¶</a></h2><ul>
+<li><p><strong>Rendimiento frente al baseline.</strong> El SVR <code>champion</code> redujo el RMSE de 41.723 a 26.904 unidades/día y aumentó el R² de 0.414 a 0.756, dando así una reducción del error aproximada del 35.5 % frente al baseline basado en el promedio móvil de siete días.</p>
+</li>
+<li><p><strong>Modelo seleccionado.</strong> MLflow registró como <code>champion</code> la versión 17, con kernel RBF, <code>C=10</code>, <code>epsilon=0.1</code> y <code>gamma=0.01</code>. Por ello, fue seleccionada por obtener el menor RMSE de validación cruzada (19.040); en test alcanzó RMSE=26.904, MAE=20.182, R²=0.756 y MAPE=12.469 %.</p>
+</li>
+<li><p><strong>Comparación de modelos.</strong> El kernel lineal con <code>C=10</code> obtuvo el menor RMSE de test (26.256), poco inferior al del <code>champion</code>. Sin embargo, se conserva la selección basada en validación cruzada para no utilizar el conjunto de prueba en la elección del modelo. Frente al LSTM de la práctica 001 (RMSE=23.19), el SVR <code>champion</code> presentó un RMSE mayor. Esta comparación es orientativa, porque ambos modelos se evaluaron con protocolos distintos y no se dispone para el LSTM de las mismas métricas de R², MAPE y validación cruzada.</p>
+</li>
+<li><p><strong>Influencia de los hiperparámetros y registro.</strong> Los resultados variaron según el kernel y <code>C</code>: <code>linear</code> y <code>rbf</code> presentaron los mejores rangos de error, mientras que <code>poly</code> y especialmente <code>sigmoid</code> tuvieron un desempeño inferior. MLflow permitió registrar los experimentos, comparar métricas y recuperar el modelo seleccionado mediante el alias <code>champion</code>. La función <code>predecir_venta()</code> reutiliza esa versión para estimar nuevos registros sin reentrenar.</p>
+</li>
+<li><p><strong>Limitaciones del conjunto de datos.</strong> El modelado utiliza 530 observaciones: 430 filas de entrenamiento (43 días) y 100 de prueba (10 días). No hubo feriados en entrenamiento; los dos feriados del conjunto de prueba concentran algunos de los residuos más altos. Además, cinco variables dummy de categoría duplican las de producto.</p>
+</li>
 </ul>
+<p>En conclusión, la práctica permitió desarrollar un flujo reproducible de regresión con SVR: preparación de datos, comparación de kernels e hiperparámetros, selección mediante validación cruzada, registro en MLflow y predicción de nuevos registros.</p>
 </div>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=70ba9b85">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=f7f8b419">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<hr/>
-<p><strong>Fin de las secciones de R3.</strong> Las secciones 10 y 11 (conclusiones y referencias APA 7) las completa R4.</p>
+<h2 id="11.-Referencias">11. Referencias<a class="anchor-link" href="#11.-Referencias">¶</a></h2><ul>
+<li><p>Cortes, C., &amp; Vapnik, V. (1995). Support-vector networks. <em>Machine Learning, 20</em>(3), 273–297. <a href="https://doi.org/10.1007/BF00994018">https://doi.org/10.1007/BF00994018</a></p>
+</li>
+<li><p>MLflow. (s. f.-a). <em>MLflow Model Registry</em>. <a href="https://mlflow.org/docs/latest/registry/">https://mlflow.org/docs/latest/registry/</a></p>
+</li>
+<li><p>MLflow. (s. f.-b). <em>MLflow Tracking</em>. <a href="https://mlflow.org/docs/latest/tracking/">https://mlflow.org/docs/latest/tracking/</a></p>
+</li>
+<li><p>Pedregosa, F., Varoquaux, G., Gramfort, A., Michel, V., Thirion, B., Grisel, O., Blondel, M., Prettenhofer, P., Weiss, R., Dubourg, V., Vanderplas, J., Passos, A., Cournapeau, D., Brucher, M., Perrot, M., &amp; Duchesnay, É. (2011). Scikit-learn: Machine learning in Python. <em>Journal of Machine Learning Research, 12</em>, 2825–2830. <a href="https://www.jmlr.org/papers/v12/pedregosa11a.html">https://www.jmlr.org/papers/v12/pedregosa11a.html</a></p>
+</li>
+<li><p>scikit-learn developers. (s. f.). <em>GridSearchCV</em>. scikit-learn. <a href="https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GridSearchCV.html">https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GridSearchCV.html</a></p>
+</li>
+<li><p>Smola, A. J., &amp; Schölkopf, B. (2004). A tutorial on support vector regression. <em>Statistics and Computing, 14</em>(3), 199–222. <a href="https://doi.org/10.1023/B:STCO.0000035301.49549.88">https://doi.org/10.1023/B:STCO.0000035301.49549.88</a></p>
+</li>
+</ul>
 </div>
 </div>
 </div>

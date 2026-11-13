@@ -5,13 +5,11 @@ desarrollar, optimizar y evaluar un modelo **SVM de regresión (SVR)** sobre el 
 ventas de la práctica 001, además de exponer una función de predicción para un sample
 nuevo y cerrar con conclusiones y referencias en APA 7.
 
-> **Estado:** en desarrollo. R1 entregó las secciones 1–3 y la v4 aprobada está promovida.
-> R2 entregó las secciones 4–6 y la v2 aprobada ya está promovida; su auditoría está en
-> `src/jose/docs/auditoria_r2-v2.md`. R3 entregó las secciones 7–9 y la v1 aprobada está
-> promovida en `src/svr_ventas.ipynb`; su auditoría está en
-> `src/geovanni/docs/auditoria_r3-v1.md`. R4 entregó la portada y las secciones 10–11; su v2
-> está en revisión con cambios menores: `src/diana/docs/auditoria_r4-v2.md`. El avance de cada
-> rol está en [Estado por rol](#estado-por-rol).
+> **Estado:** completo. R1–R4 están aprobadas y promovidas en `src/svr_ventas.ipynb`
+> (portada y secciones 1–11). Las auditorías están en
+> `src/jose/docs/auditoria_r2-v2.md`, `src/geovanni/docs/auditoria_r3-v1.md` y
+> `src/diana/docs/auditoria_r4-v2.md`. El avance de cada rol está en
+> [Estado por rol](#estado-por-rol).
 > La guía de desarrollo está en [`docs/plan_desarrollo_svr_4_personas.md`](docs/plan_desarrollo_svr_4_personas.md)
 > y su versión PDF en [`docs/plan_desarrollo_svr_4_personas.pdf`](docs/plan_desarrollo_svr_4_personas.pdf).
 
@@ -135,7 +133,10 @@ practica-002/
 │   ├── geovanni/
 │   │   ├── docs/                      # auditoría r3-v1
 │   │   └── practica-002-v1/           # entrega v1 de R3 (aprobada)
-│   ├── svr_ventas.ipynb               # integración final (secciones 1–9; R1–R3)
+│   ├── diana/
+│   │   ├── docs/                      # auditoría r4-v2
+│   │   └── practica-002-v2/           # entrega v2 de R4 (aprobada)
+│   ├── svr_ventas.ipynb               # integración final (portada y secciones 1–11; R1–R4)
 │   └── svr_ventas.html                # exportación del notebook
 ├── resultados/
 │   ├── resultados_modelos.csv         # una fila por versión, ordenada por RMSE (R3)
@@ -170,7 +171,7 @@ El detalle de tareas, entregables y criterios de aceptación está en la secció
 | R1 — Datos y EDA | 1 Configuración, 2 Datos y EDA, 3 Features y split | Listo (v4 aprobada y promovida) |
 | R2 — Modelado y MLflow | 4 Pipeline SVR, 5 Barrido kernels × C, 6 Optimización | Listo (v2 aprobada y promovida) |
 | R3 — Evaluación y predicción | 7 Evaluación, 8 Resultados consolidados, 9 Función de predicción | Listo (v1 aprobada y promovida) |
-| R4 — Conclusiones y documentación | 0 Portada, 10 Conclusiones, 11 Referencias | En revisión (v2 auditada con cambios: `src/diana/docs/auditoria_r4-v2.md`) |
+| R4 — Conclusiones y documentación | 0 Portada, 10 Conclusiones, 11 Referencias | Listo (v2 aprobada con cambios y promovida) |
 
 R1 entrega, para que nadie los modifique: `X_train`, `X_test`, `y_train`, `y_test`,
 `COLUMNAS` (25 columnas), `df` (limpio, 530 filas), `SEED` y `guardar()`. La revisión de
