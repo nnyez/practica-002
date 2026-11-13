@@ -10736,6 +10736,8 @@ forceTheme('sk-container-id-1');</script></body>
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
+<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">"MLFLOW_DISABLE_AGENT_HINT"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"1"</span>
+
 <span class="kn">import</span><span class="w"> </span><span class="nn">joblib</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">mlflow</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">mlflow.sklearn</span>
@@ -10765,8 +10767,6 @@ forceTheme('sk-container-id-1');</script></body>
 
 <span class="n">RUTA_MODELOS</span> <span class="o">=</span> <span class="n">RUTA_RESULTADOS</span> <span class="o">/</span> <span class="s2">"modelos"</span>
 <span class="n">RUTA_MODELOS</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">for</span> <span class="n">viejo</span> <span class="ow">in</span> <span class="n">RUTA_MODELOS</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">"*.joblib"</span><span class="p">):</span>
-    <span class="n">viejo</span><span class="o">.</span><span class="n">unlink</span><span class="p">()</span>
 
 <span class="n">CV</span> <span class="o">=</span> <span class="n">KFold</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">SEED</span><span class="p">)</span>
 

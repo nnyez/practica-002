@@ -220,8 +220,8 @@ En Windows: `certutil -hashfile datos\ventas_features.csv SHA256` y comparar a m
 Ejecución sin interfaz:
 
 ```bash
-MPLBACKEND=Agg jupyter nbconvert --to notebook --execute --inplace svr_ventas.ipynb
-jupyter nbconvert --to html svr_ventas.ipynb
+MPLBACKEND=Agg jupyter nbconvert --to notebook --execute --inplace src/svr_ventas.ipynb
+jupyter nbconvert --to html src/svr_ventas.ipynb
 ```
 
 ---
